@@ -250,8 +250,2473 @@ Why Tags are used?
 
 Using Branches:
 This is helpful so that you can work on a different development line without altering your stable line of work. We show you how to create new branches, and switch between existing branches.
+---------------------------------------------------DF------------------------------------------------------------------------------------------------------------------------
+
+What is a DataFrame (DF) and Ways to create DataFrame from different sources:
+DataFrame is a distributed collection of data stored into named column we can think data in data frame like data in table. DataFrames are designed for processing large collection of structured or semi-structured data. Observations in Spark DataFrame are organized under named columns, which helps Apache Spark to understand the schema of a DataFrame. This helps Spark optimize execution plan on these queries.
+1.From existing structed data sources like Hive, Json, text file, csv, etc.
+2.From existing Rdd
+3.By performing an operation or query on another data frame
+4.By defining schema
+ Methods used to create an RDD to Data frame (DF):
+1..toDF()
+2.. CreateDataFrame ()
+
+1.How to create DataFrame from different sources:
+A. EnableHiveSupport () - New in version 2.0.
+Enables Hive support, including connectivity to a persistent Hive metastore, support for Hive SerDes, and Hive user-defined functions. If we are using earlier Spark versions, we have to use HiveContext which is variant of Spark SQL that integrates with data stored in Hive. Even when we do not have an existing Hive deployment, we can still enable Hive support.
+spark = SparkSession \
+    .builder \
+    .appName("Python Spark SQL Hive integration example") \
+    .config("spark.sql.warehouse.dir", warehouse_location) \
+    .enableHiveSupport() \
+    .getOrCreate()
+
+Here is an equivalent program in Python, that you could submit using spark-submit:
+from pyspark import SparkContext, SparkConf, HiveContext
+if __name__ == "__main__":
+  # create Spark context with Spark configuration
+  conf = SparkConf().setAppName("Data Frame Join")
+  sc = SparkContext(conf=conf)
+  sqlContext = HiveContext(sc)
+df_07 = sqlContext.sql("SELECT * from sample_07")
+  df_07.filter(df_07.salary > 150000).show()
+  df_08 = sqlContext.sql("SELECT * from sample_08")
+  tbls = sqlContext.sql("show tables")
+  tbls.show()
+  df_09 = df_07.join(df_08, df_07.code == df_08.code).select(df_07.code,df_07.description)
+  df_09.show()
+  df_09.write.saveAsTable("sample_09")
+  tbls = sqlContext.sql("show tables")
+  tbls.show()
+B. Create DataFrame from Json File 
+Loads JSON files and returns the results as a DataFrame.
+If the schema parameter is not specified, this function goes through the input once to determine the input schema.
+Parameters
+•	path – string represents path to the JSON dataset, or a list of paths, or RDD of Strings storing JSON objects.
+•	schema – an optional pyspark.sql.types.StructType for the input schema or a DDL-formatted string (For example col0 INT, col1 DOUBLE).
+•	primitivesAsString – infers all primitive values as a string type. If None is set, it uses the default value, false.
+•	prefersDecimal – infers all floating-point values as a decimal type. If the values do not fit in decimal, then it infers them as doubles. If None is set, it uses the default value, false.
+•	allowComments – ignores Java/C++ style comment in JSON records. If None is set, it uses the default value, false.
+•	allowUnquotedFieldNames – allows unquoted JSON field names. If None is set, it uses the default value, false.
+•	allowSingleQuotes – allows single quotes in addition to double quotes. If None is set, it uses the default value, true.
+•	allowNumericLeadingZero – allows leading zeros in numbers (e.g. 00012). If None is set, it uses the default value, false.
+•	allowBackslashEscapingAnyCharacter – allows accepting quoting of all character using backslash quoting mechanism. If None is set, it uses the default value, false.
+•	mode –
+allows a mode for dealing with corrupt records during parsing. If None is
+set, it uses the default value, PERMISSIVE.
+•	multiLine – parse one record, which may span multiple lines, per file. If None is set, it uses the default value, false.
+dataframe=sc.read.json('/user/Mukesh.kumar/nyt2.json') 
+dataframe.show(10)
+ 
 
 
+C. Create a DataFrame  from Texfile
+Loads data from a data source and returns it as a DataFrame.
+Parameters
+•	path – optional string or a list of string for file-system backed data sources.
+•	format – optional string for format of the data source. Default to ‘parquet’.
+•	schema – optional pyspark.sql.types.StructType for the input schema or a DDL-formatted string (For example col0 INT, col1 DOUBLE).
+•	options – all other string options
+
+dataframe_txt = sc.read.text('/user/mukesh.kumar/text_data.txt')
+dataframe.show(10)
+one
+two
+three
+four
+five
+six
+seven
+eight
+nine
+ten
+D. Create DF from a csv file:
+Parameters
+•	path – the path in any Hadoop supported file system
+•	mode –
+specifies the behavior of the save operation when data already exists.
+o	append: Append contents of this DataFrame to existing data.
+o	overwrite: Overwrite existing data.
+o	ignore: Silently ignore this operation if data already exists.
+o	error or errorifexists (default case): Throw an exception if data already
+exists.
+•	compression – compression codec to use when saving to file. This can be one of the known case-insensitive shorten names (none, bzip2, gzip, lz4, snappy and deflate).
+
+Read a csv file and load the csv file 
+Command used :
+when header is given 
+df=spark.read.format("csv").option("header","true").load("/user/mukesh.kumar/FL_insurance_sample.csv")
+without header
+    df=spark.read.csv("/user/mukesh.kumar/FL_insurance_sample.csv")
+command to show schema
+     df.printSchema()
+ 
+command to show the content
+ df.show()
+
+ 
+
+Reading multiple csv files:
+df = spark.read.csv("path1, path2,path3")
+Reading all csv files from directory : 
+Need to specify the folder path where csv files are stored 
+df = spark.read.csv ("Folder path")
+Infer schema option :
+ it automatically infers column types based on the data. Note that, it requires reading the data one more time to infer the schema.
+df4 = spark.read.options(inferSchema='True',delimiter=',') \
+  .csv("/user/file.csv")
+Or 
+df4 = spark.read.option("inferSchema",True) \
+                .option("delimiter",",") \
+  .csv("/user/file.csv")
+Header :
+This option is used to read the first line of the CSV file as column names.
+df3 = spark.read.options(header='True', inferSchema='True', delimiter=',') \
+  .csv("/user/file.csv")
+Reading CSV files with a user-specified custom schema:
+If you know the schema of the file ahead and do not want to use the inferSchema option for column names and types, use user-defined custom column names and type using schema option.
+schema = StructType() \
+      .add("RecordNumber",IntegerType(),True) \
+      .add("Zipcode",IntegerType(),True) \
+      .add("ZipCodeType",StringType(),True) \
+      .add("City",StringType(),True) \
+      .add("State",StringType(),True) \
+      .add("LocationType",StringType(),True) \
+      
+      
+df_with_schema = spark.read.format("csv") \
+      .option("header", True) \
+      .schema(schema) \
+      .load("/User/file2.csv")
+Save content of a Data Frame to a data source :
+save(path=None, format=None, mode=None, partitionBy=None, **options) 
+The data source is specified by the format and a set of options. If format is not specified, the default data source configured by spark.sql.sources.default will be used.
+Parameters
+•	path – the path in a Hadoop supported file system
+•	format – the format used to save
+•	mode –
+o	specifies the behavior of the save operation when data already exists.
+o	append: Append contents of this DataFrame to existing data.
+o	overwrite: Overwrite existing data.
+o	ignore: Silently ignore this operation if data already exists.
+o	error or errorifexists (default case): Throw an exception if data already exists.
+•	partitionBy – names of partitioning columns
+•	options – all other string options
+
+write() method of the PySpark DataFrameWriter object to write PySpark DataFrame to a CSV file.
+SaveMode.Append	"append"	-- contents of the DataFrame are expected to be appended to existing data.
+SaveMode.Overwrite	"overwrite"	 --existing data is expected to be overwritten by the contents of the DataFrame.
+df.write.option("header",True).csv("/user/file3")
+
+2.Creating a dataframe from existing Rdd :
+Creating a dataframe from an existing rdd 
+rdd = sc.parallelize([(1,2,3),(4,5,6),(7,8,9)])
+df = rdd.toDF(["a","b","c"])
+ 
+3.By performing an operation or query on another data frame:
+               Create a data frame from an rdd by using a list or a pandas.DataFrame.
+When schema is a list of column names, the type of each column will be inferred from data.
+When schema is None, it will try to infer the schema (column names and types) from data, which should be an RDD of either Row, named tuple, or dict.
+
+>>>l = [('Alice', 1)]
+>>> spark.createDataFrame(l).collect()
+[Row(_1='Alice', _2=1)]
+>>> spark.createDataFrame(l, ['name', 'age']).collect()
+[Row(name='Alice', age=1)]
+>>>rdd = sc.parallelize(l)
+>>> spark.createDataFrame(rdd).collect()
+[Row(_1='Alice', _2=1)]
+>>> df = spark.createDataFrame(rdd, ['name', 'age'])
+>>> df.collect()
+[Row(name='Alice', age=1)]
+ 
+4.Create a DataFrame by using StructType in PySpark :
+While creating a Spark DataFrame we can specify the structure using StructType and StructField classes. As specified in the introduction, StructType is a collection of StructField's which is used to define the column name, data type and a flag for nullable or not. StructType objects define the schema of Spark DataFrames. StructType objects contain a list of StructField objects that define the name, type, and nullable flag for each column in a DataFrame.  StructType columns are a great way to eliminate order dependencies from Spark code.
+
+from pyspark.sql.types import *
+>>>l = [('Alice', 1)]
+>>> spark.createDataFrame(l).collect()
+[Row(_1='Alice', _2=1)]
+>>> spark.createDataFrame(l, ['name', 'age']).collect()
+[Row(name='Alice', age=1)]
+>>>rdd = sc.parallelize(l)
+
+>>> schema = StructType([
+...    StructField("name", StringType(), True),
+...    StructField("age", IntegerType(), True)])
+>>> df = spark.createDataFrame(rdd, schema)
+>>> df.collect()
+[Row(name='Alice', age=1)]
+ 
+Methods  to Create DataFrame:
+1.By using toDF()
+from pyspark.sql import Row
+ df = sc.parallelize([Row(r=Row(a=1, b="b"))]).toDF()
+ df.select(df.r.getField("b")).show()
++---+
+|r.b|
++---+
+|  b|
++---+
+df.select(df.r.a).show()
++---+
+|r.a|
++---+
+|  1|
++---+
+ 
+2.By using CreateDataFrame
+from pyspark.sql.types import *
+>>>l = [('Alice', 1)]
+>>> spark.createDataFrame(l).collect()
+[Row(_1='Alice', _2=1)]
+ 
+JDBC To Other Databases:
+Spark SQL also includes a data source that can read data from other databases using JDBC. This functionality should be preferred over using JdbcRDD. This is because the results are returned as a DataFrame and they can easily be processed in Spark SQL or joined with other data sources. The JDBC data source is also easier to use from Java or Python as it does not require the user to provide a ClassTag. (Note that this is different than the Spark SQL JDBC server, which allows other applications to run queries using Spark SQL).
+To get started you will need to include the JDBC driver for your particular database on the spark classpath. For example, to connect to postgres from the Spark Shell you would run the following command:
+bin/spark-shell --driver-class-path postgresql-9.4.1207.jar --jars postgresql-9.4.1207.jar
+Tables from the remote database can be loaded as a DataFrame or Spark SQL temporary view using the Data Sources API. Users can specify the JDBC connection properties in the data source options. user and password are normally provided as connection properties for logging into the data sources.
+A. Loading data from a JDBC source
+     jdbcDF = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:postgresql:dbserver") \
+    .option("dbtable", "schema.tablename") \
+    .option("user", "username") \
+    .option("password", "password") \
+    .load()
+    jdbcDF2 = spark.read \
+    .jdbc("jdbc:postgresql:dbserver", "schema.tablename",
+          properties={"user": "username", "password": "password"})
+
+B. Specifying dataframe column data types on read
+jdbcDF3 = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:postgresql:dbserver") \
+    .option("dbtable", "schema.tablename") \
+    .option("user", "username") \
+    .option("password", "password") \
+    .option("customSchema", "id DECIMAL(38, 0), name STRING") \
+    .load()
+C. Saving data to a JDBC source
+    JdbcDF2.write \
+    .jdbc("jdbc:postgresql:dbserver", "schema.tablename",
+          properties={"user": "username", "password": "password"}
+Step 1: Create a data frame by reading data from SQL Server via JDBC:
+jdbcDF = spark.read.format("jdbc") \
+    .option("url", jdbcUrl) \
+    .option("dbtable", "Employees") \
+    .option("user", user) \
+    .option("password", password) \
+    .option("driver", jdbcDriver) \
+    .load()
+jdbcDF.show()
+Step 2: We can also save the data frame to the database via JBBC too:
+jdbcDF.select("EmployeeID","EmployeeName", "Position").write.format("jdbc") \
+  .mode("overwrite") \
+  .option("url", jdbcUrl) \
+  .option("dbtable", "dbo.Employees2") \
+  .option("user", user) \
+  .option("password", password) \
+  .save()
+
+Sample code the following is one complete example.
+from pyspark import SparkContext, SparkConf, SQLContext
+appName = "PySpark SQL Server Example - via JDBC"
+master = "local"
+conf = SparkConf() \
+    .setAppName(appName) \
+    .setMaster(master) \
+    .set("spark.driver.extraClassPath","sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar")
+sc = SparkContext(conf=conf)
+sqlContext = SQLContext(sc)
+spark = sqlContext.sparkSession
+database = "test"
+src_table = "dbo.Employees"
+user = "zeppelin"
+password  = "zeppelin"
+jdbcUrl = f"jdbc:sqlserver://localhost:1433;databaseName={database}"
+jdbcDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+Create a data frame by reading data from SQL Server via JDBC
+jdbcDF = spark.read.format("jdbc") \
+    .option("url", jdbcUrl) \
+    .option("dbtable", "Employees") \
+    .option("user", user) \
+    .option("password", password) \
+    .option("driver", jdbcDriver) \
+    .load()
+jdbcDF.show()
+We can also save the data frame to the database via JBBC too
+jdbcDF.select("EmployeeID","EmployeeName", "Position").write.format("jdbc") \
+  .mode("overwrite") \
+  .option("url", jdbcUrl) \
+  .option("dbtable", "dbo.Employees2") \
+  .option("user", user) \
+  .option("password", password) \
+  .save()
+Read data from SQL Server table dbo.Employees as a Spark dataframe using JDBC driver:
+Select a few columns from the table and then save this new dataframe into a new table named dbo.Employees2.
+Run the script
+python script-name.py
+ Make sure the JDBC driver your are using matches with your environment Java version.
+If you use spark-submit command to run the script, ensure you pass in locations of your driver JAR files via option --jars:
+spark-submit --jars /path/to/sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar  script-name.py
+One more thing you need to ensure is the permission to create tables or write data into your tables in your database.
+
+
+-----------------------------------------------------------------------jenkins---------------------------------------------------------------
+C:\Program Files\MongoDB\Server\4.2\bin
+click appliccation mongo
+use mydb
+show db
+db.students.insert({name :"sashi"})
+dbstudents.find()
+ 
+ git - maintains version control 
+ jenkins -continious instegration 
+ selinium - constinious testing 
+  docker - constainerization
+  puppet-  continous deployment
+  
+  Vm -like a physical computer  runs os  and appliccation
+       vm runs on top of hypervisor 
+	    hypervisor runs on physical computer whch prvd  vm 
+		 with resources pbm: unstable perrformance,boot up process is long
+  constainer: bring virtulazation to os ,it uses host operating sys,
+ 
+ Docker :is a container that packes ur application and dependinces 
+         in the form of constainer
+
+
+
+Using jenkins one can pull latest code from git repo and produce a build 
+whch can final deployed to test or production 
+it can be set to trigger a new build automaticcally as soon as 
+there is change in git  repo
+
+Jenkins -enter name of ur project in “New Item” link in the Jenkins dashboard , then select type of ur project ,in project configuration page 
+			add build step and execute shell ,then click on build now in dashboard-
+			jenkins logo -dashboard -project configuration-source code managment -git url 
+			---install build tool to jenkins ----
+			jenkins -dashboard -manage jenkins -gloabal tool configuration-  install build tool -add step to invoke target 
+			---CI----
+			Navigate to your GitHub repository and click on the “Settings” tab.
+			 “Add webhook” button add url of github with webhook
+			
+create build pipeline -build 
+CI -add webhook 
+----Build Triggers -----
+Jenkins dashboard, select the project you created, It redirects you to the project configuration page.click the “Configure” option
+build trigger -  Enable the “Github hook trigger for GITScm polling” and save 
+-----------------------------------------------------------------hadoop----------------------------------------------------------------------------------------------
+record reader :used to convert input data into offset line of key value pairs 
+         
+DistributedCache:DistributedCache is a facility provided by the Map-Reduce framework to cache files ,
+					will copy the data to the slave node before any tasks for the job 
+					are executed on that node. 
+Block in HDFS : Block is nothing but the  basic unit of data ,we have a default block size of 128MB or 256 MB.
+ 
+Rack Awareness :is used to achieve high fault tolerance ,1 in same rack  and other in same rack 
+				different node ,
+				other in diff rack
+.
+ 
+Map-Reduce : map reduce is adistributed a parallel processing framework used to process larege amount of data on compute cluster of 
+				commidity hardware
+ map task - record reader... it reads input data from a file convrt into key value pairs
+							recordreader transforms the input split into records ,
+							provides the data to the mapper function in key-value pair
+          map phase ...reads data from record reader in the form of k ,v paris process data and
+						produces another set of k,v pair,
+		  combiner..... Combiner takes the intermediate data from the mapper and aggregates them ,
+						combiner combines the value of same key  as a key,it is a collection of values 
+		  partitioner ...ensures that key with the same value goes to same reducer by default it
+						is hash partitioner,no.of partition are equal to no of reducer 
+						
+					
+		  
+ reduce task  - shuffel and sort phase  ...hadoop fraework perform shuffel sort based on intermediate produced by mapper ,
+						it is collection of keys ,combiner combines the value of same key  as a key collection of value in sorted order
+			 reduce pahse .... reducer performs the reduce function once per key 
+								all key with same value are combined togother to produce output 
+			 
+Architecture:	Master data		 
+Input data is broken into blocks of size 128 Mb and then blocks are moved to different nodes.
+Once all the blocks of the data are stored on data-nodes, the user can process the data.
+Resource Manager then schedules the program (submitted by the user) on individual nodes.
+Once all the nodes process the data, the output is written back to HDFS.
+
+commands:
+hdfs dfs -mkdir /user/dataflair/dir1
+hdfs dfs -ls /user/dataflair
+hdfs dfs -ls -R /user
+hdfs dfs -put /home/sample.txt /user/dataflair/dir1
+hdfs dfs -copyFromLocal /home/sample /user/dataflair/dir1
+hdfs dfs -get /user/dataflair/dir1 /home
+hdfs dfs -getmerge /user/dataflair/dir1/sample.txt /user/dataflair/dir2/sample2.txt /home/sample1.txt
+hadoop fs –getfacl /user/dataflair/dir1  ----acess control for directory files
+hadoop fs –getfattr –d /user/dataflair/dir1  ---extended attribute names and values for the specified file or directory.
+
+Schedular --FIFO ,Fair, Capacity 
+
+What is a checkpoint?
+  “Checkpointing” is a process that takes an FsImage, edit log and compacts them into a new FsImage. 
+
+ What is “speculative execution” in Hadoop?
+    we will not stop slow running task bt launch new task in parallel
+
+ why we can’t perform “aggregation” (addition) in mapper? Why do we need the “reducer” for this?
+  sorting of data does not occur in the “mapper” 
+	we need the output of all the mapper functions which may not be possible to collect 
+	in the map phase as mappers may be running on the different machine where the data blocks are
+		stored.
+ 
+How can one copy a file into HDFS with a different block size to that of existing block size configuration?
+ 
+
+ 
+How many Mappers run for a MapReduce job?
+Number of block depends on file size. If you have 1gb of file that makes 8 blocks (of 128 mb).
+So now all 8 blocks will be replicated three times by following data locality and rack awareness - 
+but it doesn't mean all 24 (8 x 3) blocks will be processed when you run any job against this file. 
+Replication is for to recover from disk failures type of scenarios.
+So to answer your questions:
+Number of mappers = number of input splits(in most cases number of blocks).
+There will be only 8 mappers running on cluster. Hadoop will decide on which node these mappers need to be run based on 
+data locality - at closest block location in cluster(node).
+There will be different case if speculative execution is enabled for the cluster - hadoop-speculative-
+task-execution
+
+ 
+Which are the two types of ‘writes’ in HDFS?
+ 
+ 
+What is “fsck”?
+file systems check file system
+
+Compression files in hadoop ,compression techniques 
+ gzip ,LZO
+ snappy Generally used to compress Container
+ file formats like Avro and SequenceFile because the files inside a Compressed Container file can 
+ be split.
+ 
+File formats 
+ rc,orc,avaro,parquet,text,sequence 
+ 
+ Parquet is a columnar format that is supported by many data processing systems. Spark SQL provides 
+ support for both reading and writing Parquet files that automatically preserves the schema of the 
+ original data. When writing Parquet files, all columns are automatically converted to be nullable 
+ for compatibility reasons.
+ 
+Optimization job performance techniques 
+ memory tuning 
+ LZO Compression
+ useing skewed join 
+ speculative execution 
+  
+Modes of execution engine 
+  3 standalone ,pseduo ,full  distributed mode 
+ 
+ Small files in hadoop
+ 1.	Hadoop archive Files (HAR): HAR command creates a HAR file, which runs a map reduce job to prevent HDFS data to get
+ archived into small files. HAR ensures file size is large and the number is low. 
+2.	Sequence files: By this method, data is stored in such a way that file name will be kay and file name will be valued.
+ MapReduce programs can be created to make a lot of small files into a single sequence file. MapReduce divides sequence files 
+ into parts and works on each part independently.
+ 
+Explain about the indexing process in HDFS.
+	The indexing process in HDFS depends on the block size.
+	HDFS stores the last part of the data that further points to the address where the next part of
+	the data chunk is stored.
+ 
+How many Reducers in Hadoop:
+	Job.setNumreduceTasks(int) the user set the number of reducers for the job.
+	The right number of reducers are 
+	0.95 or 1.75 multiplied by (<no. of nodes> * <no. of the maximum container per node>).
+
+
+Skew data :https://bigdatacraziness.wordpress.com/2018/01/05/oh-my-god-is-my-data-skewed/
+1.repartition data 
+
+2.salting techniques   
+salting techniques  is a technique where we need to add random values to key in 1 of the table ino other table
+ we need to replicate rows of 
+random key to macth the salted key
+3.
+
+--------------------------------------------------------------------------------hive-----------------------------------------------------------------------------------------------
+Archtecture  
+modes of execution engine--mr --tez --spark
+partition 
+bucketing
+sort by 
+order by 
+group by 
+reduce by 
+cluster by (distribute by ,sort by)
+exploade
+Map Side Join
+Bucketed Join -data not  sorted
+Sort Merge Bucket join(SMB)
+Vectorization 
+Sre de 
+
+1.What query optimization techniques are used in Hive?
+
+Execution Engine -using tez execution,
+Usage of suitable file format.
+By partitioning.
+Use of bucketing.
+Use of vectorization----allows Hive to process a batch of rows together instead of processing one row at a time. 
+							Each batch is usually an array of primitive types
+Cost based optimization 
+Use of indexing.
+
+2.Mostly people these days run Hive on Tez, since it is approx.
+ 5 or 6 times faster than MR and the better the Tez conf the faster your query is.
+ it executes DAG 
+ 
+3.ORDER BY x: guarantees global ordering, but does this by pushing all data through just one reducer. This is basically unacceptable for large datasets. You end up one sorted file as output.
+SORT BY x: orders data at each of N reducers, but each reducer can receive overlapping ranges of data. You end up with N or more sorted files with overlapping ranges.
+DISTRIBUTE BY x: ensures each of N reducers gets non-overlapping ranges of x, but doesn't sort the output of each reducer. You end up with N or more unsorted files with non-overlapping ranges.
+CLUSTER BY x: ensures each of N reducers gets non-overlapping ranges, then sorts by those ranges at the reducers. This gives you global ordering, and is the same as doing (DISTRIBUTE BY x and SORT BY x). You end up with N or more sorted files with non-overlapping ranges.
+
+4.How to handle upserts in the hive?(insert update)//how to handel incremental data/delta load  in hive 
+	Hive supports ACID But doing updates directly in Row-level causes performance issue in hive.
+	1.using merge command 
+	2.Create an intermediate table with the partition to store all the recent records and then do a join
+	with the main table and
+	overwrite the partition in the main table (Insert overwrite).
+	Or the same can be done by MERGE command in the hive
+ 
+ 5.What is Cost-Based optimization in Hive?
+	parse query , generate tree and assign cost to operators and finally select plan with lowest cost.
+ 
+ 6.What is the difference between NVL and Coalesce in Hive?
+	NVL
+	Syntax - NVL(arg1, arg2)
+	This will replace arg1 with arg2 if arg1 value is NULL
+	Example -
+	NVL(value, default value) 
+	Returns default value if value is null else returns value
+	COALESCE
+	Syntax - coalesce(value1, value 2, …value n)
+	This will return the first value that is not NULL, or NULL if all values's are NULL
+
+7.How do decide no of buckets in hive 
+	By hash_function(bucketing_column) mod num_buckets. It should be less than your hdfs block size .,it should be eaqual ot block size ,and fit into memory
+
+8.What is a skewed table in Hive?
+	A skewed table is a special type of table where the values that appear very often (heavy skew)
+	 are split out into separate files 
+	 and rest of the values go to some other file.
+
+9.How do we create skewed tables?
+
+	create table <T> (schema) skewed by (keys) on ('c1', 'c2') [STORED as DIRECTOR]
+
+10.partitioning 
+	allows us to group data based on colum values all releated data will be stored under 1 partition 
+	scanning only relevant partitioned data instead of the whole dataset ,Dynamic partitioning values for partition columns 
+	are known in the runtime.
+11.What is indexing and why do we need it?
+	we use it to speed up the access of a column or set of columns in a Hive database. 
+12.Bucketing
+	it is 1 level depper to partition can be acheived by using hash function on the coulmn in the table 
+
+13.Map join 
+	Map-side Joins allows a table to get loaded into memory ensuring a very fast join operation,
+	performed entirely within a mapper and that too without having to use both map and reduce phases
+
+14.Bucket map join ,  
+		all the tables used in the join are bucketed on the join columns we use Hive Bucket Map Join feature
+
+
+15.Srede
+
+	sort by order by 
+	sort by data goes to multiple reducer order by entire data goes to 1 reducer 
+
+16.What are the different components of a Hive architecture?
+	User Interface – Basically, it calls the execute interface to the driver. Further, driver creates a session handle to the query. 
+		Then sends the query to the compiler to generate an execution plan for it.
+	Metastore – It is used to Send the metadata to the compiler. Basically, for the execution of the query on receiving the send
+		MetaData request.
+	Compiler- It generates the execution plan. Especially, that is a DAG of stages where each stage is either a metadata operation,
+		a map or reduce job or an operation on HDFS.
+	Execute Engine- Basically,  by managing the dependencies for submitting each of these stages to the relevant components we use
+			Execute engine.
+17.How are tables stored in hive? by creating directory 
+	/usr/hive/warehouse/mydb.db/myTable.
+
+18.how to see long running jobs in Hive 
+	go to yarn -resource manager-application-running jobs -in right corner u will find logs click tht u can see 
+
+19.compression techniques - snappy, lzo, lz4, bzip2, and gzip - hive.exec.compress.intermediate, hive.exec.compress.output
+
+20.Hive Architecture 
+componenets :
+	UI
+
+	driver
+
+	Tez execution engine 
+
+	yarn 
+
+	hdfs
+architecture:
+	when user submit query with ui or JDBc , ODBC connection ,hive driver will validate and send to compiler for execution plan.
+	then complier interacts with metastore to get metadata information ,then metastore send plan to driver and compiler sends to driver
+	,driver executes plan on execution engine ,then execution engine will send request to hadoop ,in hadoop it will creat job tracker 
+	task tracker to execute plan.
+
+
+-------------------------------------------------------------spark--------------------------------------------------------------------------------------------------------
+######spark####
+Number of partitions = Total input dataset size / partition size 
+
+-num-executors--instances = In this approach, we'll assign one executor per core
+                    = total-cores-in-cluster
+                   = num-cores-per-node * total-nodes-in-cluster
+				   
+ --executor-cores = 1 (one executor per core)
+ 
+ --executor-memory = amount of memory per executor
+                     = mem-per-node/num-executors-per-node
+spark architecture
+SPARK SQL 
+saprk core  
+partition -types -logical chunk of large distributed data, Spark assigns one task per partition and each worker can process 
+			one task at a time.
+executor  
+driver program -sc-worker node-executor
+DAG --- 
+rdd 
+df -way to create data frame 
+ds -ways - as -convert df to ds
+
+transformation 
+action 
+
+orc - if we are not performaning any kinds of join on data, and want max compression on result output we use orc 
+ parquet  -columnr format if we have json query -if we have nested data in json ,
+ avaro -row format ,if their is frequent update in data then schema is also changing then we opt for it, frequently it is used in hive 	
+ 
+broadcast -Broadcast variables allow the programmer to keep a read-only variable cached on each machine rather
+			than shipping a copy of it with tasks
+accumulator-- are used for aggregration of information
+rdd lineage 
+checkpointing rdd, df -freeze content ,ds -truncate underlying rdd of a ds 
+catalyist optimizer -
+spark in memeory 
+improve performance --cache ,broadcast
+optimize job performance -data serlization -java ,kryo-conf.set(“spark.serializer”,”org.apache.spark.serializer.KryoSerializer”),
+							broadcast,
+							bucketing,executor tunning,Speculative execution -spark.speculation //Set to true to enable by default it is 
+														false.spark.speculation.interval //Time interval to check for speculative tasks.
+aggregation done by using group by ,reduce by ,udaf 
+add new column - withCoulmn by using it we can change data type ,add value to column,derive new colu from existing 1 ,
+WithCloumnRenamed- -rename cloumn df 
+
+
+schedule job in oozie 
+enable hive support -enableHiveSupport()
+
+repartition - it's recommended to use it while increasing the number or reducing no of partitions, because it involve shuffling 
+				of all the data.
+				 repartition will shuffle data in all the partitions,
+				 
+coalesce - is used only to reduce the number of partitions. For example if you have 3 partitions and you want to 
+			reduce it to 2, coalesce will move the 3rd partition data to partition 1 and 2. Partition 1 and 2 will remains in the same
+			container.On the other hand, therefore the network usage between the executors will be high and it 
+				 will impacts the performance.spark default shuffling partition to 200 using spark.sql.shuffle.partitions 
+				 configuration.
+
+coalesce performs better than repartition while reducing the number of partitions.
+
+for csv ---.option("Inferschema true ")
+		This function will go through the input once to determine the input schema if inferSchema is enabled.
+		 To avoid going through the entire data once, disable inferSchema option or specify the schema explicitly using schema.
+		 set all this to avoid data loss ---spark.read.options(mode='FAILFAST', multiLine=True, escape='"').csv('file.csv').
+		 ignoreLeadingWhiteSpace,ignoreTrailingWhiteSpace,mode=premisive sets other fields to null when it meets a corrupted record
+		 columnNameOfCorruptRecord,multiLine = true
+		 SaveMode.Append	"append"	-- contents of the DataFrame are expected to be appended to existing data.
+		SaveMode.Overwrite	"overwrite"	 --existing data is expected to be overwritten by the contents of the DataFrame.
+
+-----Shuffle ------------------
+Shuffling is a process of redistributing data across different executor  
+
+		 a single task will operate on a single partition .
+		 to execute reduce by key task ,it must read data from all partitions to find values for all keys ,
+		 then combine values of all these partition to produce final output result for each key . 
+		 "Spark’s shuffle operations 
+		 The Shuffle is an expensive operation since it involves disk I/O, data serialization, and network I/O.
+		 SortByKey /groupBy/subtractByKey/foldByKey/aggregateByKey/reduceByKey/cogroup/any of the join transformations/distinct
+
+-----------spark-shuffle-partitions ------------------
+					Spark first runs map tasks on all partitions which groups all values for a single key.
+							The results of the map tasks are kept
+							in memory.Finally runs reduce tasks on each partition based on key.
+ -------Internals of spark execution ----
+		 spark gives us two operations for solving any problem.
+			Transformation
+			Action
+		 
+		 When we do the transformation on any RDD, it gives us a new RDD. 
+		 But it does not start the execution of those transformations. 
+		 The execution is performed only when an action is performed.
+		 The driver creates the DAG( Execution plan(Job) for your program.
+		 Once the DAG is created, driver  divides this DAG to a number of Stages. 
+		 These stages are the divided into smaller tasks and all the tasks are given to the executors for execution.
+		 
+		 spark divided this program into two stages ? Basically it depends on shuffling,
+		 when you perform any transformation where the spark needs to shuffle the data by communicating to the other partitions .
+		 it creates other stages for such transformations. 
+		 And the transformation which does not require the shuffling of your data, it creates a single stage for it.
+		  
+		  spark divided tasks for each stage -- it depends on your number of partitions.
+		 
+------DAG -----------------
+		DAG conatins set of all operation that are applied on rdd , when an action is called on rdd DAG is
+		built and submitted to DAG scheduler ,DAG scheduler divieds operator into stages of task 
+		a stage is comprised of task and these task are executed on exectore where data is stored
+		
+-----File Format-----------
+	 orc - if we are not performaning any kinds of join on data, and want max compression on result output we use orc ,
+			bloom filter and dictionary alog 
+	 parquet  -columnar format if we have json query -if we have nested data in json ,
+	 avaro -row format ,if their is frequent update in data  then schema is also changing then we opt for it, 
+			frequently it is used in hive 	
+
+------cache and persist-----
+		cache can store intermidate result in memeory
+		persist can store in storage level
+		
+------how many partition are created----
+		spark creates 1 partition for each block ,no of cores in cluster is equal to no of partitons 
+		
+------https://sathya-hadoop.blogspot.com/2019/06/crack-spark-interview.html
+
+------map - when we want to apply any function on key and values 
+
+-----map values-performaing any operation on  values of all the tuples of rdd 
+
+-----stage :stage is nothing bt pyhsical execution unit (set of parallel task)
+
+-----task  :A task is a unit of work that sends to the executor. Each stage has some task, one task per partition. The Same task is done 
+			over different partitions of RDD.
+			
+			
+			
+------------------------------------------------------------------------------tesco-------------------------------------------------------------------------------------------
+--questions ----
+
+--executor-cores` = 1 (one executor per core)   
+
+----num-executors--instances`   = `num-cores-per-node * total-nodes-in-cluster` 
+
+---executor-memory` =`mem-per-node/num-executors-per-node
+       
+-----shuffle partition =    should not cross max partition  size(block size)
+              
+-----executors = shuffle partition/ executer per jvm 
+
+To determine the number of executers and cores – [ for 40 GB of input ].
+
+1.	I would like a shuffle partition size generally ranging between 64 MB to 175 MB and max recommendation would be 200 MB per partition. 
+2.	For 40 GB [40000 MB] as input, by considering 100 MB per partition,40000/100 =400 we would need  400 shuffle partitions. 
+3.	One executer can process 4 JVMs i.e 4 partitions shuffle operations totally. Now for 400 partitions we would need 400/4 = 100 executors. 4 JVM’s per executor is a recommendation from my side. 
+4.	In one worker node, 4 cores for each executors is recommended [research shows that any application with more than 5 concurrent tasks,
+ would lead to a bad show. So the optimal value is 5, we can go with less in case for any leading issues].  
+ 100/4 = 25 as spark.executor.instances and 4 as spark.executor.cores. 
+
+--File Format------
+ orc - if we are not performaning any kinds of join on data, and want max compression on result ooutput we use orc 
+ parquet  -columnr format if we have json query -if we have nested data in json ,
+ avaro -row format ,if their is frequent update in data  then schema is also changing then we opt for it, frequently it is used in hive 					 
+
+import org.apache.saprk.sparksession
+
+--read  distinct record hive ,spark------
+	insert overwrite table dynpart select distinct * from dynpart;
+--without distinct --
+	select * from
+	(select Id,Name,Technology,
+	row_Number() over (partition By Id,Name order by id desc) as row_num
+	from yourtable) as tab
+	where row_num = 1;
+
+--distinct for spark -------
+	val dropDisDF = df.dropDuplicates("department","salary"),,df.distinct()
+	
+val spark = SparkSession.builder().appName().master().getorlocal()
+
+val tf = spark.read.jsonFile()
+
+jobid ,jobname , 
+
+101,xyz
+102,abc 
+101,xyx
+102,abc,
+103,gh
+what kind of data u will be dealing with -will u truncate and load in application layer
+2 tables records , insert data in table 2 not in table 1 --left join based on id null coulmn 
+etl -- 
+optimization in sql ,
+index 
+triggers
+schedduler tool ,jil 
+tracking -jira 
+how to debug store procedure
+how to update statics of table 
+external internal ,type of data paruet ,orc 
+hive optimzation ,cost based optimization technique 
+no insert update wht u will do  -overwrite ,joins
+
+select jobid, jobname from table 
+groupby  jobname orderby jobid 
+
+select jobid,distinct(jobname) as jname  from table orderby jobid 
+
+---id price  tag	date
+12  56    ab		12-feb
+123 58    gh		13-feb
+44   66     ty		2-mar
+
+
+
+---data in hive read data from hive to spark -enable HiveSupport()
+--spark-submit---
+
+
+--managed ,external ----
+
+--oozie ----
+
+--i have 2 column if i type 3rd column what will be the output 
+
+
+--nosql-
+primary kery ,foriegn key 
+schema rows 
+acid ,joins are not performed 
+insertion is fsater and retierval faster ,cassnadra key value ,mongo -document store 
+batch processing-- prod and consumer ----topic subscribe to topic ,consumer consume topic data,
+spark strctured streaming ----
+----------------------------------------------------------------------hadoop-hive-manhoar--------------------------------------------------------------------------------
+Quickly go through these topics before the interview:
+1.Hadoop architecture and Basic questions 
+
+-Hadoop HDFS to store data across slave machines
+The Hadoop Distributed File System (HDFS) is Hadoop’s storage layer. Housed on multiple servers, data is divided into blocks based on file size. These blocks are then randomly distributed and stored across slave machines.
+HDFS in Hadoop Architecture divides large data into different blocks. Replicated three times by default, each block contains 128 MB of data. replication are maintined in two different node in a rack and third is maintained in the seperate rack following rack awareness
+ 
+There are three components of the Hadoop Distributed File System:  
+
+NameNode (a.k.a. masternode): Contains metadata in RAM and disk
+NameNode holds metadata information on the various DataNodes, their locations, the size of each block, etc.
+ It also helps to execute file system namespace operations, such as opening, closing, renaming files and 
+ directories.
+
+Secondary NameNode: Contains a copy of NameNode’s metadata on disk
+The secondary NameNode server is responsible for maintaining a copy of the metadata in the disk.
+ The main purpose of the secondary NameNode is to create a new NameNode in case of failure.
+
+Slave Node: Contains the actual data in the form of blocks
+Datanodes store and maintain the blocks. While there is only one namenode, there can be multiple datanodes, 
+which are responsible for retrieving the blocks when requested by the namenode. Datanodes send the block reports
+ to the namenode every 10 seconds; in this way, the namenode receives information about the datanodes stored in
+ its RAM and disk.
+
+-Hadoop YARN for resource management in the Hadoop cluster
+Hadoop YARN (Yet Another Resource Negotiator) is the cluster resource management layer of Hadoop and is 
+responsible for resource allocation and job scheduling. Introduced in the Hadoop 2.0 version, YARN is the middle
+ layer between HDFS and MapReduce in the Hadoop architecture. 
+
+The elements of YARN include:
+
+ResourceManager (one per cluster)
+Resource Manager manages the resource allocation in the cluster and is responsible for tracking how many resources are available in the cluster and each node manager’s contribution. 
+
+ApplicationMaster (one per application)
+Application Master manages the resource needs of individual applications and interacts with the scheduler to acquire the required resources. It connects with the node manager to execute and monitor tasks.
+
+NodeManagers (one per node)
+Node Manager tracks running jobs and sends signals (or heartbeats) to the resource manager to relay the status of a node. It also monitors each container’s resource utilization.
+
+containers
+Container houses a collection of resources like RAM, CPU, and network bandwidth. Allocations are based on what YARN has calculated for the resources. The container provides the rights to an application to use specific resource amounts.
+
+-Hadoop MapReduce to process data in a distributed fashion
+MapReduce is a framework conducting distributed and parallel processing of large volumes of data. Written using a number of programming languages, it has two main phases: Map Phase and Reduce Phase.
+
+Map phases
+Map Phase stores data in the form of blocks. Data is read, processed and given a key-value pair in this phase. It is responsible for running a particular task on one or multiple splits or inputs.
+
+Reduce phase
+The reduce Phase receives the key-value pair from the map phase. The key-value pair is then aggregated into smaller sets and an output is produced. Processes such as shuffling and sorting occur in the reduce phase.
+
+-Zookeeper to ensure synchronization across a cluster
+
+Apache Zookeeper is a coordination service for distributed application that enables synchronization across a 
+cluster.
+Manage configuration across nodes
+Implement reliable messaging
+Implement redundant services
+Synchronize process execution
+
+2.File types 
+
+1.Text/CSV Files
+
+CSV files are still quite common and often used for exchanging data between Hadoop and external systems. They are readable and ubiquitously parsable. They come in handy when doing a dump from a database or bulk loading data from Hadoop into an analytic database. However, CSV files do not support block compression, thus compressing a CSV file in Hadoop often comes at a significant read performance cost. When working with Text/CSV files in Hadoop, never include header or footer lines. Each line of the file should contain a record. This, of course, means that there is no metadata stored with the CSV file. You must know how the file was written in order to make use of it. Also, since the file structure is dependent on field order, new fields can only be appended at the end of records while existing fields can never be deleted. As such, CSV files have limited support for schema evolution.
+
+2. JSON Records
+
+JSON records are different from JSON Files in that each line is its own JSON datum -- making the files splittable. Unlike CSV files, JSON stores metadata with the data, fully enabling schema evolution. However, like CSV files, JSON files do not support block compression. Additionally, JSON support was a relative late comer to the Hadoop toolset and many of the native serdes contain significant bugs. Fortunately, third party serdes are frequently available and often solve these challenges. You may have to do a little experimentation and research for your use cases.
+
+3. Avro Files
+
+Avro files are quickly becoming the best multi-purpose storage format within Hadoop. Avro files store metadata with the data but also allow specification of an independent schema for reading the file. This makes Avro the epitome of schema evolution support since you can rename, add, delete and change the data types of fields by defining new independent schema. Additionally, Avro files are splittable, support block compression and enjoy broad, relatively mature, tool support within the Hadoop ecosystem.
+
+4. Sequence Files
+
+Sequence files store data in a binary format with a similar structure to CSV. Like CSV, sequence files do not store metadata with the data so the only schema evolution option is appending new fields. However, unlike CSV, sequence files do support block compression. Due to the complexity of reading sequence files, they are often only used for in flight data such as intermediate data storage used within a sequence of MapReduce jobs.
+
+5. RC Files
+
+RC Files or Record Columnar Files were the first columnar file format adopted in Hadoop. Like columnar databases, the RC file enjoys significant compression and query performance benefits. However, the current serdes for RC files in Hive and other tools do not support schema evolution. In order to add a column to your data you must rewrite every pre-existing RC file. Also, although RC files are good for query, writing an RC file requires more memory and computation than non-columnar file formats. They are generally slower to write.
+
+6. ORC Files
+
+ORC Files or Optimized RC Files were invented to optimize performance in Hive and are primarily backed by HortonWorks. ORC files enjoy the same benefits and limitations as RC files just done better for Hadoop. This means ORC files compress better than RC files, enabling faster queries. However, they still don?t support schema evolution. Some benchmarks indicate that ORC files compress to be the smallest of all file formats in Hadoop. It is worthwhile to note that, at the time of this writing, Cloudera Impala does not support ORC files.
+
+7. Parquet Files
+
+Parquet Files are yet another columnar file format that originated from Hadoop creator Doug Cutting?s Trevni project. Like RC and ORC, Parquet enjoys compression and query performance benefits, and is generally slower to write than non-columnar file formats. However, unlike RC and ORC files Parquet serdes support limited schema evolution. In Parquet, new columns can be added at the end of the structure. At present, Hive and Impala are able to query newly added columns, but other tools in the ecosystem such as Hadoop Pig may face challenges. Parquet is supported by Cloudera and optimized for Cloudera Impala. Native Parquet support is rapidly being added for the rest of the Hadoop ecosystem. One note on Parquet file support with Hive... It is very important that Parquet column names are lowercase. If your Parquet file contains mixed case column names, Hive will not be able to read the column and will return queries on the column with null values and not log any errors. Unlike Hive, Impala handles mixed case column names. A truly perplexing problem when you encounter it.
+	
+Here are the key factors to consider:
+
+Hadoop Distribution- Cloudera and Hortonworks support/favor different formats
+Schema Evolution- Will the structure of your data evolve?
+Processing Requirements- Will you be crunching the data and with what tools?
+Read/Query Requirements- Will you be using SQL on Hadoop? Which engine?
+Extract Requirements- Will you be extracting the data from Hadoop for import into an external database engine or other platform?
+Storage Requirements- Is data volume a significant factor? Will you get significantly more bang for your storage buck through compression?
+	
+3.Block size and hadoop replication factor.
+
+default 3 replecation and 128 mb block size
+hadoop dfs -setrep -w <REPLICATION_FACTOR> -R /
+hadoop fs -D fskmnj.local.block.size=134217728 -put local_name remote_location
+
+hadoop-env.sh >> used to set the environmental variabble for hadoop
+core-ste.sh >> This file informs Hadoop daemon where NameNode runs in the cluster. It contains the configuration settings for Hadoop Core such as I/O settings that are common to HDFS and MapReduce.
+hdfs-site.xml >> This file contains the configuration settings for HDFS daemons; the Name Node, the Secondary Name Node, and the data nodes. and also specify default block replication and permission checking on HDFS
+mapred-site.sh >> This file contains the configuration settings for MapReduce daemons; the job tracker and the task-trackers.
+
+4.Hive Table creation and data load 
+
+CREATE [TEMPORARY] [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.] table_name
+
+[(col_name data_type [COMMENT col_comment], ...)]
+[COMMENT table_comment]
+[ROW FORMAT row_format]
+[STORED AS file_format]
+
+where external table doesnot drop data when table is deleted. Internal table drops data when deleted
+Internal -hive moves table data to warehouse directory 	External -it doesnt move table data to ware house
+	dropping deletes table and metadata 			  drop deletes metadata
+	supports truncate,acid					  no support for truncate,acid
+
+data in hive can be loaded in three ways
+a.using insert into command
+Insert into table employee values (15,'Bala',150000,35)
+b.using load command
+Load data local inpath '/data/empnew.csv' into table emp >>> lfs to hive
+Load data  inpath '/data/empnew.csv' into table emp >> hdfs to hive
+c. using hadoop commands
+hadoop fs -put /path/to/localfile /Data/employee
+hadoop fs -copyFromLocal /path/to/localfile /Data/employee
+hadoop fs -moveFromLocal /path/to/localfile /Data/employee
+
+5.Partition and bucketing
+Partition divides large amount of data into multiple slices based on value of a table column(s).
+
+Assume that you are storing information of people in entire world spread across 196+ countries spanning around 500 crores of entries. If you want to query people from a particular country (Vatican city), in absence of partitioning, you have to scan all 500 crores of entries even to fetch thousand entries of a country. If you partition the table based on country, you can fine tune querying process by just checking the data for only one country partition. Hive partition creates a separate directory for a column(s) value.
+CREATE TABLE table_name (column1 data_type, column2 data_type) PARTITIONED BY (partition1 data_type, partition2 data_type,….);
+
+Bucketing decomposes data into more manageable or equal parts.
+
+With partitioning, there is a possibility that you can create multiple small partitions based on column values. If you go for bucketing, you are restricting number of buckets to store the data. This number is defined during table creation scripts.
+CREATE TABLE table_name PARTITIONED BY (partition1 data_type, partition2 data_type,….) CLUSTERED BY (column_name1, column_name2, …) SORTED BY (column_name [ASC|DESC], …)] INTO num_buckets BUCKETS;
+
+
+6.How to run parallel jobs in oozie 
+three main components
+workflow, coordinator and bundle
+dynamic values can set through job.propert file
+
+Actions type >> is used to run the type of jobs to execute (Hive,sqoop,spark)
+control type >> is used to provide decisions on the jobs like (start,stop, conditions,,,)
+
+fro parllel processing >> fork and join tags are used in the xml file
+fork tag will declare all the actions and merge join tag on completion .
+
+7.Spark session creation 
+
+import org.apache.spark.sql.SparkSession
+
+The entry point into all functionality in Spark is the SparkSession class. To create a basic SparkSession, just use SparkSession.builder():
+val spark = SparkSession
+  .builder()
+  .appName("Spark SQL basic example")
+  .master(local[*])
+  .config("spark.some.config.option", "some-value")
+  .getOrCreate()
+  .enableHiveSupport()
+  
+8submitThe spark-submit script in Spark’s bin directory is used to launch applications on a cluster.
+./bin/spark-submit \
+  --class <main-class> \
+  --master <master-url> \
+  --deploy-mode <deploy-mode> \
+  --conf <key>=<value> \
+  ... # other options
+  <application-jar> \
+  [application-arguments]
+  
+Some of the commonly used options are:
+
+--class: The entry point for your application (e.g. org.apache.spark.examples.SparkPi)
+--master: The master URL for the cluster (e.g. spark://23.195.26.187:7077)
+--deploy-mode: Whether to deploy your driver on the worker nodes (cluster) or locally as an external client (client) (default: client) †
+--conf: Arbitrary Spark configuration property in key=value format. For values that contain spaces wrap “key=value” in quotes (as shown).
+application-jar: Path to a bundled jar including your application and all dependencies. The URL must be globally visible inside of your cluster, for instance, an hdfs:// path or a file:// path that is present on all nodes.
+application-arguments: Arguments passed to the main method of your main class, if any
+
+8.Data frames 
+A Spark DataFrame is a distributed collection of data organized into named columns that provides operations to filter, group, or compute aggregates, and can be used with Spark SQL. DataFrames can be constructed from structured data files, existing RDDs, tables in Hive, or external databases
+A DataFrame is a distributed collection of data organized into named columns. It is conceptually equivalent to a table in a relational database or a R/Python Dataframe. Along with Dataframe, Spark also introduced catalyst optimizer, which leverages advanced programming features to build an extensible query optimizer.
+
+DATA set
+Dataset API is an extension to DataFrames that provides a type-safe, object-oriented programming interface. It is a strongly-typed, immutable collection of objects that are mapped to a relational schema.
+At the core of the Dataset, API is a new concept called an encoder, which is responsible for converting between JVM objects and tabular representation. The tabular representation is stored using Spark internal Tungsten binary format, allowing for operations on serialized data and improved memory utilization. Spark 1.6 comes with support for automatically generating encoders for a wide variety of types, including primitive types (e.g. String, Integer, Long), Scala case classes, and Java Beans.
+
+RDD
+The ain abstraction Spark provides is a resilient distributed dataset (RDD), which is a collection of elements partitioned across the nodes of the cluster that can be operated on in parallel.
+
+8.1 catalyst optimizer
+Query Analysis >> creates a logical query by using catalog
+Logical optimization >> creates a optimized query 
+Physical planning >>  generates multiple optimized queries
+Code generation >> selects a particular pysical query based on cost model algorithm
+
+The goal of Project Tungsten is to improve Spark execution by optimizing Spark jobs for CPU and memory efficiency 
+(as opposed to network and disk I/O which are considered fast enough). Tungsten focuses on the hardware architecture of the platform Spark
+ runs on, including but not limited to JVM, LLVM, GPU, NVRAM, etc.
+
+9.Delta/Incremental Load in Hive
+
+merge statement
+MERGE INTO employee
+USING empl z 
+ON employee1.ID=z.ID
+WHEN MATCHED THEN 
+UPDATE SET id=z.ID
+WHEN NOT MATCHED THEN
+INSERT VALUES ( z.ID, 1);
+
+or using intermediate table 
+
+storing the new result in the intermediate/stage table by combining main table and incremental table. and finally overwriting the data from stage table to main table
+ex- insert into orders_temp partition (order_date) 
+select t1.* from (select * from orders union all select * from orders_stage) t1 join 
+(select order_no, max(last_update_date) as last_update_date from (select * From orders union all select * From orders_stage ) t2 group by order_no, quantity, amount) t3
+ on t1.order_no = t3.order_no and t1.last_update_date = t3.last_update_date;
+ 
+ or using intermediate view
+ CREATE VIEW reconcile_view AS
+SELECT t2.id, t2.field1, t2.field2, t2.field3, t2.field4, t2.field5, t2.modified_date FROM
+(SELECT *,ROW_NUMBER() OVER (PARTITION BY id ORDER BY modified_date DESC) rn
+FROM (SELECT * FROM base_table
+UNION ALL
+SELECT * FROM incremental_table)
+t1) t2
+WHERE rn = 1;
+
+10.Data locality
+In Hadoop, Data locality is the process of moving the computation close to where the actual data resides on the node, instead of moving large data to computation. This minimizes network congestion and increases the overall throughput of the system.
+this enhances faster execution and increased throughput by reducing network congestion.
+
+11.hadoop 1 and 2 
+H2 is more scalable supports 10000 node (earlier 4000)
+H2 supports more distributed computing like spark, etc earlier it was only mapreduce
+resource management in H1 was taken care by mapreduce but H2 YARN takes care
+single point of failure was avoided in H2 by introducing secondary name node.
+H2 supports windows processing unlike H1
+H2 supports container approach, H1 supports slot approach
+
+12. FUNCTIONS IN MAPREDUCE - mapper driver reducer, map and reduce functions
+
+13. blocksize - 64MB in h1 and 128 MB in h2
+
+14. partitioner in map reducer - "A partitioner works like a condition in processing an input dataset. The partition phase takes place 
+after the Map phase and before the Reduce phase.The number of partitioners is equal to the number of reducers.
+ That means a partitioner will divide the data according to the number of reducers. Therefore, the data passed from a single partitioner 
+ is processed by a single Reducer."
+
+15. commutative law - The Law that says you can swap numbers around and still get the same answer when you add. Or when you multiply.
+ Examples: You can swap when you add: 6 + 3 = 3 + 6
+	
+16. combiner - Combiner can be viewed as mini-reducers in the map phase. They perform a local-reduce on the mapper results before they are
+ distributed further. Once the Combiner functionality is executed, it is then passed on to the Reducer for further work. Map output -> Partitioner  -> Combiner - > Reducer
+	
+17. how many mappers it uses in combiner - same combiner can be used for multiple mapper until and unless the op of all mapper are same.
+	
+18. identity mapper - this is default class provided by hadoop and invoked automatically if no mapper class created and it will do processing the data.
+	simply writes input key/value pairs of output
+	
+19. identity reducer - same as identity mapper with no aggregations and just shuffle and sorting data
+	
+20. min reducer 1 - if we set one reducer, it will write to one file in HDFS
+	
+21. scenario of reducer 0 - job. setNumreduceTasks(0) -  we set the number of Reducer to 0 (by setting job. setNumreduceTasks(0)), then no reducer will execute and no aggregation will take place. In such case, we will prefer “Map-only job” in Hadoop. In Map-Only job, the map does all task with its InputSplit and the reducer do no job
+	
+22. coherence model 
+	
+23. data pipelining  - data pipeline architecture is a system that captures, organizes, and routes data so that it can be used to gain 
+					insights
+	
+24. exec modes - standalone , psedo distributed, fully distributed(hadoop) 
+    - hive two execution modes(local and map reduce mode) 
+	- Spark(Client and Custer)
+	
+25. secondary namenode - fsimage and editlog merge- overcomes single point failure
+	
+26. split brain scenario - There should be only one NameNode active at a time. Otherwise, two NameNode will lead to corruption of the data.
+ 				We call this scenario as a “Split-Brain Scenario”, where a cluster gets divided into the smaller cluster.
+				 Each one believes that it is the only active cluster. 
+				“Fencing” avoids such scenarios. Fencing is a process of ensuring that only one NameNode remains active at a particular time. 
+				Quoram manager using zookeeper 
+	
+27. Quorum Journal nodes >> theses are odd number of nodes which help in keeping name nade and seccondary name node in synchronization.
+
+28. zookeeper - coordinator purpose and centralized configuration purpose in the cluster
+-Zookeeper to ensure synchronization across a cluster
+
+Apache Zookeeper is a coordination service for distributed application that enables synchronization across a cluster.
+Manage configuration across nodes
+Implement reliable messaging
+Implement redundant services
+Synchronize process execution
+	
+29. parameters of speculative - memory issues - speculative execution is a feature in Hadoop when the hadoop framework starts to clone the “long running” task in another node. As a result of this, the number of tasks is greater than the number of splits.
+	
+30. map reduce vs hive - data processing - datawarehouse/data analysis tool
+	
+31. update in hive  
+- insert overwrite table main_table partition (c,d)
+- select t2.a, t2.b, t2.c,t2.d  from staging_table t2 left outer join main_table t1 on t1.a=t2.a;
+
+	deleting in hive 
+32. row format delimited - This line is telling Hive to expect the file to contain one row per line. So basically, we are telling Hive that when it finds a new line character that means is a new records
+	
+33. partition saving - dynamic and static partition 
+	
+34. distributed by  
+- sortby(no global order) - orderby(global order)- distribute by(distributes data across reducers based on keys but no global order) 
+- cluster by = distributeby + sortby
+	
+35. data saved in hdfs >> compression using file formats which supports compression
+
+36. embedded metastore(Hiveservice and metastore service and metastor db in same JVM, default)
+	vs local(Hiveservice and metastore service in same JVM and metastor db in separate JVM)
+	vs remote (all are in different JVM, production)
+	
+37. compression techniques - snappy, lzo, lz4, bzip2, and gzip - hive.exec.compress.intermediate, hive.exec.compress.output
+	
+38. hive removing duplicates - insert overwrite table dynpart select distinct * from dynpart;
+--without distinct --
+select * from
+(select Id,Name,Technology,
+row_Number() over (partition By Id,Name order by id desc) as row_num
+from yourtable) as tab
+where row_num = 1;
+	
+--------distinct for spark -------val dropDisDF = df.dropDuplicates("department","salary"),,df.distinct()
+
+39. common errors in oozie - may be data type mismatch, wrong job.properties configurations, if any of server down etc
+	
+40. workflow running another workflow - yes, with <sub-workflow> action we can call wf within wf.
+	
+41. passing parameters through sh file - yes, we cn call the shell script in job.properties which will pass the paramters to workflow.xml where shell action 
+is called.
+	
+42. spark faster than hadoop-more points - processing in the main memory of the worker nodes and prevents the unnecessary I/O operations with the disks
+-directed acyclic graph (DAG) data processing engine
+-spark has persist option instead to write to disks
+
+43. RDD -failure of data
+	
+44. lineanage in spark- RDD lineage is nothing but the graph of all the parent RDDs of an RDD. We also call it
+ an RDD operator graph or RDD dependency graph.
+ To be very specific, it is an output of applying transformations to the spark. Then, it creates a logical execution plan
+	
+	Lineage Graph
+
+Lineage is the graph of how all the parent RDD’s are connected to the derived RDD’s. It hence is a graph of how each RDD is dependent on the other and how 
+
+the transformations are applied to each RDD. 
+
+DAG (Directed Acyclic Graph) is a collection of all the RDD and the corresponding transformations on them. A DAG is created when the
+ user creates a RDD and applies transformations on it, this results in a DAG. 
+
+45.Optimization job performance techniques hive
+ memory tuning 
+ LZO Compression
+ useing skewed join 
+ speculative execution 
+
+46.Compression files in hadoop ,compression techniques 
+ gzip ,LZO
+ snappy Generally used to compress Container
+ file formats like Avro and SequenceFile because the files inside a Compressed Container file can 
+ be split.
+ 
+------------------------------------------------spark-hive-walmart----------------------------------------------------------------------------------------------------
+Read the folder and all files in it ---//ISFile or IsDirectory 
+ val peopleDF = spark.sparkContext.wholeTextFiles("C:\\Users\\sashirekha.bisati\\Downloads\\data-master\\retail_db_json\\departments")
+ val files = peopleDF.map{ case(filename,content)=> filename}
+  files.collect.foreach(filename => print(filename.toString.split("-")(0)))
+
+Read the json nested file and flattened the output ----flatmap
+val  address= spark.read.option(multline=true).json("path") // json nested //for csv inferschema true header true 
+val names = address.select('address').collect()
+val flattened = names.expload('cites','city').{c:List[string]=>c}
+val allcities = flattened.select('
+
+how to use option -----
+val a:Option[Int]=some(5)
+val b:Option[Int] =None 
+print(a.getOrElse(1))
+
+how to update table when matched ,when not matched ---
+merge statement
+MERGE INTO employee
+USING empl z 
+ON employee1.ID=z.ID
+WHEN MATCHED THEN 
+UPDATE SET id=z.ID
+WHEN NOT MATCHED THEN
+INSERT VALUES ( z.ID, 1);
+
+set salary for emp like 2-1  to 1 ,3-2 to 2,4-3 to 3 and 4th to null --- 
+
+
+
+
+------------------------------------------------------------------scenario-----------------------------------------------------------------------------------------
+1.file 1: 
+candidate, CTC, Exp
+Arun,       5,  2
+Pradeep,    7,  3
+...
+
+file 2:
+Pradeep,   7,   3
+....
+
+ 
+
+file 3:
+Arun,       5,  2
+....
+
+folder: file1, file 2, file 3. ,......
+
+
+val lines = spark.wholeTextFiles("/folderpath").toDF()
+
+val result = lines.distinct()//if all coumns have same data(duplicate) then only row is removed here 
+
+result.show()
+
+2. val teendata = spark.sql("select *, ctc/exp as rating from vdata order by rating asc")//sql
+   
+   teendata.show()
+
+	val r1 = result.select("candidate", Expr($"ctc")/$"exp").alias("rating")).orderBy("rating")//df 
+	
+	r1.show()
+string s ="123"
+
+3.int convert(String str)
+{
+int result =0
+  for(int i =0; i<str.length;i++)
+   if(str.charAt(i) instanceOf Integer)
+   {
+      result = result+str.charAt(i)
+    }
+	}
+	else{
+	
+	throw NumberException();
+	}
+}
+//distinct will give all distinct rows so even candidate with same name 
+ 
+4.student id  student marks subject show Max marks ://rank windows
+	1 english  50
+	2 hindi    60
+	3 sanskrit 70
+
+
+    val r = df.groupBy("subject").agg(max("marks").alais("HighestMark"))
+    r.show()
+	
+5.show max marks with studentid
+	val r = df.groupBy("StudentId","subject").agg(max("marks").alais("HighestMark"))
+
+6.show max and min marks 
+
+	val r = df.groupBy("subject").agg(max("marks").alais("HighestMark"),min("marks").alias("lowest"))
+
+7.explain each statment what happens in DAG :explain stages here : stage 1 : map : parallel : stage map: stage : action 
+	
+	val r = df.groupBy("StudentId","subject")//transformation 
+		Spark first runs map tasks on all partitions which groups all values for a single key.
+		The results of the map tasks are kept in memory.
+		When results do not fit in memory, Spark stores the data into a disk.
+		Spark shuffles the mapped data across partitions,
+		some times it also stores the shuffled data into a disk for reuse when it needs to recalculate.
+		Run the garbage collection
+		Finally runs reduce tasks on each partition based on key.
+val s1=r.agg(max("marks").alais("HighestMark"))// transformation 
+s1.show() //action 
+
+or other way for 4,5,6,7 is 
+
+ val pw = Window.partitionBy($"Subject").orderBy($"marks".desc)
+    val rankTest = rank().over(pw)
+    peopledf.select($"*", rankTest as "rank").show()
+	
+8.print distinct category :
+    daynumber (1-31)          | .     product_id (2digit)         | Category (Char(2))
+
+    1-11-AB
+
+    10-11-BB
+
+    12-11-CD
+	
+	
+	val count = df.distinct() // countDistinct() 
+	count.show()
+
+9.when does it get loaded bcz we use inferschema bcz we use inferschema it get loaded now before action is called 
+,not recommended to use 
+	spark.read.option.("delimiter",",").option("header","true").option("inferschema","true").csv("path")
+
+10.convert map data into key value column data frame in scala 
+ 
+ import spark.implicits._
+
+    val m = Map("A" -> 11,"B" -> 12)
+
+    val data = m.toSeq.toDF("name","score")
+
+    data.show()
+11.---id and tag for 1 to 30 days---------
+	feb 1 to feb 29 month wise
+	groupby(tag) order by date asc based on  avg price 
+
+	val df = spark.sparkContext.parallelize(l).toDF("id","price","tag","date")
+
+    val grpaBY = df.groupBy("tag","date").agg(avg("price")).orderBy("date")
+
+        grpaBY.show(10)
+		
+		---------------------------------------------------------------------------------python---------------------------------------------------------
+		
+		----python----
+python interpeture is going to do  compliation.
+python virtual machine is goin to do compliation,no explict compliation 
+python dnt have interpeture.
+types are not required in python ,
+by default type is consideried internally (inbulit functions are there)
+it is dynamaically typed prgm language 
+python is functional pgm language
+python is oop 
+python is scripting lang 
+python is modular pgrm 
+for web applications we use Django
+platform independent
+portability run on any os 
+dynamaically typed pgm language
+both procedure oriented and object oriented 
+everything is object 
+performance is not good 
+nt used for mobile
+if idetnfiry start with _ its private ,__ it is too private
+__main__ language specfice identifery defined by python
+
+data types-- char is not there
+int ----in python2 there is long ,but not in python3 
+float 
+decimal 
+string s ="durga" ->str s='durga' ->String multiline =>'''durga
+	boolean :True =1.0, False =0.0														sir ''' or """durga """																			sir """
+complex -a+bj a= real part b= imaginary part
+base coonverstion 
+decimal ,hexa,octal,binary 
+
+slice operator 
+s="durga" s[:] = durga s[-4:-1] =urg s='durga' s*10 ==durga for 10 times
+s[2:5] from 1to5 ,from -5 to -1 
+
+Type casting 
+int --complex to int not possible(a+bj) ,it should conatin int values passed as arrgument
+float --int to float, str should be int value -string to float ,cannot convert float to complex (a+bj),can conver booean to
+			float ,float("tren") not possible string to float,float(ob1111) not possible value error ,
+
+mutable and immutable  - example of voter list a1 to v4 first to hyd the n v3 to wag 
+v1="hyd" v2="hyd"  v3="hyd" v4="hyd"
+id(v1) id(v2) id(v3) id(v4)  only 1 obj all obj pointing to same refernce 
+v3="wag"  --now it has 2 obj --hyd has 3 obj v1 v2 v4 -id(v1)  ,--wag has only v3 obj id(v3)
+all fundamental types(int,flaot ,bool ,complex ,str)data obj as immutable ,everything is an object
+List is not mutable 
+x=10 
+y=10 
+x is y (insted of using memeory of(x) or memoery of(y))
+x and y are pointing to same obj to check use x is y or y is x  ( is is equal to == operator )
+
+x=10, y=10 both point to same obj then 
+both point to same obj ,x=y ,y=x ,reusing same obj is avaliable up to  0 to 256 --int it is range for prgm
+x= 46887968  y = 46887968 x != y , y != x for flaot point reuse concept is not there 
+x = 10+20j for complex reuse conecpt is not there -same as above 
+
+--List---mutable 
+List data  type -=insertion order preserved,duplicates are allowed
+List=[10,20,30,10] --growable in nature 
+type(List)
+print(List) 10,20,30,10--null is not applicable 
+list.appened('durga') --different type of obj are allowed
+list.append(None) --allowed
+print(list)- [10,20,30,10,'durga',none]
+list[0]-10,list[-1]-nothing,list[1:5]-20,30,10,'durga']
+list.remove(10)
+s=[10,"durga",True]
+s1= s*2 [10,'durga',True,10,'durga',True]
+---
+bytes are immutablex=[10,20,30,40]
+b=bytes[x]  0 to 256 
+
+bytes array are mutable stores data like images
+x=[10,20,30,40]
+b=bytearray(x)
+
+----tuple is ----immutable
+t=(10,'durga',True,10)
+t[0] = 10
+t[0]= 100 ---doest nt suppoert item assignment
+t1 = t*2 --seperate obj get created for these many parameters
+t1 (10,'durga',True,10,10,'durga',True,10)
+
+-----range()---
+its a sequence of values,immutable
+r=range(10)
+type(r)--range,r range (0,10)
+for i in r : print(i) --0to 9 
+range is applicable for int only 
+
+-------set------
+difference between list and set 
+list order is oreserved and duplicates are allowed ()
+set no duplicates and no order{} it allows char and number 
+
+---frozenset--------
+group of unique values bt no 1  is allowed to change 
+order not maintained 
+add remove are not there 
+-----
+list []-mutable,
+tuple() -immutable  ,
+set{}-mutable,
+frozenset -immutable,range,bytes-sequence of values,
+bytearray  --sequence of values
+--these are group of indiviual obj
+
+
+----dictionary----{}
+a group of k,v then go for dictionary
+duplicates key - not allowed(old values is replaced with new value)
+duplicates values- allowed
+its mutable we can add and remove 
+d={} -is empty dictionary
+d={100:'durga',200:'shive'}
+
+s=set{} --- set
+s={}-dictionary --mosty commanly used so by deaflut it is considered
+s1[100] = 'sunny' ---to add 
+s1[100] = 'che' ---- allowed(old value is replaced with new)
+
+--------fundamental data types-int ,float ,complex ,bool ,str ------
+
+---binary data-- like images videos ,audio 
+byte - is immutable
+byte array --mutable
+
+---long ---in python2---not in python 3 
+
+----ch='a' --char is nt there use -str 
+
+----bool --- immutable
+T+ T = 2 
+T +F =1 
+
+-----str-----
+multiline -'''   '''
+immutable 
+once we creat obj it cnt be changed ,if we change it create new obj
+
+----def - to def mehods or functions in python ---
+def f2()
+f2()
+print(f2())
+
+
+-------Escape character-------
+\n
+\t
+
+---relations  operators <,<=,>,>=, chanining of relations operators is possible 
+if 1 comprasion fails then its false 10>20<30
+if all comprasion must be true then only it return true 10<20<30
+10>20 => false
+'durga'<'ravi' => true it considered asci key code and alphabatical order
+True > False-> means 1>0 => output is true 
+
+
+--equality operators --------------------
+== ,!= 
+10==20==30==40 is applicable 
+
+---Arithmetic operator -------
+division operator generator float values 
+ // => floor division 
+  ** => exponent operator 
+  10/2 ==> 5.0  (division)
+  10//2 => 5 (floor)
+  10.2//2=> 5.0 either float or int in floor operator
+  10**2 => 100  poweer 
+  + ,* are applicable for string 
+  'durga'+'soft' => durgasoft 
+  'durga'+10 => error
+   10+'durga' => error
+   'durga'*3 => durga 3 times
+    3*'durga' => durga 3 times
+	'durga'*'soft' => error 2nd arrgument should be number
+	
+  
+-----logical operator-----
+boolean : T or F  , T and F => F , T and T => T ,not True => False 
+and : both shpuld be true 
+or 1 should be true 
+not 
+
+For non booleans: reslut may nt be boolean 
+0 means 0->False 
+non zero means(10)-> True 
+empty string" "=> False 
+
+x and y 
+if x is evlautes to FALSE then return x otherwise return y 
+0 and 20 => 0 
+
+x or y :
+if x is evlautes to TRUE then return x otherwise return y 
+
+not x :
+ not true :false
+ not'':true :empty string is treated as false
+ 
+ 
+ ------bit wise ----applicable for int and boolean
+ & 
+ |
+ ^
+ ~
+ <<
+ >>
+ 
+ 
+ -----Assignment operator------
+ a,b,c,d=10,20,30,40 -correct
+ a,b,c,d=10,20,30 -error not enought values to unpack
+print(a,b,c,d)
+
+-------compound assignment ------------+=,
+-=,*=,/=,%=,**=,&=,|=,^=,>>=,<<=
+x=10
+print(++x)--+(+x)= +10
+print(--x)-(-x)=-10
+print(x++) invalid syntax (increament ,decreament are not avaliable)
+
+a=4
+a&=5 4&=5 
+print(a)
+
+---Ternary operator-----  avaliable 
+?: 
+x= firstvalue if condition else secondvalue
+x= 30 if 10< 20 else 40
+x =10 if 20>30 else 40 if 50>60 else 70 print(x)==70
+max =a if a>b and a>c else b if b>c else c ==> a=7 b =4 c =6 output =7
+if condition is true consider 1st value otherwise second value  
+
+----read variables from key board and print values--------
+a=int(input("enter first number"))
+b=int(inut("enter second nature"))
+min =a if a<b else b 
+print("number",min)
+
+----------------------Identity operators ----- is , is not
+a=10 a is b  = true  
+b=10 a is not b = false 
+a and b both are pointing to same obj only 1 obj  'is' used for addres compreasion  
+all are obj, fundamental obj are immutable
+
+list1 = [10,20] 
+list2= [10,20] ' == 'is meant for content comprasion 
+list1 is list2 --> address comprasion
+list1 == list2 content comprasion
+
+-------membership operator----------------in ,not in 
+list1=[10,20]
+print(10 in list1) --true
+print(40 not in list1) --true
+
+-----operator precedence-------------
+()
+**
+~-
+*,/%//
++-
+<<,>>
+&
+^
+|
+>,>=,,<=
+=,+=,-=,
+is is not 
+in not in 
+not add 
+or
+((a+b)*c/d)
+((a+b)*(c/d))
+(a+(b*c)/d)
+
+--------group of module is nothing bt library -
+module is low level companent contains classs ,varaiable,functions
+library is high level 
+---------------------------------------
+Read values from keyboard
+raw_input in for entering data through keyboard --python2
+input for entering data through keyboard --python3
+by defalut data is string type we must type cast it 
+print("sum",int(input("number")))
+
+---------------------------------------
+Read multiple values from keyboard 
+a,b=[int(x) for x in input("enter 2 numbers").split()]
+print("product ",a*b)
+pass 10 20 based onspace it considered as 2 parameters
+
+a,b=[float(x) for x in input("enter 2 float values").split(',')]
+print("sum",a+b)
+
+pass 10.0,20.0 based onspace it considered as 2 parameters
+
+
+------------------------------
+eval(): if we use eval not need to type cast 
+takes string as argument and evluate to corresponding argument
+
+a,b,c=[eval(x) for x in input("enter 3 values").split("5")]
+print(type(a))
+input :105020530
+output :int int int (we are checking type here )
+
+
+-----------------command line arrguments ----------------
+
+when we pass sashi rekha as cmd line arrgument then op is sashi
+
+when we pass "sashi rekha" as cmd line arrgument then op is sashi rekha
+
+when we pass 'sashi rekha' as cmd line arrgument then op is 'sashi
+
+when we pass '''sashi rekha''' as cmd line arrgument then op is '''sashi
+
+when we pass """"sashi rekha""" as cmd line arrgument then op is "sashi  rekha"
+
+str+str --concatation operator 
+argv[100] --index is nt avaliable list index out of bound
+
+argv[7:100] -slice operator 
+
+from sys import argv 
+print(arvg)
+
+by defalut argv type is str type 
+
+argv and sys module 
+argv is s list type 
+
+var-argument :print(a,b,c)
+-----------------
+sep-attribute: between arrguments by defalut its space 
+print(a,b,c,sep=',')
+print(a,b,c,sep='-')
+-----------------------
+print with end attribute: in end what u want by defalut its new line \n
+in java \n for new line bt here end=''
+print("hello hi",sep=' ',end='....')
+print(10,20,30 end =" ")
+
+-------------------------
+print formatted string (how to pass values to variables 
+%i ==int
+%d ==int 
+% f ==float 
+%s==str type 
+
+print("formatted string" %(varaiable list))
+a,b,c=10,20,30
+print("a value is %i and b value is %i" %(a,b))
+a value is 10 and b value is 20 
+
+name="durga" l =[10,20,30]
+print("hello %s the list is %s "%(name,l) 
+
+print ("hello sashi the list is 10,20,30)
+
+-----------------replacment operator------------------replave value for variables
+{}===>
+name ="sashi"
+salary=1000
+day=tue
+print("hello {0} ur salary is {1} and your day is {3}".format(name,salary,day))
+print("hello {} ur salary is {} and your day is {}".format(name,salary,day))
+print("hello {x} ur salary is {y} and your day is {z}".format(z=day,y=salary,x=name))
+
+
+-----------------------variable 
+instance variable
+local variable
+refernce variable  class Student:
+			s=Student() //here s is refernce variable 
+			s.talk()
+
+
+----------------------operations are represented by using methods 
+types : methods whch are declared inside  a class contain self 
+instance methods
+class methods
+static methods
+
+
+------------------------self----------------
+self is default variable whch is always pointing to current obj (ike ths keyword in java)
+class Student:
+  def __init__(self,anem,roll)
+       self.name=name
+	   self.roll=roll
+for every instance methods and constructor 1st argument should be self 
+
+when ever we create obj constructor will be excuted 
+s=Student()
+self is always pointing to current object of a class 
+print(id(s))
+instance variables:variables whch vary from variable to variable are called instance variable 
+
+s=Student('durga',100)
+s=Student('sashi',200)
+
+--------------------functions are declared outside of class 
+   
+
+--------------------------------------------------------python-flow-control----------------------------------------------------------------------
+flow control - at run time in whch order the stmt are going to be executed is knw 
+they are 3 types 
+1.conditional /selectional  ex :if ,if else ,if elif elif ,if else elif(else if alias of elif)
+2.Iterative statments : loops , for loops , while no do while 
+	for x in range(10):
+	   print(x)
+	 
+	
+		x=1
+		while x<=10: 
+		print(x)
+		 x += 1
+		 
+name=""
+pwd=""
+while(name!='durga' and pwd !='python'):
+	name=input("enter name:")
+	pwd=input("enter password")
+print("hello")
+
+infinite loops:
+ while True:
+   i=i+1
+   print("hello",i)
+   
+   
+  for i in range(4):
+	for j in range(4):
+		print("i={} and j={}".format(i,j)) o/p 16 (4*4)  1 loop has ptherr lop
+		
+nested loops:
+*
+**
+***
+****
+*****
+
+	n=int(input("enter no.of rows"))
+	for i in range(1,n+1): i represents row number 
+	for j in range(1,i+1): j represents * number
+	print("*",end="")
+	print()
+	
+	
+	***
+	***
+	***
+	n = int(input("enter number of rows"))
+	for i in range(n): (row number n=2)
+		for j in range(n): (no of *)
+		  print('*',end='')
+	    print()
+		
+3.Transfer statments : break , pass ,continue ,switch is not there in python 
+
+	break:for  some condition if u want to break loop execution
+
+	continue:
+	cart=[10,20,600,60,70]
+	for item in cart:
+	 if item>500//if item is 600 it goes in if loop then continue to print and continue cart loop
+	   print("sorry we cannot process "item,"required pwd")
+	   continue
+	  print('processing")//when item is 10 it wnt go in if loop comes here 
+ indentation is imp 
+ if(x == 10):
+    print()
+	print()
+	print()
+	here are print stmt will execute bcz of indentation 
+
+
+only else stmt is not allowed it should be with for else , while else , try-except-else-finally
+
+while or for loop 
+
+  stmt 
+    
+  break 
+	
+  stmt
+else 
+  stmt 
+
+
+
+	if loop executes without break then else get executed 
+	if loop executes with break then else wnt execute
+ex:
+		cart=[10,20,60,70,90]
+		for item in cart :
+		  if item >500 
+		   print("sorry we cnt process")
+		   break
+		  print("processing item",item)
+		 else :
+		print ("all iteam processed")
+ 
+	
+for :
+     execute body for everry item in the gievn sequence ,
+	 
+while : execute body as long as some condition is true 
+
+exit from loop:  break
+
+skip current iteration and continue for next iteration : continue 
+
+where else will be execcuted : if loop executed without break 
+
+
+pass stmt :
+	it is a empty stmt ex:null 
+	if we want define empty block it wnt do anything then use pass 
+	def f1():
+		print("")
+	 def f2():
+	  pass()
+	  
+	  ex:
+	  class P:
+	    def m1(): pass 
+		
+	  class c(p):
+	    def m1():
+		  stmt1
+		  stmt2
+		  stmt3
+		  
+		  
+del stmt: 
+		delete stmt: if corresponding object is not required we can delete 
+		
+		x=10
+		print(x)
+		del x 
+		print(x) --name x is not defined 
+		
+		
+		
+		s = "durga" // either '' or "" both are string obj 
+		del s[0] - iteam deletion is not there in string type 
+		
+		we want variable bt dnt want coresponding object then none
+		s1= none then variable exists bt no object for it 
+		
+		y = None 
+		print(y)
+		
+		
+		s="""durga ///multiline
+		software 
+		soultions"""
+		
+del cannot used for function --function calls 
+
+		
+		s1="durga"
+		s2="durga"
+		s3="durga"
+		print(id(s1),id(s2),id(s3))  -same output  for all 3 
+				del s1 ---
+		print(s1)---error -- name s1 not defined 
+		print(s2) --durga
+		print(s3)--durga
+	
+		s1 and s2 and s3 are pointiing to same object then only tht paticular variable deleted but other varaible exist and point to same obj
+
+		
+how to acess characters from string:
+
+    1.by using index  s='durga' both by +ve(left to right ) and -ve( right to left)index 
+	2.using slice operator 
+	 s='durga'
+	 s[0:7] --from 0  to 7 
+	 s[0:] --from 0 to all 
+	 s[::] --total all
+	 
+    s[2:8:1] ==> 2 to 7 
+	s[2:-5:1] ==> 2 to 4 
+	s[:] =>forward direction
+	s[::-1] => reverse direction
+	
+	lstrip()--remove spaces in left 
+	rstrip()--remove spaces in right
+	strip()--only beginning and end spaces are removed 
+	find(substring)
+	rfind()
+	index()
+	rindex()
+	s.count(substring)
+	s.count(substring,begin,end)
+	s.replace(oldstring ,newstring) --replace old with new 
+	
+	s="ababab"  //this obj address is diff 
+	s1= s.replace('a','b') //this obj address is diff --new obj is cretated ,existing obj remains same
+	
+	
+	------split string :
+	s.split(seperator) --by default space
+	s.split()
+	rsplit() 
+	
+	----changing case of string:
+	
+	upper()
+	lower()
+	swapcase()
+	title()  ----first word of a letter is upper 
+	capitalize()--only 1st character is upper everything is lower case 
+	s.startwith()
+	s.endswith()
+	
+	
+	---if we define any function out side a class function
+	---if we define function inside a class are called method 
+	
+	def f1():
+		print()
+	class student:
+	  def info(self):
+	     print("")
+	  f1()
+	  s=student()
+	  s.info
+	  
+	  -----List-----methods and functions of list ---------
+	  len()
+	  count()
+	  index()
+	  extend()
+	  remove()
+	  pop()
+	  reverse()
+	  sort()
+	  copy()--clonning means obj created 
+	  add elements to list 
+	  l.append(element)
+	  l.insert()
+	  l.insert(50,777)
+	  if specified indexx is bigger than number insert then it adds in last 
+	  l.insert(-10,999)
+	  if specified number is small than number insert in first 
+	  ---extend()
+	  L1=[10,20,30]
+	  L2=[40,50,60]
+	  L1.extend(L2) 
+	  all elements present in l1 will be add to L1 
+	  
+	  l.sort(revrse=true)
+	  
+	  --comparing list object --
+	  x==y
+	  number  of elements must be equal
+	  order should be same
+	  content should be same(including case also)
+	  
+	  ex:
+	  x=[50,20,30]
+	  y=[40,90,100,120,170]
+	  print(x>y) o/p = true 
+	  it will only compare 1st element not all 
+	  
+	  x =[10,20,30]
+	  print(10 in x)
+	  print(100 not in x)
+	  
+	  ---nested list ----
+	  emp=[['sashi],48,'hyd'],['rekha',48,'hyd']]
+	  
+	  ------tuple ------
+		t=()
+		t=(10,20,30,40)	 
+		t=tuple(sequence)
+	  	  we can acess elements of tuple by using : index , slice+ ,*  
+	 functions of tuple:
+	  t.len()
+	  t.count(10) --how many times 	10 is there 
+	  t.index(20)--index of occurence of number 
+	  t.sorted()--natural sorting
+	  ex: when we sort tuple it return list ,
+	  it is immutable ,it arrange elemnets in sort in 't' itself 
+	  t=(30,10,50,40,20)
+	  print(sorted(t))
+	  o/p:30,10,50,40,20
+	  
+	  t1= (30,10,50,40,20)
+	  t2=tuple(sorted(t1))
+	  print(t1)  -->30,10,50,40,20
+	  print(t2)   -->10,20,30,40,50
+	  min(t1)
+	  max(t1)
+	  cmp(t1,t2)  if both t1 and t2 are equal then it return 0
+	   if t1 is less than t2 then it returns -1 
+	   if t1 is greater than t2 it returns +1
+	   
+ tuple packing and unpacking :
+  tuple can be used with list and set
+	packing -> grouping into single 
+	a=10
+	b=20
+	c=30
+	t=a,b,c ---3 variable are packed into tuple
+	print(t) 
+	
+	t='abcd'
+	a,b,c=t
+	print("a=",a,"b=",b,"c=",c)
+	
+	 Tuple Comprehension:is not supported ,it returns generator 
+    	 
+write a pgm to take tuple of numbers from keyboard and print sum,avg
+		
+		
+	
+	 list: 										tuple 
+	group of comma seperated values []		 group of values withing (), prathanesis are optional
+	 list obj are mutable						tuple are immutable 	 
+	 content is not fixed then use it 			content is fixed  
+	  allows duplicates 	,mutable			allows duplicates 	,immutable
+	  insertion order preserved 				insertion order preserved 
+	  duplicates allowed 						insertion order preserved 
+	  
+	 
+	  list 												set
+														insertion order is not preserved 
+														duplicates not allowed 
+														set are mutable
+														set are represented by {} 
+	  
+	  
+important functions of set :
+	  s.add()
+	  s.update()--any no .of arrgumnents can be passed to set 
+	  s.copy
+	  s.pop() ---remove and return  elemnent ,it never takes argument ,(some random element)
+	  remove()--remove specified element ,set never talks abt index ,
+	  s.discard()
+	  s.clear()
+	  s={10,20}
+	  l=[40,50]
+	  
+	  s.update(l,range(1,5),'durga')
+	  
+	  s={10,20}
+	  s1=s.copy() --replica of an obj 
+	  
+	  s.remove(10)--if element nt there it will show error ,if element exist then only it removes
+	  
+	  s.discard(40)--if element is not there it doesnot show the error
+	  
+	  s.clear()
+	  
+dicitionary   ::list,set,tuple 3-only hold indiviual obj 
+	if we are representating group of obj as k,v then use dicitionary  
+	  no order, all types are allowed int ,string 
+	  create dict:
+	  d={}
+	  d=dict()
+	  
+	  d[key] = values
+	  d[10]='sashi'
+	  d[20]='rekha'
+	  d['sas']='re'
+	  
+	  print(d){10:'sashi',20:'rekha'}
+	  
+	  update dict:
+	  d[key]=value  if key is there it will update ,otherwise it will update value
+	  
+	  del key:
+	  del d[key]
+	  del d[40]
+	  
+	 methods of dictionary:
+	 dict()-
+	 d.get(key)
+	 d.get(key,defaultvalue)
+	 pop(key)
+	 popitem()--1 k,v will be removed and returned it is picked up randomly
+	 
+	 d.update(x)
+	 
+	 -------------parameters:arguments 
+	 positional 
+	 keyword
+	 default
+	 var-argument
+	 
+	 return --can return multiple values ,if not mentioned it return none
+	 
+	 def calc(a,b) => a,b is posotiona largumenst 
+	 t=calc(100,50) 
+	 default argument can take at last
+	 
+	 
+	 def wish(msg,name="Guest"):
+	   pass(we are not doing anyboady so use it pass)
+	   
+	   
+	 def sum(*n)--we can pass any noof arguments (it is a variable argument)
+	 sm(10)
+	 def display(**kwargs) --keyword argument (k,v)
+	   print(type(kwargs)---it is doctinoary
+	   print("keyvlaue") 
+	    for k,v i kwargs.items():
+		 print(k,v)
+	   display(name="ravi",wife1="s",wife2="e",wife3="r")
+	   
+	   
+	    def f(arg1,arg2,arg3,arg4)
+		
+		print(arg1,arg2,arg3,arg4)
+		
+		f(arg4=2,arg1=3,arg2=4) o/p ==3442 (its positional with keyword)
+	   
+	    f(arg3=10,arg4=40,20,30) -wrong -bcz positional argu follows keword argumenst 
+		
+		f(4,5,arg2=6)-wrong--bcz arg values passed bt here arg2 values passed 2 times so wrong
+		
+		f(4,5,arg3=12,arg5=6) -wrong -bcz no arg 5 
+		
+Function :(group of stmt)
+	module (group of functions)
+	package (group of  modules
+	library(group of package)
+	
+Function:
+	recursive:a fucntion calls itself
+	Local varaible
+	global varaible
+	anyonyms :nameless function (instant use go for ths)
+				def squareit(n):
+				   return n*n
+				   
+				or in other way in lambda syn:(lambda input:expression)
+				s = lambda n:n*n ---it contains implicits return stmt
+				print(s(4))
+				
+	iterator
+    decrotar 
+	generator
+	
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   -------------------------------------------xsb-clustering------------
+	   
+--xsb analysis --
+xsb -large data -txt file 3gb - orc 300 gb in spark it is getting 
+multplide 
+read orc file compressed it has 300 gb and decompressed  after spark job is performed 
+what will be the size in the cluster
+--perfomance testing 
+data ingested ---spark configuration -- dqm validation is done on xsb table --
+
+
+---analysis---
+**Cluster Config:**
+10 Nodes
+16 cores per Node
+64GB RAM per Node
+
+So, if we request 20GB per executor, AM will actually get 20GB + memoryOverhead = 20 + 7% of 20GB = ~23GB memory for us.
+- `--num-executors` = `In this approach, we'll assign one executor per core`
+                    = `total-cores-in-cluster`
+                   = `num-cores-per-node * total-nodes-in-cluster` 
+                   = 16 x 10 = 160
+- `--executor-cores` = 1 (one executor per core)
+- `--executor-memory` = `amount of memory per executor`
+                     = `mem-per-node/num-executors-per-node`
+                     = 64GB/16 = 4GB
+num_executors  --sathya 
+executor_cores 
+executor_memory 
+envirnmental variables ---set as of now 
+raw validation code full  --me ---dqm -raw validation-raw dqm validation
+unit testing  -shrtuee
+ sec_name:Deplyoment environment variables  ->uat 
+ rdf_root->folder name -dev-lab 
+ ppe
+ --------------------------------------------------------environment variable-----------------------------------------------------------------------------------
+ ---enivronment vairable---
+3 edge 
+
+--folder structure in edge node that is being used for Jenkins pipeline
+of the shell script is 
+On hdfs :
+/ingest/data/stage/CA7_source/rdf/uk_roi/uat/<project_name>/scripts/*.sh
+e.g. /ingest/data/stage/CA7_source/rdf/uk_roi/uat/lost_sales/scripts/lost_sales_wrap.sh
+
+from jenkins deployments are done on 1 or 2 ,password queue based on congiuration deployment team will say
+from there it goes to hdfs,
+1 folder it is reflected to  --(ingest) hdfs mount it is local folder,present in igest 1 or igest 2
+ca7 scheduling we use igest node
+2nd igest -prod (scheduling)
+
+3 igest not used
+6 nodes -3-edge ,3-igest
+
+318 data node
+
+142 TB RAM  
+ 
+14372 cores
+
+
+---analysis---	10 Nodes -rdf nodes -6 nnmmmp'
+	16 cores per Node -14372
+	64GB RAM per Node -142 tb ram 
+		spark.conf.set("spark.dynamicAllocation.enabled", "true")
+		spark.conf.set("spark.executor.cores", 4)
+		spark.conf.set("spark.dynamicAllocation.minExecutors","1")
+		spark.conf.set("spark.dynamicAllocation.maxExecutors","5")
+		
+		example :6 node cluster ,each with 16 cores, and 64 gd ram 
+		
+
+Partitions:
+	the number of partitions based on the input dataset size :
+	input dataset size is about 1.5 GB (1500 MB) and going with 128 MB per partition(block size)
+	Total input dataset size / partition size => 1500 / 128 = 11.71 = ~12 partitions
+	
+	let us perform a test by reducing the partition size and increasing the number of partitions.
+
+Consider partition size as 64 MB.
+
+Number of partitions = Total input dataset size / partition size => 1500 / 64 = 23.43 = ~23 partitions.
+
+So, if we request 20GB per executor, AM will actually get 20GB + memoryOverhead = 20 + 7% of 20GB = ~23GB memory for us.
+- `--num-executors--instances` = `In this approach, we'll assign one executor per core`
+                    = `total-cores-in-cluster`
+                   = `num-cores-per-node * total-nodes-in-cluster` 
+                   = 16 x 10 =160
+- `--executor-cores` = 1 (one executor per core)
+- `--executor-memory` = `amount of memory per executor`
+                     = `mem-per-node/num-executors-per-node`
+                     = 64GB/16 = 4GB
+					 
+----cloud distributation ----hortonworks 
+----git branches----
+total 7 branches -3 dev,uat,preprod,master,3- development -ref-res,
+-----testing---
+4 enivronments
+dev-uat- prepord -prod
+dev - 1st testing is done here after liocal then uat ,
+manualy testing in dev less more in uat,uatand ca7 schedyling 
+regression testing in uat,
+preprod performance testing regards to confgiure,
+ca7 in sceduling in  uat,
+in prod we schedule our job 
+ -------validation.properties -----
+ small ,medium,dev,prod  enivronment specific details
+
+ptp -
+old table - 
+inceremental - currentdate -1,
+
+-------------------------------------------------------testing-----------------------------------------------------------------------------
+(dev Unit Integration Regression Performance ca7sch  change mangment then production deployment scheduling) 
+/Regression/Integration testing)
+--Unit testing :is a software testing method by which individual units of source code,
+ such as functions, methods, and class are tested to determine whether they are fit for use. I
+
+--Intergrtion testing:  connection b/w terrdata and hdfs 
+
+what do u test in Intergrtion testing: 
+Integration tests determine if independently developed units of 
+software work correctly when they are connected to each other.
+
+when should Intergrtion testing start :
+System Integration Test is done to test the complete integrated system. Modules or components are tested
+ individually in unit testing before integrating the components. Once all the modules are tested, system 
+ integration testing is done by integrating all the modules and the system as a whole is tested
+
+Diff between unit testing and integration testing :
+Unit testing is a testing method by which individual units of source code are tested to determine if they 
+are ready to use, whereas Integration testing checks integration between software modules. ...
+ Unit Testing is executed by the developer, whereas Integration Testing is performed by the testing team.
+ 
+ --Performance Testing: is  to ensure software applications will perform well under their expected workload.
+ speed, responsiveness and stability of a computer, network, software program or device under a workload.
+  how the components of a system are performing under a certain given situation.behavior of the system
+ Resource usage, scalability, and reliability of the product are also validated under this testing.
+ 
+--Regression Testing :is a type of testing that is done to verify that a code change in the software does
+ not
+ impact the existing functionality of the product. This is to make sure the product works fine with new
+ functionality, 
+bug fixes or any change in the existing feature.
+
+when should we do Regression Testing -
+is usually performed after new functionality
+
+
+
+preprod 
+ensures that, when a failover condition occurs,the alternate or backup systems properly. 
+“take over” for the failed system ..
+
+queue 
+git 
+git branches
+commit 
+merge 
+master branch 
+cluster scheduler 
+--------------------------------------------------------------------------------------eni-git-test----------------------------------------
+---important question --Rdf 
+Different environments in DQM framework
+•	Dev
+•	UAT
+•	Pre-prod
+•	Prod
+
+GIT Branching -total 7
+•	RDFSER -> 3 branches
+•	Dev
+•	UAT
+•	Prod
+•	Release branch
+
+Steps followed in GIT:-
+•	git pull
+•	git add .
+•	git commit
+•	git pull -> when multiple users are committing to 
+•	git push
+•	pull request for merging branches
+
+Types of testing (different environments):-
+•	Dev testing
+•	UAT testing
+•	Pre-Prod testing
+
+Types of testing on code:-
+•	Unit testing  -pytest write some function pvd some data and check the output should match the desired output done in pycharm ,
+					befre pushing code 
+					just to check the development ,next push to git ,build and deploy ,there we do in dev we check functional testing 
+					(integretgation)
+					dev -check we test for 1 or 2 tables ckeck logical chage 
+					uat -entire module ,egg file ,result are caputred , metadat result and bad record ar captured 
+					schedule ca7 job in uat 
+					preprd - performance testing is done in preprod -parameters -small ,medium, large ,change in congif file for prod 
+•	Integration testing
+•	Performance testing
+•	Regression testing--this time they are checking full refresh tables to check any code impacted 
+
+What are configuration parameters in performance testing?
+•	Driver memory
+•	No. of executors
+•	No. of cores
+•	Shuffle.parition
+
+Types of tables handled by the team:-
+•	Full refresh tables
+•	Incremental tables
+
+Data code flow:-
+•	DQM_wrapper.sh -> invoker.py -> façade_client.py -> raw_validation_dqm.py
 
 
 
