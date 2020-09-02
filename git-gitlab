@@ -1,0 +1,265 @@
+
+Git – GitLab Guide
+Beginners’ guide for version controlling and source code management
+	17 July 2020
+
+This document contains the step by step process of version control & source code management using Git and GitLab along with best practices to follow
+	
+	
+	
+
+
+                                    
+
+ 
+Table of Contents
+Introduction	2
+What is Git?	2
+What is GitLab?	2
+Prerequisites	2
+Create a project in GitLab	2
+Configure Git with GitLab	3
+git config	4
+git init	4
+Add remote project to git	4
+Git pull/push to GitLab	5
+git pull	5
+git status	6
+git add	6
+git commit	6
+git push	6
+Clone the existing project	7
+Branching	7
+Create a branch	7
+Switch to another branch	8
+Merging	8
+Merge a branch with master branch	8
+Best practices	8
+Write meaningful commit messages	8
+Do not write single commit message to all files	8
+Commit often, perfect later	9
+Do not push erroneous code to major branch	9
+Create a meaningful git ignore file	9
+Use branch naming convention	9
+References	9
+
+Introduction
+What is Git?
+Git is an extremely popular version control system that is at the heart of a wide variety of high-profile projects. Git is installed and maintained on your local system (rather than cloud) and gives you a self-contained record of your ongoing programming versions.
+What is GitLab?
+Gitlab is designed as a Git repository hosting service. It’s an online database that allows you to keep track of and share your Git version-controlled projects outside of your local computer/server.
+Prerequisites
+You need a GitLab access for collaboration and source code management. You also need Git Bash tool on your windows system for version controlling and to push code on GitLab. Linux/MacOS user can run git commands directly on terminal.
+Create a project in GitLab
+To create project in GitLab:
+1.	In your dashboard, click the green New project button or use the plus icon in the navigation bar. This opens the New project page.
+ 
+
+2.	On the New project page, choose if you want to.
+a.	Create a blank project
+b.	Create from template
+c.	Import project
+By default, you are creating a blank project, in that case, enter the “Project name” and click on “Create project” button. Note that you can fill in the optional details as per your choice.
+ 
+A message will pop up saying “Project <project-name> successfully created.” Congrats!
+Configure Git with GitLab
+Open Git Bash in your system (Windows)
+ 
+Linux/MacOS user can access git from terminal by “git” command.
+git config
+To start using Git from your system, you’ll need to enter your credentials to identify you as the author of your work. Remember, the username and email should match the one’s you’re using on GitLab.
+In your git bash, add your username and email address:
+ git config --global user.name “Your Name” 
+ git config –global user.email “email@mu-sigma.com”
+ 
+git init
+When you have your files in local folder and want to convert it into a git repository, you’ll need to initialize the folder through the git init command. This command will instruct Git to begin to track that directory as a repository. To do so, go to the directory you want to start tracking and run git init
+ 
+Typical Git Repository Listing
+ 
+COMMIT_EDITMSG: Contains a text message for each commit. First commit gives you the message for the first commit and second message gives you the message for second commit and so on.
+HEAD: Plain text file and contains the reference to the current branch that we are working. In our case it is dev.
+Config: Contains all the configurations
+Git confit – Configures various elements of your git elements.
+Git –list – View your configuration information 
+git 
+ 
+Description:
+Hooks:
+Index:
+Info:
+Logs: 
+Objects:
+Refs:
+
+Add remote project to git
+To start collaborating using GitLab, you need to add your remote project to Git, to do so you need remote git repository address. In case of already existing project, you can go to project’s landing page on GitLab and click on Clone button. You can copy SSH or HTTPS address from here and add that to Git Bash.
+ 
+Once you have the link for the remote project, you need to run:
+ git remote add origin <gitlab clone link>
+ 
+Now your remote project is setup with your current directory, from here you can start pulling the content that is already there on the server or you can push whatever you have in local directory to the remote server.
+Git pull/push to GitLab
+git pull
+When the remote repository changes, your local copy will be behind it. You can update it with the new changes in the remote repo. To do so, you need to run git pull command. It’s always a best practice to run this command before you push anything to remote project, that will help you avoid merge conflicts. 
+ 
+git status
+It’s important to be aware of what is happening and the status of changes. When you add, change, or delete files/folders, Git knows about it. To check the status of your changes, you can run git status command.
+ 
+git add
+As you saw in above screenshot, the local changes will be seen in red when you run git status command. These changes may be new, modified, or deleted files/folders. Use git add to stage (prepare) a local file/folder for committing. Then use git commit to commit (save) the staged files.
+Though you can add all the files to staging area in one go by running “git add .” command. However, it is recommended to add one file at a time followed by git commit command to staging area to avoid one commit message for all changes.
+To add file to the staging area, you need to run git add command followed by file name.
+ 
+git commit
+To save your change to the staged files, you need to commit the changes, for which you need to run git commit command followed by a comment which describe the intent of the commit.
+
+ 
+git push
+To push your local commits to the remote repository, you need to run git push command. 
+
+ 
+Here, master is the branch name. If you want to push changes to other branch, replace master with that branch name.
+Congrats! your changes have been pushed to remote server, in this case GitLab. To see the same, you can also go to your project on GitLab and check history.
+Clone the existing project
+To download an existing project, you need to run git clone command followed by remote project git repository address. 
+You can find git repository address by navigating to your project’s landing page and clicking Clone. GitLab will prompt you with HTTPS and SSH addresses, from which you can copy and paste with git clone command.           
+ 
+Branching
+A branch is an independent line of development in a project. When you create a branch in git, you are creating a snapshot of a certain branch, usually the main master branch, as it’s the default create state. From there, you can start to make your own changes without affecting the main codebase. And the history of your changes will be tracked in your branch. Once your changes are ready you can merge them to rest of the codebase with git merge
+Create a branch
+To create a new branch, to work from without affecting the master branch, you need to run git checkout command with option -b and branch name.
+ 
+Switch to another branch
+You are always in branch when working with Git, in this case you are in dev branch that you have just created. To checkout to another branch, you need to run git checkout command followed by branch name. The main branch is the master branch.
+ 
+Merging
+Merge a branch with master branch
+When you are ready to make all the changes in a branch a permanent addition to any or master branch, you merge the two together.
+To merge your branch to another branch, you need to run git merge command followed by branch name in which you want to merge your permanent changes.
+ 
+ 
+Best practices
+Write meaningful commit messages
+Insightful and descriptive commit messages that concisely describe what changes are being made as part of a commit make life easier for others as well as your future self. 
+Do not write single commit message to all files
+When you run “git add .” command, you are sending all the files to staging area. To save the commit you execute “git commit -m <commit message>”, which in this case write same commit message to all the files that you have added. It’s always a best practice to add one file at a time followed by commit message.
+Commit often, perfect later
+Git works best, and works in favour, when you commit your work often. Instead of waiting to make the commit perfect, it’s better to work in small chucks and keep committing you work. 
+Do not push erroneous code to major branch
+When you push erroneous commit to a branch, it’s likely that you want someone else to spend their time fixing that. In case of major branch which has multiple collaborators to your file, everyone’s code will get affected, it’s better to commit non erroneous code chucks to major branch.
+Create a meaningful git ignore file
+A “.gitignore” file is a must in each repository to ignore predefined files and directories. It will help you prevent secret keys and dependencies. Pushing dependencies into your remote origin will increase repository size. Add those to “.gitignore” file to not push unnecessarily files to remote server. 
+Use branch naming convention
+A master branch is used only for release as the name suggest. The most main-line work happens on develop or dev branch. You can create multiple feature branches of the dev branch. Name them based on the name of the feature. Remember, these will be merged back into dev and not master or any other release branch, always keep parent-child relationship in mind to not get confused.
+References 
+•	GitLab basics guide (https://docs.gitlab.com/ee/gitlab-basics/)
+•	Pro Git Book – all you need to know about Git (https://git-scm.com/book/en/v2)
+•	A successful git branching model (https://nvie.com/posts/a-successful-git-branching-model/)
+•	Git best practices (https://indico.cern.ch/event/288437/contributions/1642636/attachments/538025/741708/git-best-practices.pdf)
+
+
+
+
+
+
+
+
+Hello.py is added to the .git/index file
+ 
+Git Status: See what there in the staging area is and Git.pptx is the file which is there in the staging area waiting to be commited. 
+ 
+Create a file and move it a new directory:
+ 
+ 
+ 
+Push the file into the GitLab:
+ 
+Is that reflecting in GitLab?
+ 
+There another way to add a folder to a git repository and that is by adding a hidden file .keep to it.
+ 
+ 
+GIT STATUS:  1. Shows branch 2. Untracked files 3. Newly added files 
+ 
+
+ 
+A  - means the file has been staged 
+AM – Means
+How to check the modifications to the file?
+ 
+
+Committing to GIT:
+Git commit
+Git commit -m “ Type your message”
+Git commit -a -m “message”
+What happens when you execute – git commit 
+Commit message gets stored in “COMMIT EDIT MESSAGE FILE”
+ 
+ 
+The below string is the hash value of the new modification to the file. You can check the hash value for this complete modification in object directory. Use first tow letters of the commit string to check in the Object director
+ 
+The binary file is below
+ 
+Ignoring Certain File Types:
+ 
+Create a directory and ignore it 
+ 
+ 
+
+ 
+ 
+The file will be ignored.
+ 
+ 
+
+
+Using Tags:
+This is useful when you want to mark a point in your project's history, or use a specific tag as a reference point, such as a release of a specific version.  We will use the git tag command, and show you how to view all tags on a project, and how to delete them should you need to.
+How to use Tags:
+1.	People use this functionality to mark release points (v1.0, v2.0 and so on)
+2.	Mark a specific commit
+3.	Mark specific points in a repository’s history 
+>git tag
+Output: V1
+	Git tag
+o	Output -> v1
+	Git show v1
+ 
+
+Types:
+1.	Annotated Tags: Creating an annotated tag in Git is simple. The easiest way is to specify -a when you run the tag command. 
+a.	Annotated tags, however, are stored as full objects in the Git database. 
+b.	They’re check summed; contain the tagger name, email, and date; have a tagging message; and can be signed and verified with GNU Privacy Guard (GPG). It’s generally recommended that you create annotated tags so you can have all this information;
+2.	Lightweight tag: A lightweight tag is very much like a branch that doesn’t change — it’s just a pointer to a specific commit. if you want a temporary tag or for some reason don’t want to keep the other information, lightweight tags are available too.
+
+ 
+Create light weight tab. Try this 
+Delete a tag. Try this on your own
+Git tag -d v1
+Git tag
+Why Tags are used?
+
+
+
+
+
+
+
+
+
+Using Branches:
+This is helpful so that you can work on a different development line without altering your stable line of work. We show you how to create new branches, and switch between existing branches.
+
+
+
+
+
+
+
+
+
+
+
+
+
