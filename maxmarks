@@ -1,0 +1,23 @@
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions.rank
+
+case class Student(StudentId:Int,Subject:String,marks:Int)
+object MaxMarksWindow {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder().master("local").appName("WindowDFFunc").getOrCreate()
+    import spark.implicits._
+    //to use DF()
+    val peopledf = spark.sparkContext
+      .textFile("C:\\Users\\sashirekha.bisati\\Desktop\\Student.txt")
+      .map(_.split(","))
+      .map(attributes => Student(attributes(0).trim.toInt, attributes(1), attributes(2).trim.toInt))
+      .toDF()
+    peopledf.createOrReplaceTempView("Sdata")
+    val pw = Window.partitionBy($"Subject").orderBy($"marks".desc)
+    val rankTest = rank().over(pw)
+    peopledf.select($"*", rankTest as "rank").show()
+
+
+  }
+}
