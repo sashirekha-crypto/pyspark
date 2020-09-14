@@ -1,0 +1,20 @@
+package com.Linkedin
+import org.apache.spark.sql.SparkSession
+
+case class Product(day:Int,product_id:Int,category:String)
+
+object DistinctCategoryProduct {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder().master("local").appName("WindowDFFunc").getOrCreate()
+    import spark.implicits._
+    //to use DF()
+    val productdf = spark.sparkContext
+      .textFile("C:\\Users\\sashirekha.bisati\\Desktop\\Product.txt")
+      .map(_.split("-"))
+      .map(attributes => Product(attributes(0).trim.toInt, attributes(1).trim.toInt, attributes(2)))
+      .toDF()
+    productdf.createOrReplaceTempView("pdata")
+    val count = productdf.distinct()
+    count.show()
+  }
+}
