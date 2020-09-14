@@ -1,0 +1,11 @@
+from pyspark.sql import SparkSession
+from pyspark import SparkContext
+from pyspark.sql.functions import __all__
+
+if __name__ == "__main__":
+ spark = SparkSession.builder.appName("python").master("local").getOrCreate()
+tech_rdd = spark.read.csv("C://Users//sashirekha.bisati//Desktop//export-customer.csv",header=True, mode="DROPMALFORMED")
+#tech_rdd.select(tech_rdd['cust_id'].alias('customerID'),tech_rdd['amount'].alias('Dollar_Amount')).show()
+#tech_rdd.select(tech_rdd['cust_id'].alias('customerID'),tech_rdd['amount'].alias('Dollar_Amount')).limit(5).show()
+tech_rdd.select('cust_id','FIRST_NAME','LAST_NAME').show()
+#tech_rdd.write.option("header",True).csv("C://Users//sashirekha.bisati//Desktop//export-customer-output-4.csv")
