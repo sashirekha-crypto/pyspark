@@ -1,0 +1,33 @@
+package com.spark.scala
+
+import org.apache.spark.sql.{Row, SparkSession, types}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+
+object Nested_Data_Seq {
+    def main(args: Array[String]): Unit = {
+      val spark = SparkSession.builder().master("local").appName("test").getOrCreate()
+      val data = Seq(Row(Row ("James ","","Smith"),"36636","M",3000),
+        Row(Row("Michael ","Rose",""),"40288","M",4000),
+        Row(Row("Robert ","","Williams"),"42114","M",4000),
+        Row(Row("Maria ","Anne","Jones"),"39192","F",4000),
+        Row(Row("Jen","Mary","Brown"),"","F",-1))
+
+      val schema = new StructType()
+        .add("name",new StructType()
+          .add("firstname",StringType)
+          .add("middlename",StringType)
+          .add("lastname",StringType))
+        .add("dob",StringType)
+        .add("gender",StringType)
+        .add("salary",IntegerType)
+
+      val df = spark.createDataFrame(spark.sparkContext.parallelize(data),schema)
+            //df.printSchema()
+
+      val df2 = df.withColumnRenamed("dob","DateOfBirth")
+        .withColumnRenamed("salary","salary_amount")
+      df2.printSchema()
+
+
+    }
+}
