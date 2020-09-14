@@ -1,0 +1,30 @@
+object Test {
+  def main(args: Array[String]):Unit ={
+    val spark = SparkSession.builder().master("local").appName("case-when").getOrCreate()
+    import spark.implicits._//to use DF()
+
+    val Visitor = spark.sparkContext
+      .textFile("C://Users//sashirekha.bisati//Desktop//info.txt")
+      .map(_.split(","))
+      .map(attributes => Person(attributes(0).trim.toInt,attributes(1)))
+      .toDF()
+    Visitor.createOrReplaceTempView("VisitorData")
+
+    val visited = Visitor.withColumn("ID's", when(col("Id") === "1","11")
+      .when(col("Id") === "2","22")
+      .otherwise("Unknown"))
+    visited.show()
+
+    val visited1 = Visitor.withColumn("ID''s",
+      expr("case when Id = '1' then '111' " +
+        "when Id = '2' then '222' " +
+        "else 'Unknown' end"))
+    visited1.show()
+
+    Visitor.withColumn("Id",
+      when(col("Id") === "1" || col("name") === "sashi", "one")
+        .when(col("ID") === "2" && col("name") === "Rekha", "two")
+        .otherwise("A1"))
+      .show()
+}
+}
