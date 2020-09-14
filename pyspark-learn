@@ -1,0 +1,1322 @@
+Content 
+
+1. What is a DataFrame (DF)? 
+     1.1 Read a csv file and load the csv file 
+     1.2 Reading CSV files with a user-specified custom schema 
+     1.3 Creating a DataFrame from existing RDD 
+     1.4 By performing an operation or query on another data frame 
+     1.5 Create a DataFrame by using StructType in PySpark 
+
+2. How to create DataFrame from different sources 
+     2.1 EnableHiveSupport 
+     2.2 Create DataFrame from Json File 
+     2.3 Create a DataFrame  from Texfile 
+     2.4 Create DF from a csv file 
+
+3. Methods used to create an RDD to Data frame (DF) 
+    3.1 using toDF() 
+    3.2 using CreateDataFrame() 
+
+4. Spark Integration with other Databases 
+
+5. Spark Transformations and Actions 
+     5.1 Transformations 
+     5.2 Actions 
+     5.3 Basic operations on DataFrame 
+     5.4 Window functions 
+     5.5 Connecting Oracle DB from Spark 
+
+6. What is Partitioning in Spark? 
+     6.1 Partition Controlling 
+     6.2 Why partitioning required? 
+
+7. Repartition 
+    7.1 Methods to Repartition a DataFrame 
+
+8. Coalesce 
+
+9. Repartition vs Coalesce 
+
+10. Spark DataFrame Cache and Persist 
+       10.1 cache() 
+       10.2 persist() 
+       10.3 unpersist() 
+ 
+
+ 
+
+ 
+
+ 
+
+Pre-requisite: We assume that you have prior exposure to Python programming, database concepts (SQL), and any of the Linux operating system flavors. 
+
+ 
+
+Audience: This course has been designed to enhance your Spark skills and after end of this course you will be able to understand Spark DataFrame and Partitioning concepts. 
+
+ 
+
+Introduction: Apache Spark is a lightning-fast cluster computing designed for fast computation. It was built on top of Hadoop MapReduce and it extends the MapReduce model to efficiently use more types of computations which includes Interactive Queries and Stream Processing. This is a brief tutorial that explains the basics of Spark Core programming. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+1. What is a DataFrame (DF)? 
+
+DataFrame is a distributed collection of data stored into named column we can think data in data frame like data in table. DataFrames are designed for processing large collection of structured or semi-structured data. Observations in Spark DataFrame are organized under named columns, which helps Apache Spark to understand the schema of a DataFrame. This helps Spark optimize execution plan on these queries. 
+
+1. From existing structed data sources like Hive, Json, text file, csv, etc. 
+
+2. From existing RDD. 
+
+3. By performing an operation or query on another data frame. 
+
+4. By defining schema. 
+
+1.1 Read a csv file and load the csv file  
+
+Command: 
+
+a. When header is given 
+
+     df=spark.read.format("csv") 
+     .option("header","true") 
+     .load("/user/mukesh.kumar/FL_insurance_sample.csv")        
+
+ 
+
+b. Without header 
+
+     df=spark.read.csv("/user/mukesh.kumar/FL_insurance_sample.csv") 
+
+ 
+
+c. Command to show schema 
+
+     df.printSchema() 
+
+ 
+
+d. Command to show the content 
+
+     df.show() 
+
+ 
+
+e. Reading multiple csv files: 
+
+df = spark.read.csv("path1, path2,path3") 
+
+ 
+
+f. Reading all csv files from directory:  
+
+Need to specify the folder path where csv files are stored  
+
+df = spark.read.csv ("Folder path") 
+
+ 
+
+g. Infer schema option: 
+
+It automatically infers column types based on the data. Note that, it requires reading the data one more time to infer the schema. 
+
+df4 = spark.read.options(inferSchema='True',delimiter=',') \ 
+
+  .csv("/user/file.csv") 
+
+Or  
+
+df4 = spark.read.option("inferSchema",True) \ 
+
+                .option("delimiter",",") \ 
+
+  .csv("/user/file.csv") 
+
+ 
+
+h. Header: 
+
+This option is used to read the first line of the CSV file as column names. 
+
+df3 = spark.read.options(header='True', inferSchema='True', delimiter=',') \ 
+
+  .csv("/user/file.csv") 
+
+ 
+
+1.2 Reading CSV files with a user-specified custom schema: 
+
+If you know the schema of the file ahead and do not want to use the inferSchema option for column names and types, use user-defined custom column names and type using schema option. 
+
+ 
+
+schema = StructType() \ 
+
+      .add("RecordNumber",IntegerType(),True) \ 
+
+      .add("Zipcode",IntegerType(),True) \ 
+
+      .add("ZipCodeType",StringType(),True) \ 
+
+      .add("City",StringType(),True) \ 
+
+      .add("State",StringType(),True) \ 
+
+      .add("LocationType",StringType(),True) \ 
+
+       
+
+       
+
+df_with_schema = spark.read.format("csv") \ 
+
+      .option("header", True) \ 
+
+      .schema(schema) \ 
+
+      .load("/User/file2.csv") 
+
+ 
+
+Save content of a Data Frame to a data source: 
+
+save(path=None, format=None, mode=None, partitionBy=None, **options)  
+
+The data source is specified by the format and a set of options. If format is not specified, the default data source configured by spark.sql.sources.default will be used. 
+
+Parameters 
+
+path – the path in a Hadoop supported file system 
+
+format – the format used to save 
+
+mode – 
+
+specifies the behavior of the save operation when data already exists. 
+
+append: Append contents of this DataFrame to existing data. 
+
+overwrite: Overwrite existing data. 
+
+ignore: Silently ignore this operation if data already exists. 
+
+error or errorifexists (default case): Throw an exception if data already exists. 
+
+partitionBy – names of partitioning columns 
+
+options – all other string options 
+
+ 
+
+write() method of the PySpark DataFrameWriter object to write PySpark DataFrame to a CSV file. 
+
+SaveMode.Append"append"-- contents of the DataFrame are expected to be appended to existing data. 
+
+SaveMode.Overwrite"overwrite" --existing data is expected to be overwritten by the contents of the DataFrame. 
+
+df.write.option("header",True).csv("/user/file3") 
+
+ 
+
+1.3. Creating a DataFrame from existing RDD: 
+
+Creating a DataFrame from an existing RDD 
+
+  
+
+rdd = sc.parallelize([(1,2,3),(4,5,6),(7,8,9)]) 
+
+df = rdd.toDF(["a","b","c"]) 
+
+ 
+
+ 
+
+1.4. By performing an operation or query on another data frame: 
+
+Create a data frame from an RDD by using a list or a pandas.DataFrame. 
+
+When schema is a list of column names, the type of each column will be inferred from data. 
+
+When schema is None, it will try to infer the schema (column names and types) from data, which should be an RDD of either Row, named tuple, or dict. 
+
+ 
+
+>>>l = [('Alice', 1)] 
+
+>>> spark.createDataFrame(l).collect() 
+
+[Row(_1='Alice', _2=1)] 
+
+>>> spark.createDataFrame(l, ['name', 'age']).collect() 
+
+[Row(name='Alice', age=1)] 
+
+>>>rdd = sc.parallelize(l) 
+
+>>> spark.createDataFrame(rdd).collect() 
+
+[Row(_1='Alice', _2=1)] 
+
+>>> df = spark.createDataFrame(rdd, ['name', 'age']) 
+
+>>> df.collect() 
+
+[Row(name='Alice', age=1)] 
+
+ 
+
+ 
+
+1.5. Create a DataFrame by using StructType in PySpark: 
+
+ 
+
+While creating a Spark DataFrame we can specify the structure using StructType and StructField classes. As specified in the introduction, StructType is a collection of StructField's which is used to define the column name, data type and a flag for nullable or not. StructType objects define the schema of Spark DataFrames. StructType objects contain a list of StructField objects that define the name, type, and nullable flag for each column in a DataFrame.  StructType columns are a great way to eliminate order dependencies from Spark code. 
+
+ 
+
+from pyspark.sql.types import * 
+
+>>>l = [('Alice', 1)] 
+
+>>> spark.createDataFrame(l).collect() 
+
+[Row(_1='Alice', _2=1)] 
+
+>>> spark.createDataFrame(l, ['name', 'age']).collect() 
+
+[Row(name='Alice', age=1)] 
+
+>>>rdd = sc.parallelize(l) 
+
+ 
+
+>>> schema = StructType([ 
+
+...    StructField("name", StringType(), True), 
+
+...    StructField("age", IntegerType(), True)]) 
+
+>>> df = spark.createDataFrame(rdd, schema) 
+
+>>> df.collect() 
+
+[Row(name='Alice', age=1)] 
+
+ 
+
+ 
+
+ 
+
+2. How to create DataFrame from different sources: 
+
+2.1 EnableHiveSupport () - New in version 2.0. 
+
+Enables Hive support, including connectivity to a persistent Hive metastore, support for Hive SerDes, and Hive user-defined functions. If we are using earlier Spark versions, we have to use HiveContext which is variant of Spark SQL that integrates with data stored in Hive. Even when we do not have an existing Hive deployment, we can still enable Hive support. 
+
+  spark = SparkSession \ 
+
+    .builder \ 
+
+    .appName("Python Spark SQL Hive integration example") \ 
+
+    .config("spark.sql.warehouse.dir", warehouse_location) \ 
+
+    .enableHiveSupport() \ 
+
+    .getOrCreate() 
+
+ 
+
+ 
+
+2.2 Create DataFrame from Json File 
+
+Loads JSON files and returns the results as a DataFrame. 
+
+If the schema parameter is not specified, this function goes through the input once to determine the input schema. 
+
+ 
+
+Parameters 
+
+path – string represents path to the JSON dataset, or a list of paths, or RDD of Strings storing JSON objects. 
+
+schema – an optional pyspark.sql.types.StructType for the input schema or a DDL-formatted string (For example col0 INT, col1 DOUBLE). 
+
+primitivesAsString – infers all primitive values as a string type. If None is set, it uses the default value, false. 
+
+prefersDecimal – infers all floating-point values as a decimal type. If the values do not fit in decimal, then it infers them as doubles. If None is set, it uses the default value, false. 
+
+allowComments – ignores Java/C++ style comment in JSON records. If None is set, it uses the default value, false. 
+
+allowUnquotedFieldNames – allows unquoted JSON field names. If None is set, it uses the default value, false. 
+
+allowSingleQuotes – allows single quotes in addition to double quotes. If None is set, it uses the default value, true. 
+
+allowNumericLeadingZero – allows leading zeros in numbers (e.g. 00012). If None is set, it uses the default value, false. 
+
+allowBackslashEscapingAnyCharacter – allows accepting quoting of all character using backslash quoting mechanism. If None is set, it uses the default value, false. 
+
+mode – 
+
+allows a mode for dealing with corrupt records during parsing. If None is 
+
+set, it uses the default value, PERMISSIVE. 
+
+multiLine – parse one record, which may span multiple lines, per file. If None is set, it uses the default value, false. 
+
+ 
+
+dataframe=sc.read.json('/user/mukesh.kumar/nyt2.json') 
+
+ 
+dataframe.show(10) 
+
+ 
+
+ 
+
+ 
+
+2.3 Create a DataFrame from Texfile 
+
+Loads data from a data source and returns it as a DataFrame. 
+
+Parameters 
+
+path – optional string or a list of string for file-system backed data sources. 
+
+format – optional string for format of the data source. Default to ‘parquet’. 
+
+schema – optional pyspark.sql.types.StructType for the input schema or a DDL-formatted string (For example col0 INT, col1 DOUBLE). 
+
+options – all other string options 
+
+dataframe_txt = sc.read.text('/user/mukesh.kumar/text_data.txt') 
+
+dataframe.show(10) 
+
+one 
+
+two 
+
+three 
+
+four 
+
+five 
+
+six 
+
+seven 
+
+eight 
+
+nine 
+
+ten 
+
+ 
+
+2.4 Create DF from a csv file: 
+
+Parameters 
+
+path – the path in any Hadoop supported file system 
+
+mode – specifies the behavior of the save operation when data already exists. 
+
+append: Append contents of this DataFrame to existing data. 
+
+overwrite: Overwrite existing data. 
+
+ignore: Silently ignore this operation if data already exists. 
+
+error or errorifexists (default case): Throw an exception if data already 
+
+exists. 
+
+compression – compression codec to use when saving to file. This can be one of the known case-insensitive shorten names (none, bzip2, gzip, lz4, snappy and deflate). 
+
+ 
+
+3. Methods used to create an RDD to Data frame (DF): 
+
+1.. toDF() 
+
+2.. CreateDataFrame () 
+
+3.1. By using toDF() 
+
+ 
+
+ from pyspark.sql import Row 
+
+ df = sc.parallelize([Row(r=Row(a=1, b="b"))]).toDF() 
+
+ df.select(df.r.getField("b")).show() 
+
++---+ 
+
+|r.b| 
+
++---+ 
+
+|  b| 
+
++---+ 
+
+df.select(df.r.a).show() 
+
++---+ 
+
+|r.a| 
+
++---+ 
+
+|  1| 
+
++---+ 
+
+ 
+
+3.2 By using CreateDataFrame(): 
+
+ 
+
+from pyspark.sql.types import * 
+
+>>>l = [('Alice', 1)] 
+
+>>> spark.createDataFrame(l).collect() 
+
+[Row(_1='Alice', _2=1)] 
+
+ 
+
+4. Spark Integration with other Databases: 
+
+ 
+Spark SQL also includes a data source that can read data from other databases using JDBC. This functionality should be preferred over using JdbcRDD. This is because the results are returned as a DataFrame and they can easily be processed in Spark SQL or joined with other data sources. The JDBC data source is also easier to use from Java or Python as it does not require the user to provide a ClassTag. (Note that this is different than the Spark SQL JDBC server, which allows other applications to run queries using Spark SQL). 
+
+To get started you will need to include the JDBC driver for your particular database on the spark classpath. For example, to connect to postgres from the Spark Shell you would run the following command: 
+
+bin/spark-shell --driver-class-path postgresql-9.4.1207.jar --jars postgresql-9.4.1207.jar 
+
+Tables from the remote database can be loaded as a DataFrame or Spark SQL temporary view using the Data Sources API. Users can specify the JDBC connection properties in the data source options. user and <password> are normally provided as connection properties for logging into the data sources. 
+
+A. Loading data from a JDBC source 
+
+     jdbcDF = spark.read \ 
+
+    .format("jdbc") \ 
+
+    .option("url", "jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>"") \ 
+
+    .option("dbtable", "schema.tablename") \ 
+
+    .option("user", "<user_id>") \ 
+
+    .option("<password>", "<password>") \ 
+
+    .load() 
+
+    jdbcDF2 = spark.read \ 
+
+    .jdbc("jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>", 
+
+"schema.tablename", 
+
+          properties={"user": "<user_id>", "<password>": "<password>"}) 
+
+ 
+
+B. Specifying dataframe column data types on read 
+
+     jdbcDF3 = spark.read \ 
+
+    .format("jdbc") \ 
+
+    .option("url", "jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>"") \ 
+
+    .option("dbtable", "schema.tablename") \ 
+
+    .option("user", "<user_id>") \ 
+
+    .option("<password>", "<password>") \ 
+
+    .option("customSchema", "id DECIMAL(38, 0), name STRING") \ 
+
+    .load() 
+
+C. Saving data to a JDBC source 
+
+    JdbcDF2.write \ 
+
+    .jdbc("jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>", 
+
+ "schema.tablename", 
+
+          properties={"user": "<user_id>", "<password>": "<password>"} 
+
+ 
+
+ 
+
+Step 1: Create a data frame by reading data from SQL Server via JDBC: 
+
+              jdbcDF = spark.read.format("jdbc") \ 
+
+              .option("url", jdbcUrl) \ 
+
+              .option("dbtable", "Employees") \ 
+
+              .option("user", user) \ 
+
+              .option("<password>", <password>) \ 
+
+              .option("driver", jdbcDriver) \ 
+
+              .load() 
+
+              jdbcDF.show() 
+
+Step 2: We can also save the data frame to the database via JBBC too: 
+
+              jdbcDF.select("EmployeeID","EmployeeName", "Position").write.format("jdbc") \ 
+
+              .mode("overwrite") \ 
+
+              .option("url", jdbcUrl) \ 
+
+              .option("dbtable", "dbo.Employees2") \ 
+
+              .option("user", <user_id>) \ 
+
+              .option("<password>", <password>) \ 
+
+              .save() 
+
+ 
+
+Sample code the following is one complete example. 
+
+from pyspark import SparkContext, SparkConf, SQLContext 
+
+appName = "PySpark SQL Server Example - via JDBC" 
+
+master = "local" 
+
+conf = SparkConf() \ 
+
+    .setAppName(appName) \ 
+
+    .setMaster(master) \ 
+
+    .set("spark.driver.extraClassPath","sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar") 
+
+sc = SparkContext(conf=conf) 
+
+sqlContext = SQLContext(sc) 
+
+spark = sqlContext.sparkSession 
+
+database = "test" 
+
+src_table = "dbo.Employees" 
+
+user = "<user_id>" 
+
+password  = "<password>" 
+
+jdbcUrl = f"jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>"" 
+
+jdbcDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver" 
+
+ 
+
+Create a data frame by reading data from SQL Server via JDBC 
+
+    jdbcDF = spark.read.format("jdbc") \ 
+
+    .option("url", jdbcUrl) \ 
+
+    .option("dbtable", "Employees") \ 
+
+    .option("user", <user_id>) \ 
+
+    .option("<password>", <password>) \ 
+
+    .option("driver", jdbcDriver) \ 
+
+    .load() 
+
+jdbcDF.show() 
+
+We can also save the data frame to the database via JBBC too 
+
+  jdbcDF.select("EmployeeID","EmployeeName", "Position").write.format("jdbc") \ 
+
+  .mode("overwrite") \ 
+
+  .option("url", jdbcUrl) \ 
+
+  .option("dbtable", "dbo.Employees2") \ 
+
+  .option("user", <user_id>) \ 
+
+  .option("<password>", <password>) \ 
+
+  .save() 
+
+Read data from SQL Server table dbo.Employees as a Spark dataframe using JDBC driver: 
+
+Select a few columns from the table and then save this new dataframe into a new table named dbo.Employees2. 
+
+ 
+
+Run the script: python script-name.py 
+
+Make sure the JDBC driver your are using matches with your environment Java version. 
+
+If you use spark-submit command to run the script, ensure you pass in locations of your driver JAR files via option --jars: 
+
+spark-submit --jars /path/to/sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar  script-name.py 
+
+One more thing you need to ensure is the permission to create tables or write data into your tables in your database. 
+
+ 
+
+5. Spark Transformations and Actions: 
+
+ Creating a DataFrame from csv file: 
+
+Dataframe can be created with the help of various spark API, But here I am going to use “spark.read.format()”. This API is a generalize API that can be used for generating Dataframe from different files types. I am going to use csv file for the demo here. 
+
+ 
+
+Thus, by using above command we can create the dataframe “df1” out of csv file. 
+
+5.1 Transformations: 
+
+5.1.1 Applying map operation on DataFrame column: 
+
+ We can apply map operation as well on Dataframe column using lambda function.For applying map operation we must need to convert Dataframe into rdd using .rdd API and after that we can perform map operation over it. Ex- 
+
+ 
+
+5.1.2 To view distinct row from the DataFrame: 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+5.1.3 To filter the rows from DataFrame based on some value for a column: 
+
+filter() API is used to filter the row from the dataframe with a specific value for a column. 
+
+ 
+
+5.1.4 To perform join on the DataFrame: 
+
+We can perform all the available join on the dataframe. For example, here I am considering two dataframe and will try to perform some sample join. 
+
+ 
+
+ 
+
+ 
+
+5.2 Actions: 
+
+5.2.1 Show() DataFrame API: 
+
+By default, it prints 20 rows and to change the number of rows, we can pass the number as parameter in show(n). 
+
+ 
+
+ 
+
+ 
+
+ 
+
+5.2.2 printSchema() DataFrame API: 
+
+printSchema() print the schema of the Dataframe. 
+
+ 
+
+5.2.3 take() DataFrame API: 
+
+take(n) returns first n rows as Array of row objects from the Dataframe. 
+
+ 
+
+5.2.4 head() DataFrame API: 
+
+head(n) API will also return the first n rows as Array of row objects from the Dataframe. 
+
+ 
+
+5.2.5 count() DataFrame API: 
+
+count() API prints the total number rows in the Dataframe. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+5.3 Basic operations on DataFrame 
+
+5.3.1 To print columns name from the DataFrame: 
+
+ 
+
+5.3.2 To print total number of columns present in the DataFrame: 
+
+ 
+
+5.3.3 describe() DataFrame API:  
+
+describe() API is used to calculate the summary statistics of numerical column(s) in DataFrame. If we don’t specify the name of columns it will calculate summary statistics for all numerical columns present in DataFrame. 
+
+ 
+
+5.3.4 To select columns from the DataFrame: 
+
+select() API is used to select columns out of the Dataframe. 
+
+ 
+
+ 
+
+5.3.5 To drop duplicate rows from the DataFrame: 
+
+dropDuplicates() API is used to drop the duplicate rows of a DataFrame and get the DataFrame which won’t have duplicate rows. 
+
+ 
+
+5.3.6 To drop null rows which contain null value: 
+
+Dropna() API is used to drop the rows which contain null values. With parameters ‘any’ or ‘all’. If ‘any’, drop a row if it contains any nulls. If ‘all’, drop a row only if all its values are null. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+a. With Parameter “any” 
+
+ 
+
+b. With Parameter “all” 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+5.3.7 To fill null value with some value in DataFrame: 
+
+fillna() API is used to fill the null value in the row of dataframe with some constant value. 
+
+ 
+
+5.3.8 Adding a new column to the DataFrame: 
+
+A new column can be added to the dataframe using “withColumn” API. 
+
+ 
+
+5.3.9 Dropping an existing column from the DataFrame: 
+
+We can drop and existing column from the dataframe using the drop() API. 
+
+ 
+
+ 
+
+SQL queries can also be executed over DataFrame but for that first we need to create a temp view of table for that DataFrame using createOrReplaceTempView() API :  
+
+5.3.10 To register a DataFrame as a Temp view and execute sql’s on it: 
+
+ 
+
+Thus, we can execute all the sql queries over the temp view that created using this API. 
+
+5.4 Window functions (sum) 
+
+5.4.1 Applying window function to get total salary role wise: 
+
+ To get the required total salary role wise, we can use group by on role and use the aggregate function sum() on the salary and will get the required output. 
+
+ 
+
+Similarly, we can apply different aggregate function over group by. 
+
+5.5 Connecting Oracle DB from Spark 
+
+To Oracle DB from spark, first we need to download the OJDBC jar and put it in classpath else provide as a jar to spark session. 
+
+After that we need to create the dataframe mentioning all the DB connection details like URL, Port number, <user_id>, <password> like given in the below command. 
+
+ 
+
+empDF = spark.read \ 
+
+.format("jdbc") \ 
+
+.option("url", "jdbc:oracle:thin:<user_id>/<password>@//<hostip>:<socket No>/<SID>"") \ 
+
+.option("dbtable", "system.employee") \ 
+
+.option("user", "system") \ 
+
+.option("<password>", "admin123") \ 
+
+.option("driver", "oracle.jdbc.driver.OracleDriver") \ 
+
+.load() 
+
+ 
+
+ 
+
+It will create an empDF as per the above sample programe. After that we can perform any type of dataframe operation on this dataframe. 
+
+ 
+
+  
+
+ 
+
+Hands-On exercise on Spark DataFrame: 
+
+Read a CSV file, create a dataframe out of it. Perform some transformation operation on it and finally save back the transformed Dataframe in CSV file format. 
+
+Change the Datatype of a column in the dataframe. 
+
+Implement some aggregate functions on the dataframe like groupbykey, Average, min, max, sum etc. 
+
+Implement withColumn function on the dataframe and calculate the value for the new column from the exixting columns applying some formulae. 
+
+Perform join operation on more than 2,3 dataframe and play around it, see the join operation how it is happening, Ex – inner,left_outer,right_outer full_outer join. 
+
+ 
+
+6. What is Partitioning in Spark? 
+
+A Partition in simple terms is a split in the input data, so partitions in spark are basically smaller logical chunks or divisions of the input data. Spark distributes this partitioned data among the different nodes to perform distributed processing on the data. 
+
+Let’s dive into a practical example and create a simple RDD using the sc.parallelize method to determine the number of partitions spark creates by default. 
+
+ 
+
+>>rdd = sc.parallelize(range(1,11))  
+
+>>rdd.getNumPartitions()  
+
+8 
+
+As shown above, spark creates 8 partitions by default here. Now, you must be wondering where this default number is come from. Spark has a default parallelism parameter which is determined by, sc.defaultParallelism. When we run this method, it returns 8 as shown in below. 
+
+>>sc.defaultParallelism  
+
+8  
+
+This is how the data is present inside each partition. Spark uses an internal Hash Partitioning Scheme to split the data into these smaller chunks. We can use the rdd.glom() method to display the partitions in a list. 
+glom - returns an RDD having the elements within each partition in a separate list 
+
+>>rdd.glom().collect()  
+
+>>[[1], [2], [3], [4, 5], [6], [7], [8], [9, 10]]  
+
+ 
+
+Let’s visualize the above collect operation in the Spark WebUI(if you are using spark locally, navigate to https://localhost:4040 to see the spark webui or if spark is being accessed via a cluster navigate to your cluster specific localhost webUI) 
+
+Since 8 partitions are present, 8 executors would be launched for this action, as shown below. 
+
+ 
+
+The above method used for an RDD can also be applied to a dataframe. Let’s convert the RDD to a Dataframe and apply the same method. We can see that the same number of partitions are present. 
+
+>>df = rdd.map(lambda x: (x, )).toDF() # converting rdd to Dataframe 
+>>df.rdd.glom().collect() 
+
+[[Row(_1=1)],[Row(_1=2)], 
+
+ [Row(_1=3)],[Row(_1=4), 
+
+    [Row(_1=5)],[Row(_1=6)], 
+
+       [Row(_1=7)],[Row(_1=8)], 
+
+         [Row(_1=9), Row(_1=10)]] 
+
+ 
+6.1 Let’s see in below scenarios how to control the number of partitions when reading / writing files in Spark? 
+
+Now, you must’ve had the question in your mind as to how spark partitions the data when reading textfiles. Let’s read a simple textfile and see the number of partitions here. 
+
+Let’s read the CSV file which was the input dataset 
+
+>>df2 = spark.read.format('csv').options(delimiter=',', header=True).load('/path-to-file/ FL_insurance_sample1.csv’) 
+
+>>df2.rdd.getNumPartitions() 
+1 
+
+We can see that only 1 partition is created here. Alright let’s break this down, 
+
+Spark by default creates 1 partition for every 128 MB of the file. So if you are reading a file of size 1GB, it creates 10 partitions. The file being read here is of 3.9 MB, hence only 1 partition is created in this case. 
+
+ 
+
+ 
+
+The no. of partitions is determined by spark.sql.files.maxPartitionBytes parameter, which is set to 128 MB, by default. 
+
+spark.conf.get("spark.sql.files.maxPartitionBytes")            # -> 128 MB by default 
+
+Note: The files being read must be splittable by default for spark to create partitions when reading the file. So, in case of compressed files like snappy, gz or lzo etc, a single partition is created irrespective of the size of the file. 
+
+Let’s manually set the spark.sql.files.maxPartitionBytes to 1MB, so that we get 4 partitions upon reading the file. 
+
+>>spark.conf.set("spark.sql.files.maxPartitionBytes", 1000000) 
+
+>>spark.conf.get("spark.sql.files.maxPartitionBytes") 
+
+'1000000' 
+
+>>df3 = spark.read.format('csv').options(delimiter=',', header=True).load('/path-to-file/ FL_insurance_sample1.csv) 
+
+>>df3.rdd.getNumPartitions() 
+5 
+
+ 
+
+As discussed, 5 partitions were created. 
+
+Caution: The above manual setting of the spark.sql.files.maxPartitionBytes to 1MB was just for the purpose of this demo and is not recommended in practical scenarios. It is recommended to use the default setting or set a value based on your input size and cluster hardware size. 
+
+6.2 Why partitioning required? 
+
+Partitioning is the sole basis by which spark distributes data among different nodes to thereby producing a distributed and parallel execution of the data with reduced latency. 
+
+If this concept of partitioning is not present in spark, then there would be no parallel processing existing in spark. 
+
+Let’s analyze this with a simple example where we create an RDD with a single partition and perform an action on the same. 
+
+>>rdd2 = sc.parallelize(range(20), 1)  
+
+# the second optional parameter specifies the number of partitions, which is 1 here 
+
+>>rdd2.collect() 
+
+When the above action is seen on the Spark WebUI, only a single executor would be issued to process this data. 
+
+So, imagine a case where you are processing a huge volume of data without the concept of partitioning, then the entire data would be processed by a single executor taking a lot of time and memory. 
+
+ 
+
+ 
+
+7. Repartition: 
+
+if you wish to control the partitions by yourself. This is where the methods of repartition and coalesce come to effect. Repartition is a method in spark which is used to perform a full shuffle on the data present and creates partitions based on the user’s input. The resulting data is hash partitioned and the data is equally distributed among the partitions 
+
+7.1 Methods to Repartition a DataFrame: 
+
+There are 2 ways to repartition a dataframe, Specifying a set of columns or column along with the partition size (or) Specifying an int value to create the number of partitions 
+
+ 
+
+7.1.1 Repartition using Column Name  
+
+Now let’s repartition our dataset using the first method using the column present in the dataframe and check the number of partitions being created after repartition. 
+
+>>df3.printSchema()     # it will print the column/schema details 
+
+ 
+
+df4 = df3.repartition(' policyID') 
+
+df4.rdd.getNumPartitions() 
+
+200 
+
+ 
+
+After our repartition, 200 partitions are created by default. This is because of the value present in spark.sql.shuffle.partitions. Spark uses the value present here to create the number of partitions after the shuffle operation. By default, 200 partitions are created if the number is not specified in the repartition clause.  
+
+spark.conf.get("spark.sql.shuffle.partitions") 
+
+'200' 
+
+ 
+
+ 
+
+7.1.2: Repartition using integer value  
+
+Now let’s use method 2 to specify an integer value to create the number of partitions as per our requirement. Let’s repartition the dataset to 3 partitions. 
+
+>>df = df.repartition(4) 
+
+>>df.rdd.getNumPartitions()   # It will show you the no of partitions 
+
+ 
+
+ 
+
+Since the file is very big. I can’t show you the actual partition column value here. But, just to understand if you run this “df.rdd.glom().collect()” command It will show you the value of partitions. If you save the dataframe as CSV, 3 files would be created. 
+
+Let’s visualize the same on the Spark WebUI 
+
+ 
+
+The above execution when seen on the spark console would show 3 tasks being issued on the collect operation(stage 2). 
+
+Caution: Repartition performs a full shuffle on the input dataset, hence it would be a costly operation if done on large datasets. 
+
+Note: Use Repartition only when you want to increase the number of partitions (or) if you want to perform a full shuffle on the data. 
+
+Note:- Method 2 generally use in the real time scenario. 
+
+ 
+
+8. Coalesce: 
+
+Coalesce is another method to partition the data in a dataframe. This is mainly used to reduce the number of partitions in a dataframe. 
+
+Unlike repartition, coalesce doesn’t perform a shuffle to create the partitions. 
+
+Suppose there are 100 partitions with 10 records in each partition, and if the partition size is reduced to 50, it would retain 50 partitions and append the other values to these existing partitions thereby having 20 records in each partition. 
+
+Let’s analyze this using our dataset, let’s reduce the number of partitions to 2 now, 
+
+>>df2 = df.coalesce(2) 
+
+>>df2.rdd.getNumPartitions() 
+
+ 
+
+As shown above, the data from the 3rd partition is removed and appended with the 2nd partition, proving that there is no shuffle process going on here. Hence, this would be much less memory intensive. Now, if you save the above dataframe as CSV, 2 files would be created with each one having contents 
+
+So, when your motive is to reduce the number of partitions from say 1000 to 500, then coalesce is a better option. But the output data would not be equally partitioned. 
+
+Note:- This is generally use during write operation. 
+
+8.1 Can you increase the number of partitions using Coalesce? 
+
+The Answer is no. Coalesce has no shuffle taking place and the algorithm is designed to move data from some partitions to existing partitions. 
+
+Let’s prove the above point with an example. If we try to increase the coalesce number to 8, we would still receive the existing number of partitions present before the coalesce function, so in our case only 3 partitions would be the output. 
+
+>>> df3 = df2.coalesce(8) 
+
+>>> df3.rdd.getNumPartitions() 
+3 
+
+ 
+
+ 
+
+9. Repartition vs Coalesce 
+
+Repartition can be used under these scenarios, 
+
+when you want your output partitions to be of equally distributed chunks. 
+
+increase the number of partitions. 
+
+perform a shuffle of the data and create partitions. 
+
+Coalesce can be used under the following scenarios, 
+
+when you want to decrease the number of partitions. 
+
+in order to avoid shuffle when decreasing partition 
+
+By now, you must be clear on the concepts of partitioning in spark and how spark utilizes partitioning to perform parallel distributed processing. In addition to this, the repartition and coalesce methods should be much clearer, and you can use either one depending upon your use case. 
+
+10. Spark DataFrame Cache and Persist: 
+
+Spark Cache and Persist are optimization techniques in DataFrame / Dataset for iterative and interactive Spark applications to improve the performance of Jobs. 
+
+Though Spark provides computation 100 x times faster than traditional Map Reduce jobs, If you have not designed the jobs to reuse the repeating computations you will see degrade in performance when you are dealing with billions or trillions of data. Hence, we may need to look at the stages and use optimization techniques as one of the ways to improve performance. 
+
+Using cache() and persist() methods, Spark provides an optimization mechanism to store the intermediate computation of a Spark DataFrame so they can be reused in subsequent actions. 
+
+When you persist a dataset, each node stores it’s partitioned data in memory and reuses them in other actions on that dataset. And Spark’s persisted data on nodes are fault-tolerant meaning if any partition of a Dataset is lost, it will automatically be recomputed using the original transformations that created it. 
+
+ 
+
+10.1 cache() 
+
+cache is a synonym of persist or persist(MEMORY_ONLY), i.e. cache is merely persist with the default storage level MEMORY_ONLY while Persist provide you various following options. 
+
+Spark cache() method in Dataset class internally calls persist() method which in turn uses sparkSession.sharedState.cacheManager.cacheQuery to cache the result set of DataFrame or Dataset. 
+
+cache() : 
+
+>>df2.cache() 
+
+To check if a dataframe is cached, check the storageLevel property. 
+
+>>df2.storageLevel 
+
+ 
+
+ 
+
+To un-cache a dataframe, use unpersist() 
+
+>>df1.unpersist() 
+
+ 
+
+ 
+
+10.2 persist() 
+
+Spark persist() method is used to store the DataFrame or Dataset to one of the storage levels MEMORY_ONLY,MEMORY_AND_DISK, MEMORY_ONLY_SER, MEMORY_AND_DISK_SER, DISK_ONLY, MEMORY_ONLY_2,MEMORY_AND_DISK_2, OFF_HEAP and more. 
+
+Caching or persisting of Spark DataFrame or Dataset is a lazy operation, meaning a DataFrame will not be cached until you trigger an action. 
+
+ 
+
+ 
+
+Spark Persist storage levels 
+
+All different storage level Spark supports are available at org.apache.spark.storage.StorageLevel class. The storage level specifies how and where to persist or cache a Spark DataFrame and Dataset. 
+
+MEMORY_ONLY – This is the default behavior of the RDD cache() method and stores the RDD or DataFrame as deserialized objects to JVM memory. When there is no enough memory available it will not save DataFrame of some partitions and these will be re-computed as and when required. This takes more memory. but unlike RDD, this would be slower than MEMORY_AND_DISK level as it recomputes the unsaved partitions and recomputing the in-memory columnar representation of the underlying table is expensive. 
+
+MEMORY_ONLY_SER – This is the same as MEMORY_ONLY but the difference being it stores RDD as serialized objects to JVM memory. It takes lesser memory (space-efficient) then MEMORY_ONLY as it saves objects as serialized and takes an additional few more CPU cycles in order to deserialize. 
+
+MEMORY_ONLY_2 – Same as MEMORY_ONLY storage level but replicate each partition to two cluster nodes. 
+
+MEMORY_ONLY_SER_2 – Same as MEMORY_ONLY_SER storage level but replicate each partition to two cluster nodes. 
+
+MEMORY_AND_DISK – This is the default behavior of the DataFrame or Dataset. In this Storage Level, The DataFrame will be stored in JVM memory as a deserialized objects. When required storage is greater than available memory, it stores some of the excess partitions into disk and reads the data from disk when it required. It is slower as there is I/O involved. 
+
+MEMORY_AND_DISK_SER – This is same as MEMORY_AND_DISK storage level difference being it serializes the DataFrame objects in memory and on disk when space not available. 
+
+MEMORY_AND_DISK_2 – Same as MEMORY_AND_DISK storage level but replicate each partition to two cluster nodes. 
+
+MEMORY_AND_DISK_SER_2 – Same as MEMORY_AND_DISK_SER storage level but replicate each partition to two cluster nodes. 
+
+DISK_ONLY – In this storage level, DataFrame is stored only on disk and the CPU computation time is high as I/O involved. 
+
+DISK_ONLY_2 – Same as DISK_ONLY storage level but replicate each partition to two cluster nodes. 
+
+ 
+
+10.3 Unpersist: 
+
+Spark automatically monitors every persist() and cache() calls you make and it checks usage on each node and drops persisted data if not used or by using least-recently-used (LRU) algorithm. You can also manually remove using unpersist() method.  
+
+unpersist() marks the Dataset as non-persistent, and remove all blocks for it from memory and disk. 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Reference:- https://datanoon.com/blog/spark_repartition_coalesce/ 
+
+     https://spark.apache.org/  
+
+ 
+
+APPENDIX: 
+
+How to use “sc” in pycharm IDE or SPYDER: 
+
+From pyspark Import SparkContext  
+
+sc=SparkContext.getOrCreate() 
+
+ 
+
+ 
