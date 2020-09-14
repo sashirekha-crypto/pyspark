@@ -1,0 +1,16 @@
+import org.apache.spark.sql.SparkSession
+case class Person(Id:Int,name:String)
+object Rdd_DF {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder().master("local").appName("sample").getOrCreate()
+   // val df = spark.read.json("C:\\Users\\sashirekha.bisati\\Downloads\\data-master\\retail_db_json\\categories\\part-r-00000-ce1d8208-178d-48d3-bfb2-1a97d9c05094")
+
+    import spark.implicits._
+    val peopledf = spark.read.textFile("C://Users//sashirekha.bisati//Desktop//info.txt").map(_.split(","))
+      .map(attributees => Person(attributees(0).trim.toInt,attributees(1))).toDF()
+
+    peopledf.createOrReplaceTempView("data")
+    val info = spark.sql("select Id,name from data")
+    info.show()
+  }
+}
