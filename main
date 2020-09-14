@@ -1,0 +1,12 @@
+package com.Linkedin
+
+
+object SampleMainMethod   {
+  def main(args: Array[String]): Unit = {
+
+    val obj = new Sample_Demo()
+    obj.pet() //convert DF to map
+    obj.pet_color() //convert map to DF
+  }
+}
+
