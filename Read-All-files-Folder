@@ -1,0 +1,48 @@
+package com.Scenario
+
+
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions.rank
+import org.apache.spark.sql.functions.dense_rank
+import org.apache.spark.sql.functions.row_number
+//case class Student(StudentId:Int,Subject:String,StudentMarks:Int)
+case class file(name:String,ctc:Int,exp:Int)
+case class Emp_details(name:String,dept:String,salary:Int)
+object ReadAllFilesFromFolder {
+  //    def main (args:Array[String]): Unit= {
+  //      val spark = SparkSession.builder().appName("ReadFolder").master("local").getOrCreate()
+  //      import spark.implicits._
+  //      val readFolder = spark.sparkContext.wholeTextFiles("C:\\Users\\sashirekha.bisati\\Desktop\\New folder") .toDF()
+  //
+  //       val removeduplicate = readFolder.distinct()
+  //        removeduplicate.show()
+  //
+  //    val readstudent = spark.sparkContext.textFile("C:\\Users\\sashirekha.bisati\\Desktop\\Student.txt")
+  //        .map(_.split(","))
+  //        .map(attributes => Student(attributes(0).trim.toInt,attributes(1),attributes(2).trim.toInt))
+  //        .toDF()
+  //      readstudent.createOrReplaceTempView("Studentdata")
+  //
+  //      val pw = Window.partitionBy($"Subject").orderBy($"marks".asc)
+  //      val rankstudent = rank().over(pw)
+  //      readstudent.select($"*",rankstudent as "rank").show()
+def main(args : Array[String]): Unit ={
+    val spark = SparkSession.builder().master("local").appName("scenario").getOrCreate()
+    import spark.implicits._
+    val readfolder = spark.sparkContext.wholeTextFiles("C:\\Users\\sashirekha.bisati\\Desktop\\New folder").toDF()
+    val removeduplicates = readfolder.distinct()
+    removeduplicates.show()
+
+    val readallfiles = spark.sparkContext.textFile("C:\\Users\\sashirekha.bisati\\Desktop\\sales_data.txt")
+                          .map(_.split(","))
+                            .map(attributes => Emp_details(attributes(0),attributes(1),attributes(2).trim.toInt))
+                            .toDF()
+    readallfiles.createOrReplaceTempView("empdata")
+    val pw_emp = Window.partitionBy($"dept").orderBy($"salary".desc)
+    val rankemp=rank().over(pw_emp)
+
+    val rank_emp1= dense_rank().over(pw_emp)
+    readallfiles.select($"*",rank_emp1 as "rank").show()
+  }
+}
