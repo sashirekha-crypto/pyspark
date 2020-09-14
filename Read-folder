@@ -1,0 +1,16 @@
+package com.Linkedin
+
+import org.apache.spark.sql.SparkSession
+
+object ReadWholeTextFile {
+
+    def main(args: Array[String]): Unit = {
+      val spark = SparkSession.builder().master("local").appName("ReadDirectory").getOrCreate()
+
+      val peopleDF = spark.sparkContext.wholeTextFiles("C://Users//sashirekha.bisati//Desktop//New folder")
+      val files = peopleDF.map{ case(filename,content)=> filename}
+      files.collect.foreach(filename => print(filename.toString.split(".txt")(0)))
+
+    }
+
+}
