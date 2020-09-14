@@ -1,0 +1,11 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("Simplejson").master("local").getOrCreate()
+    path = "file:///C://Users//sashirekha.bisati//Downloads//data-master//retail_db_json//products//part-r-00000-158b7037-4a23-47e6-8cb3-8cbf878beff7"
+    peopleDF = spark.read.json(path)
+
+peopleDF.createOrReplaceTempView("people")
+
+teenagerNamesDF = spark.sql("SELECT product_id,product_image,product_name,product_price FROM people WHERE product_id BETWEEN 2 AND 19")
+teenagerNamesDF.show()
