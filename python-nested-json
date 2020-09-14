@@ -1,0 +1,14 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("Nestedjson").master("local").getOrCreate()
+    path = "file:///C://Users//sashirekha.bisati//Downloads//data-master//nested"
+
+    #path = "file:///C://Users//sashirekha.bisati//Desktop//SampleNestedJson"
+    peopleDF = spark.read.option("multiLine",True).json(path)
+    print(peopleDF.printSchema)
+peopleDF.createOrReplaceTempView("people")
+
+teenagerNamesDF = spark.sql("SELECT * FROM people")
+teenagerNamesDF.show()
+spark.stop()
