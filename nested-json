@@ -1,0 +1,15 @@
+package com.Linkedin
+
+import org.apache.spark.sql.SparkSession
+
+object NestedJsonFile {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder().master("local").appName("WindowDFFunc").getOrCreate()
+
+    val peopelDF = spark.read.option("multiLine", true).option("mode", "PERMISSIVE")
+      .json("C:\\Users\\sashirekha.bisati\\Desktop\\New folder\\NestedJson.json")
+    peopelDF.printSchema()
+
+
+  }
+}
