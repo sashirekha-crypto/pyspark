@@ -1,0 +1,24 @@
+
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.{SparkSession,types}
+import org.apache.spark.sql.functions._
+
+//case class Person1(Id:Int,name:String)
+object WindowFunction {
+def main(args: Array[String]):Unit ={
+  val spark = SparkSession.builder().master("local").appName("WindowDFFunc").getOrCreate()
+  import spark.implicits._//to use DF()
+  val peopledf = spark.sparkContext
+                    .textFile("C://Users//sashirekha.bisati//Desktop//info.txt")
+                     .map(_.split(","))
+                    .map(attributes => Person(attributes(0).trim.toInt,attributes(1)))
+                .toDF()
+  peopledf.createOrReplaceTempView("vdata")
+  val teendata = spark.sql("select Id,name from  vdata")
+    teendata.show()
+  val pw = Window.partitionBy($"Id").orderBy($"name".desc)
+  val rankTest = rank().over(pw)
+  peopledf.select($"*",rankTest as "rank").show()
+
+}
+}
