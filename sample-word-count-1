@@ -1,0 +1,19 @@
+import org.apache.spark.sql.SparkSession
+
+object Sample_wordcount {
+  def main(args :Array[String]):Unit= {
+    val spark = SparkSession.builder().master("local").appName("test").getOrCreate()
+
+    val text_file = spark.read.textFile("C://Users//sashirekha.bisati//Desktop//data.txt").rdd
+
+
+    val counts = text_file.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey((a, b) => a + b)
+    counts.foreach(println)
+
+    val lines =  spark.sparkContext.textFile("C://Users//sashirekha.bisati//Desktop//data.txt")
+    val pairs = lines.map(s => (s, 1))
+    val counts1 = pairs.reduceByKey((a, b) => a + b)
+    counts1.foreach(println)
+
+  }
+}
