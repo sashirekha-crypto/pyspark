@@ -1,0 +1,24 @@
+package com.spark.scala
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.expressions.Window
+case class sales(Name:String,department:String,salary:Int)
+object Window_partition_EX {
+  def main(args: Array[String]): Unit = {
+    val spark = SparkSession.builder().master("local").appName("WindowDFFunc").getOrCreate()
+    import spark.implicits._
+    //to use DF()
+    val salesdata = spark.sparkContext
+      .textFile("C://Users//sashirekha.bisati//Desktop//sales_data.txt")
+      .map(_.split(","))
+      .map(attributes => sales(attributes(0), attributes(1),attributes(2).trim.toInt))
+      .toDF()
+
+    salesdata.show()
+//it displays row for each department whose id is 1
+    val w2 = Window.partitionBy("department").orderBy(col("salary"))
+    salesdata.withColumn("row",row_number.over(w2))
+      .where($"row" === 1).drop("row")
+      .show()
+  }
+}
