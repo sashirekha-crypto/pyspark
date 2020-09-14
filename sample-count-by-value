@@ -1,0 +1,11 @@
+package com.spark.scala
+import org.apache.spark.sql.SparkSession
+
+object SampleCount_By_value {
+  def main(args: Array[String]): Unit={
+    val spark = SparkSession.builder().appName("SampleCount_By_value").master("local").getOrCreate()
+    val rdd1= spark.sparkContext.parallelize(Seq(("Hr", 1),("It",2 ),("Finance" ,3),("ItSuport",2),("POI",3)))
+    println(rdd1.countByValue())
+  }
+
+}
