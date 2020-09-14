@@ -1,0 +1,52 @@
+package com.Linkedin
+
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+
+class Sample_Demo extends Sampletrait {
+   //convert DF to map
+  override def pet() : Unit =
+  {
+    val structureData = Seq(
+      Row("36636","Finance",Row(3000,"USA")),
+      Row("40288","Finance",Row(5000,"IND")),
+      Row("42114","Sales",Row(3900,"USA")),
+      Row("39192","Marketing",Row(2500,"CAN")),
+      Row("34534","Sales",Row(6500,"USA"))
+    )
+
+    val structureSchema = new StructType()
+      .add("id",StringType)
+      .add("dept",StringType)
+      .add("properties",new StructType()
+        .add("salary",IntegerType)
+        .add("location",StringType)
+      )
+
+    var df = spark.createDataFrame(
+      spark.sparkContext.parallelize(structureData),structureSchema)
+    df.printSchema()
+    df.show(false)
+
+    var collectdf = df.collect()
+
+    var collectdftoMap = collectdf.map( row => row.getValuesMap(df.columns))
+
+    collectdftoMap.foreach(println)
+  }
+//convert map to DF
+  override def pet_color(): Unit =
+  {
+    import spark.implicits._
+
+    val m = Map("A" -> 11,"B" -> 12)
+
+    val data = m.toList.toDF("name","score")
+
+    data.show
+  }
+
+
+
+}
+
