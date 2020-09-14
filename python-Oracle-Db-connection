@@ -1,0 +1,44 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+import cx_Oracle
+import os
+import sys
+
+import pandas as pd
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("OracleDBConnection").master("local").getOrCreate()
+
+    conn = cx_Oracle.connect("DEFT", "oracle", "10.2.2.150/admin123")
+
+    conn.version
+
+    # Connection string - definition
+
+    connection_string = """system/admin123@(DESCRIPTION=
+        (FAILOVER=on)
+        (LOAD_BALANCE=off)
+        (ADDRESS_LIST=
+        (ADDRESS=
+        (PROTOCOL=TCP)
+        (HOST=10.2.2.150)
+        (PORT=1521)
+        )
+        (ADDRESS=
+        (PROTOCOL=TCP)
+        (HOST=10.2.2.150)
+        (PORT=1521)
+        ))
+        (CONNECT_DATA=
+        (SERVER=dedicated)
+        (SERVICE_NAME=DEFT))
+        )"""
+    conn = cx_Oracle.connect(connection_string)
+
+    c = conn.cursor()
+    # sample data to test the connection
+
+    df = pd.read_sql('sql stateement', conn)
+    # ensuring the connection is closed
+
+    conn.close()
