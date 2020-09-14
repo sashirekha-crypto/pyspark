@@ -1,0 +1,24 @@
+from pyspark.sql import SparkSession
+
+if __name__ == "__main__":
+    spark = SparkSession.builder.appName("python").master("local").getOrCreate()
+    sample_list = [1,2,3,4,5,7,8,9]
+
+    rdd_list = spark.sparkContext.parallelize(sample_list,2)
+    rdd_filter = rdd_list.filter(lambda n: n % 2 ==0 )
+    rdd_map = rdd_list.map(lambda n : n * n)
+
+    print(rdd_filter.collect())
+    print(rdd_map.collect())
+    rdd_total=rdd_list.collect()
+    print(rdd_total)
+    sample_String_list=["sas","rekha","sashi","test"]
+    print(sample_String_list)
+    rdd_String_list = spark.sparkContext.parallelize(sample_String_list)
+    rdd_string_count=rdd_String_list.filter(lambda ele :'sa' in ele).collect()
+
+    #rdd_string_collect=rdd_string_count.collect()
+    print(rdd_string_count)
+   # for element in rdd_string_collect:
+      #  print(element)
+spark.stop()
