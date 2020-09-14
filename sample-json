@@ -1,0 +1,15 @@
+import org.apache.spark.sql.SparkSession
+case class Person_Json(product_category_id : Int, product_description:String, product_id:Int, product_image:String, product_name:String, product_price:Float)
+object Sample_json {
+def main(args : Array[String]): Unit={
+  val spark = SparkSession.builder().master("local").appName("sample").getOrCreate()
+
+  val path = "C:\\Users\\sashirekha.bisati\\Downloads\\data-master\\retail_db_json\\products\\part-r-00000-158b7037-4a23-47e6-8cb3-8cbf878beff7"
+  val peopelDF = spark.read.json(path)
+  peopelDF.createOrReplaceTempView("people")
+
+  val teenagerNamesDF = spark.sql("SELECT product_id,product_image,product_name,product_price FROM people WHERE product_id BETWEEN 2 AND 19")
+  teenagerNamesDF.show()
+
+ }
+}
