@@ -1,0 +1,861 @@
+----python----
+python interpeture is going to do  compliation.
+python virtual machine is goin to do compliation,no explict compliation 
+python dnt have interpeture.
+types are not required in python ,
+by default type is consideried internally (inbulit functions are there)
+it is dynamaically typed prgm language 
+python is functional pgm language
+python is oop 
+python is scripting lang 
+python is modular pgrm 
+for web applications we use Django
+platform independent
+portability run on any os 
+dynamaically typed pgm language
+both procedure oriented and object oriented 
+everything is object 
+performance is not good 
+nt used for mobile
+if idetnfiry start with _ its private ,__ it is too private
+__main__ language specfice identifery defined by python
+
+data types-- char is not there
+int ----in python2 there is long ,but not in python3 
+float 
+decimal 
+string s ="durga" ->str s='durga' ->String multiline =>'''durga
+	boolean :True =1.0, False =0.0														sir ''' or """durga """																			sir """
+complex -a+bj a= real part b= imaginary part
+base coonverstion 
+decimal ,hexa,octal,binary 
+
+slice operator 
+s="durga" s[:] = durga s[-4:-1] =urg s='durga' s*10 ==durga for 10 times
+s[2:5] from 1to5 ,from -5 to -1 
+
+Type casting 
+int --complex to int not possible(a+bj) ,it should conatin int values passed as arrgument
+float --int to float, str should be int value -string to float ,cannot convert float to complex (a+bj),can conver booean to
+			float ,float("tren") not possible string to float,float(ob1111) not possible value error ,
+
+mutable and immutable  - example of voter list a1 to v4 first to hyd the n v3 to wag 
+v1="hyd" v2="hyd"  v3="hyd" v4="hyd"
+id(v1) id(v2) id(v3) id(v4)  only 1 obj all obj pointing to same refernce 
+v3="wag"  --now it has 2 obj --hyd has 3 obj v1 v2 v4 -id(v1)  ,--wag has only v3 obj id(v3)
+all fundamental types(int,flaot ,bool ,complex ,str)data obj as immutable ,everything is an object
+List is not mutable 
+x=10 
+y=10 
+x is y (insted of using memeory of(x) or memoery of(y))
+x and y are pointing to same obj to check use x is y or y is x  ( is is equal to == operator )
+
+x=10, y=10 both point to same obj then 
+both point to same obj ,x=y ,y=x ,reusing same obj is avaliable up to  0 to 256 --int it is range for prgm
+x= 46887968  y = 46887968 x != y , y != x for flaot point reuse concept is not there 
+x = 10+20j for complex reuse conecpt is not there -same as above 
+
+--List---mutable 
+List data  type -=insertion order preserved,duplicates are allowed
+List=[10,20,30,10] --growable in nature 
+type(List)
+print(List) 10,20,30,10--null is not applicable 
+list.appened('durga') --different type of obj are allowed
+list.append(None) --allowed
+print(list)- [10,20,30,10,'durga',none]
+list[0]-10,list[-1]-nothing,list[1:5]-20,30,10,'durga']
+list.remove(10)
+s=[10,"durga",True]
+s1= s*2 [10,'durga',True,10,'durga',True]
+---
+bytes are immutablex=[10,20,30,40]
+b=bytes[x]  0 to 256 
+
+bytes array are mutable stores data like images
+x=[10,20,30,40]
+b=bytearray(x)
+
+----tuple is ----immutable
+t=(10,'durga',True,10)
+t[0] = 10
+t[0]= 100 ---doest nt suppoert item assignment
+t1 = t*2 --seperate obj get created for these many parameters
+t1 (10,'durga',True,10,10,'durga',True,10)
+
+-----range()---
+its a sequence of values,immutable
+r=range(10)
+type(r)--range,r range (0,10)
+for i in r : print(i) --0to 9 
+range is applicable for int only 
+
+-------set------
+difference between list and set 
+list order is oreserved and duplicates are allowed ()
+set no duplicates and no order{} it allows char and number 
+
+---frozenset--------
+group of unique values bt no 1  is allowed to change 
+order not maintained 
+add remove are not there 
+-----
+list []-mutable,
+tuple() -immutable  ,
+set{}-mutable,
+frozenset -immutable,range,bytes-sequence of values,
+bytearray  --sequence of values
+--these are group of indiviual obj
+
+
+----dictionary----{}
+a group of k,v then go for dictionary
+duplicates key - not allowed(old values is replaced with new value)
+duplicates values- allowed
+its mutable we can add and remove 
+d={} -is empty dictionary
+d={100:'durga',200:'shive'}
+
+s=set{} --- set
+s={}-dictionary --mosty commanly used so by deaflut it is considered
+s1[100] = 'sunny' ---to add 
+s1[100] = 'che' ---- allowed(old value is replaced with new)
+
+--------fundamental data types-int ,float ,complex ,bool ,str ------
+
+---binary data-- like images videos ,audio 
+byte - is immutable
+byte array --mutable
+
+---long ---in python2---not in python 3 
+
+----ch='a' --char is nt there use -str 
+
+----bool --- immutable
+T+ T = 2 
+T +F =1 
+
+-----str-----
+multiline -'''   '''
+immutable 
+once we creat obj it cnt be changed ,if we change it create new obj
+
+----def - to def mehods or functions in python ---
+def f2()
+f2()
+print(f2())
+
+
+-------Escape character-------
+\n
+\t
+
+---relations  operators <,<=,>,>=, chanining of relations operators is possible 
+if 1 comprasion fails then its false 10>20<30
+if all comprasion must be true then only it return true 10<20<30
+10>20 => false
+'durga'<'ravi' => true it considered asci key code and alphabatical order
+True > False-> means 1>0 => output is true 
+
+
+--equality operators --------------------
+== ,!= 
+10==20==30==40 is applicable 
+
+---Arithmetic operator -------
+division operator generator float values 
+ // => floor division 
+  ** => exponent operator 
+  10/2 ==> 5.0  (division)
+  10//2 => 5 (floor)
+  10.2//2=> 5.0 either float or int in floor operator
+  10**2 => 100  poweer 
+  + ,* are applicable for string 
+  'durga'+'soft' => durgasoft 
+  'durga'+10 => error
+   10+'durga' => error
+   'durga'*3 => durga 3 times
+    3*'durga' => durga 3 times
+	'durga'*'soft' => error 2nd arrgument should be number
+	
+  
+-----logical operator-----
+boolean : T or F  , T and F => F , T and T => T ,not True => False 
+and : both shpuld be true 
+or 1 should be true 
+not 
+
+For non booleans: reslut may nt be boolean 
+0 means 0->False 
+non zero means(10)-> True 
+empty string" "=> False 
+
+x and y 
+if x is evlautes to FALSE then return x otherwise return y 
+0 and 20 => 0 
+
+x or y :
+if x is evlautes to TRUE then return x otherwise return y 
+
+not x :
+ not true :false
+ not'':true :empty string is treated as false
+ 
+ 
+ ------bit wise ----applicable for int and boolean
+ & 
+ |
+ ^
+ ~
+ <<
+ >>
+ 
+ 
+ -----Assignment operator------
+ a,b,c,d=10,20,30,40 -correct
+ a,b,c,d=10,20,30 -error not enought values to unpack
+print(a,b,c,d)
+
+-------compound assignment ------------+=,
+-=,*=,/=,%=,**=,&=,|=,^=,>>=,<<=
+x=10
+print(++x)--+(+x)= +10
+print(--x)-(-x)=-10
+print(x++) invalid syntax (increament ,decreament are not avaliable)
+
+a=4
+a&=5 4&=5 
+print(a)
+
+---Ternary operator-----  avaliable 
+?: 
+x= firstvalue if condition else secondvalue
+x= 30 if 10< 20 else 40
+x =10 if 20>30 else 40 if 50>60 else 70 print(x)==70
+max =a if a>b and a>c else b if b>c else c ==> a=7 b =4 c =6 output =7
+if condition is true consider 1st value otherwise second value  
+
+----read variables from key board and print values--------
+a=int(input("enter first number"))
+b=int(inut("enter second nature"))
+min =a if a<b else b 
+print("number",min)
+
+----------------------Identity operators ----- is , is not
+a=10 a is b  = true  
+b=10 a is not b = false 
+a and b both are pointing to same obj only 1 obj  'is' used for addres compreasion  
+all are obj, fundamental obj are immutable
+
+list1 = [10,20] 
+list2= [10,20] ' == 'is meant for content comprasion 
+list1 is list2 --> address comprasion
+list1 == list2 content comprasion
+
+-------membership operator----------------in ,not in 
+list1=[10,20]
+print(10 in list1) --true
+print(40 not in list1) --true
+
+-----operator precedence-------------
+()
+**
+~-
+*,/%//
++-
+<<,>>
+&
+^
+|
+>,>=,,<=
+=,+=,-=,
+is is not 
+in not in 
+not add 
+or
+((a+b)*c/d)
+((a+b)*(c/d))
+(a+(b*c)/d)
+
+--------group of module is nothing bt library -
+module is low level companent contains classs ,varaiable,functions
+library is high level 
+---------------------------------------
+Read values from keyboard
+raw_input in for entering data through keyboard --python2
+input for entering data through keyboard --python3
+by defalut data is string type we must type cast it 
+print("sum",int(input("number")))
+
+---------------------------------------
+Read multiple values from keyboard 
+a,b=[int(x) for x in input("enter 2 numbers").split()]
+print("product ",a*b)
+pass 10 20 based onspace it considered as 2 parameters
+
+a,b=[float(x) for x in input("enter 2 float values").split(',')]
+print("sum",a+b)
+
+pass 10.0,20.0 based onspace it considered as 2 parameters
+
+
+------------------------------
+eval(): if we use eval not need to type cast 
+takes string as argument and evluate to corresponding argument
+
+a,b,c=[eval(x) for x in input("enter 3 values").split("5")]
+print(type(a))
+input :105020530
+output :int int int (we are checking type here )
+
+
+-----------------command line arrguments ----------------
+
+when we pass sashi rekha as cmd line arrgument then op is sashi
+
+when we pass "sashi rekha" as cmd line arrgument then op is sashi rekha
+
+when we pass 'sashi rekha' as cmd line arrgument then op is 'sashi
+
+when we pass '''sashi rekha''' as cmd line arrgument then op is '''sashi
+
+when we pass """"sashi rekha""" as cmd line arrgument then op is "sashi  rekha"
+
+str+str --concatation operator 
+argv[100] --index is nt avaliable list index out of bound
+
+argv[7:100] -slice operator 
+
+from sys import argv 
+print(arvg)
+
+by defalut argv type is str type 
+
+argv and sys module 
+argv is s list type 
+
+var-argument :print(a,b,c)
+-----------------
+sep-attribute: between arrguments by defalut its space 
+print(a,b,c,sep=',')
+print(a,b,c,sep='-')
+-----------------------
+print with end attribute: in end what u want by defalut its new line \n
+in java \n for new line bt here end=''
+print("hello hi",sep=' ',end='....')
+print(10,20,30 end =" ")
+
+-------------------------
+print formatted string (how to pass values to variables 
+%i ==int
+%d ==int 
+% f ==float 
+%s==str type 
+
+print("formatted string" %(varaiable list))
+a,b,c=10,20,30
+print("a value is %i and b value is %i" %(a,b))
+a value is 10 and b value is 20 
+
+name="durga" l =[10,20,30]
+print("hello %s the list is %s "%(name,l) 
+
+print ("hello sashi the list is 10,20,30)
+
+-----------------replacment operator------------------replave value for variables
+{}===>
+name ="sashi"
+salary=1000
+day=tue
+print("hello {0} ur salary is {1} and your day is {3}".format(name,salary,day))
+print("hello {} ur salary is {} and your day is {}".format(name,salary,day))
+print("hello {x} ur salary is {y} and your day is {z}".format(z=day,y=salary,x=name))
+
+
+-----------------------variable 
+instance variable
+local variable
+refernce variable  class Student:
+			s=Student() //here s is refernce variable 
+			s.talk()
+
+
+----------------------operations are represented by using methods 
+types : methods whch are declared inside  a class contain self 
+instance methods
+class methods
+static methods
+
+
+------------------------self----------------
+self is default variable whch is always pointing to current obj (ike ths keyword in java)
+class Student:
+  def __init__(self,anem,roll)
+       self.name=name
+	   self.roll=roll
+for every instance methods and constructor 1st argument should be self 
+
+when ever we create obj constructor will be excuted 
+s=Student()
+self is always pointing to current object of a class 
+print(id(s))
+instance variables:variables whch vary from variable to variable are called instance variable 
+
+s=Student('durga',100)
+s=Student('sashi',200)
+
+--------------------functions are declared outside of class 
+   
+
+flow control - at run time in whch order the stmt are going to be executed is knw 
+they are 3 types 
+1.conditional /selectional  ex :if ,if else ,if elif elif ,if else elif(else if alias of elif)
+2.Iterative statments : loops , for loops , while no do while 
+	for x in range(10):
+	   print(x)
+	 
+	
+		x=1
+		while x<=10: 
+		print(x)
+		 x += 1
+		 
+name=""
+pwd=""
+while(name!='durga' and pwd !='python'):
+	name=input("enter name:")
+	pwd=input("enter password")
+print("hello")
+
+infinite loops:
+ while True:
+   i=i+1
+   print("hello",i)
+   
+   
+  for i in range(4):
+	for j in range(4):
+		print("i={} and j={}".format(i,j)) o/p 16 (4*4)  1 loop has ptherr lop
+		
+nested loops:
+*
+**
+***
+****
+*****
+
+	n=int(input("enter no.of rows"))
+	for i in range(1,n+1): i represents row number 
+	for j in range(1,i+1): j represents * number
+	print("*",end="")
+	print()
+	
+	
+	***
+	***
+	***
+	n = int(input("enter number of rows"))
+	for i in range(n): (row number n=2)
+		for j in range(n): (no of *)
+		  print('*',end='')
+	    print()
+		
+3.Transfer statments : break , pass ,continue ,switch is not there in python 
+
+	break:for  some condition if u want to break loop execution
+
+	continue:
+	cart=[10,20,600,60,70]
+	for item in cart:
+	 if item>500//if item is 600 it goes in if loop then continue to print and continue cart loop
+	   print("sorry we cannot process "item,"required pwd")
+	   continue
+	  print('processing")//when item is 10 it wnt go in if loop comes here 
+ indentation is imp 
+ if(x == 10):
+    print()
+	print()
+	print()
+	here are print stmt will execute bcz of indentation 
+
+
+only else stmt is not allowed it should be with for else , while else , try-except-else-finally
+
+while or for loop 
+
+  stmt 
+    
+  break 
+	
+  stmt
+else 
+  stmt 
+
+
+
+	if loop executes without break then else get executed 
+	if loop executes with break then else wnt execute
+ex:
+		cart=[10,20,60,70,90]
+		for item in cart :
+		  if item >500 
+		   print("sorry we cnt process")
+		   break
+		  print("processing item",item)
+		 else :
+		print ("all iteam processed")
+ 
+	
+for :
+     execute body for everry item in the gievn sequence ,
+	 
+while : execute body as long as some condition is true 
+
+exit from loop:  break
+
+skip current iteration and continue for next iteration : continue 
+
+where else will be execcuted : if loop executed without break 
+
+
+pass stmt :
+	it is a empty stmt ex:null 
+	if we want define empty block it wnt do anything then use pass 
+	def f1():
+		print("")
+	 def f2():
+	  pass()
+	  
+	  ex:
+	  class P:
+	    def m1(): pass 
+		
+	  class c(p):
+	    def m1():
+		  stmt1
+		  stmt2
+		  stmt3
+		  
+		  
+del stmt: 
+		delete stmt: if corresponding object is not required we can delete 
+		
+		x=10
+		print(x)
+		del x 
+		print(x) --name x is not defined 
+		
+		
+		
+		s = "durga" // either '' or "" both are string obj 
+		del s[0] - iteam deletion is not there in string type 
+		
+		we want variable bt dnt want coresponding object then none
+		s1= none then variable exists bt no object for it 
+		
+		y = None 
+		print(y)
+		
+		
+		s="""durga ///multiline
+		software 
+		soultions"""
+		
+del cannot used for function --function calls 
+
+		
+		s1="durga"
+		s2="durga"
+		s3="durga"
+		print(id(s1),id(s2),id(s3))  -same output  for all 3 
+				del s1 ---
+		print(s1)---error -- name s1 not defined 
+		print(s2) --durga
+		print(s3)--durga
+	
+		s1 and s2 and s3 are pointiing to same object then only tht paticular variable deleted but other varaible exist and point to same obj
+
+		
+how to acess characters from string:
+
+    1.by using index  s='durga' both by +ve(left to right ) and -ve( right to left)index 
+	2.using slice operator 
+	 s='durga'
+	 s[0:7] --from 0  to 7 
+	 s[0:] --from 0 to all 
+	 s[::] --total all
+	 
+    s[2:8:1] ==> 2 to 7 
+	s[2:-5:1] ==> 2 to 4 
+	s[:] =>forward direction
+	s[::-1] => reverse direction
+	
+	lstrip()--remove spaces in left 
+	rstrip()--remove spaces in right
+	strip()--only beginning and end spaces are removed 
+	find(substring)
+	rfind()
+	index()
+	rindex()
+	s.count(substring)
+	s.count(substring,begin,end)
+	s.replace(oldstring ,newstring) --replace old with new 
+	
+	s="ababab"  //this obj address is diff 
+	s1= s.replace('a','b') //this obj address is diff --new obj is cretated ,existing obj remains same
+	
+	
+	------split string :
+	s.split(seperator) --by default space
+	s.split()
+	rsplit() 
+	
+	----changing case of string:
+	
+	upper()
+	lower()
+	swapcase()
+	title()  ----first word of a letter is upper 
+	capitalize()--only 1st character is upper everything is lower case 
+	s.startwith()
+	s.endswith()
+	
+	
+	---if we define any function out side a class function
+	---if we define function inside a class are called method 
+	
+	def f1():
+		print()
+	class student:
+	  def info(self):
+	     print("")
+	  f1()
+	  s=student()
+	  s.info
+	  
+	  -----List-----methods and functions of list ---------
+	  len()
+	  count()
+	  index()
+	  extend()
+	  remove()
+	  pop()
+	  reverse()
+	  sort()
+	  copy()--clonning means obj created 
+	  add elements to list 
+	  l.append(element)
+	  l.insert()
+	  l.insert(50,777)
+	  if specified indexx is bigger than number insert then it adds in last 
+	  l.insert(-10,999)
+	  if specified number is small than number insert in first 
+	  ---extend()
+	  L1=[10,20,30]
+	  L2=[40,50,60]
+	  L1.extend(L2) 
+	  all elements present in l1 will be add to L1 
+	  
+	  l.sort(revrse=true)
+	  
+	  --comparing list object --
+	  x==y
+	  number  of elements must be equal
+	  order should be same
+	  content should be same(including case also)
+	  
+	  ex:
+	  x=[50,20,30]
+	  y=[40,90,100,120,170]
+	  print(x>y) o/p = true 
+	  it will only compare 1st element not all 
+	  
+	  x =[10,20,30]
+	  print(10 in x)
+	  print(100 not in x)
+	  
+	  ---nested list ----
+	  emp=[['sashi],48,'hyd'],['rekha',48,'hyd']]
+	  
+	  ------tuple ------
+		t=()
+		t=(10,20,30,40)	 
+		t=tuple(sequence)
+	  	  we can acess elements of tuple by using : index , slice+ ,*  
+	 functions of tuple:
+	  t.len()
+	  t.count(10) --how many times 	10 is there 
+	  t.index(20)--index of occurence of number 
+	  t.sorted()--natural sorting
+	  ex: when we sort tuple it return list ,
+	  it is immutable ,it arrange elemnets in sort in 't' itself 
+	  t=(30,10,50,40,20)
+	  print(sorted(t))
+	  o/p:30,10,50,40,20
+	  
+	  t1= (30,10,50,40,20)
+	  t2=tuple(sorted(t1))
+	  print(t1)  -->30,10,50,40,20
+	  print(t2)   -->10,20,30,40,50
+	  min(t1)
+	  max(t1)
+	  cmp(t1,t2)  if both t1 and t2 are equal then it return 0
+	   if t1 is less than t2 then it returns -1 
+	   if t1 is greater than t2 it returns +1
+	   
+ tuple packing and unpacking :
+  tuple can be used with list and set
+	packing -> grouping into single 
+	a=10
+	b=20
+	c=30
+	t=a,b,c ---3 variable are packed into tuple
+	print(t) 
+	
+	t='abcd'
+	a,b,c=t
+	print("a=",a,"b=",b,"c=",c)
+	
+	 Tuple Comprehension:is not supported ,it returns generator 
+    	 
+write a pgm to take tuple of numbers from keyboard and print sum,avg
+		
+		
+	
+	 list: 										tuple 
+	group of comma seperated values []		 group of values withing (), prathanesis are optional
+	 list obj are mutable						tuple are immutable 	 
+	 content is not fixed then use it 			content is fixed  
+	  allows duplicates 	,mutable			allows duplicates 	,immutable
+	  insertion order preserved 				insertion order preserved 
+	  duplicates allowed 						insertion order preserved 
+	  
+	 
+	  list 												set
+														insertion order is not preserved 
+														duplicates not allowed 
+														set are mutable
+														set are represented by {} 
+	  
+	  
+important functions of set :
+	  s.add()
+	  s.update()--any no .of arrgumnents can be passed to set 
+	  s.copy
+	  s.pop() ---remove and return  elemnent ,it never takes argument ,(some random element)
+	  remove()--remove specified element ,set never talks abt index ,
+	  s.discard()
+	  s.clear()
+	  s={10,20}
+	  l=[40,50]
+	  
+	  s.update(l,range(1,5),'durga')
+	  
+	  s={10,20}
+	  s1=s.copy() --replica of an obj 
+	  
+	  s.remove(10)--if element nt there it will show error ,if element exist then only it removes
+	  
+	  s.discard(40)--if element is not there it doesnot show the error
+	  
+	  s.clear()
+	  
+dicitionary   ::list,set,tuple 3-only hold indiviual obj 
+	if we are representating group of obj as k,v then use dicitionary  
+	  no order, all types are allowed int ,string 
+	  create dict:
+	  d={}
+	  d=dict()
+	  
+	  d[key] = values
+	  d[10]='sashi'
+	  d[20]='rekha'
+	  d['sas']='re'
+	  
+	  print(d){10:'sashi',20:'rekha'}
+	  
+	  update dict:
+	  d[key]=value  if key is there it will update ,otherwise it will update value
+	  
+	  del key:
+	  del d[key]
+	  del d[40]
+	  
+	 methods of dictionary:
+	 dict()-
+	 d.get(key)
+	 d.get(key,defaultvalue)
+	 pop(key)
+	 popitem()--1 k,v will be removed and returned it is picked up randomly
+	 
+	 d.update(x)
+	 
+	 -------------parameters:arguments 
+	 positional 
+	 keyword
+	 default
+	 var-argument
+	 
+	 return --can return multiple values ,if not mentioned it return none
+	 
+	 def calc(a,b) => a,b is posotiona largumenst 
+	 t=calc(100,50) 
+	 default argument can take at last
+	 
+	 
+	 def wish(msg,name="Guest"):
+	   pass(we are not doing anyboady so use it pass)
+	   
+	   
+	 def sum(*n)--we can pass any noof arguments (it is a variable argument)
+	 sm(10)
+	 def display(**kwargs) --keyword argument (k,v)
+	   print(type(kwargs)---it is doctinoary
+	   print("keyvlaue") 
+	    for k,v i kwargs.items():
+		 print(k,v)
+	   display(name="ravi",wife1="s",wife2="e",wife3="r")
+	   
+	   
+	    def f(arg1,arg2,arg3,arg4)
+		
+		print(arg1,arg2,arg3,arg4)
+		
+		f(arg4=2,arg1=3,arg2=4) o/p ==3442 (its positional with keyword)
+	   
+	    f(arg3=10,arg4=40,20,30) -wrong -bcz positional argu follows keword argumenst 
+		
+		f(4,5,arg2=6)-wrong--bcz arg values passed bt here arg2 values passed 2 times so wrong
+		
+		f(4,5,arg3=12,arg5=6) -wrong -bcz no arg 5 
+		
+Function :(group of stmt)
+	module (group of functions)
+	package (group of  modules
+	library(group of package)
+	
+Function:
+	recursive:a fucntion calls itself
+	Local varaible
+	global varaible
+	anyonyms :nameless function (instant use go for ths)
+				def squareit(n):
+				   return n*n
+				   
+				or in other way in lambda syn:(lambda input:expression)
+				s = lambda n:n*n ---it contains implicits return stmt
+				print(s(4))
+				
+	iterator
+    decrotar 
+	generator
+	
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
