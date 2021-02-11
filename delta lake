@@ -1,0 +1,12 @@
+data lakes – it consists repositories for raw data in a variety of formats. 
+  . Data lakes do not support ACID transactions, do not enforce data quality, and their lack of consistency
+  
+Delta Lake --
+          is a storage solution specifically designed to work with Apache Spark and is read from and written to using Apache Spark. 
+          data stored inside of the data lake has guaranteed consistency.
+  Delta Lake is comprised of the following elements:
+    Delta files containing the data and kept in object storage
+    a Delta table registered in the Metastore
+    the Delta Transaction Log kept with the Delta files in object storage 
+ Delta files leverage all of the technical capabilities of working with Parquet files but also track data versioning and metadata, 
+  and store transaction logs to keep track of all commits made to a table or object storage directory to provide ACID transactions. 
