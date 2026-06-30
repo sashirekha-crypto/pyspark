@@ -1,0 +1,2334 @@
+======
+	list:[] & Tuple:()                     Dict                     Set
+	Ordered 							Unordered,				Unordered
+	Changable, NA for tuple				Changable & Indexed     Changable&Unindexed
+	Allow duplicates                    No duplicates  			No duplicates
+	
+
+	explode():
+		df.select(df.id, explode(df.numbers).alias('number'))
+	enumerate()
+	zip(l, s)
+	filter()
+	lambda
+		b=[10,20]
+		b=map(lambda x: x*x,b)
+		print(list(b))
+	sorted()
+	isinstance()
+
+	def factorial(n):
+		result = 1
+		for i in range(1, n + 1):
+			result *= i  #result=result*i
+		return result
+	a=	factorial(9)
+	
+	Remove duplicates:
+		1.print(list(set(numbers)))
+		2.numbers = [1, 2, 2, 3, 4, 4, 5]
+		  unique_numbers = list(dict.fromkeys(numbers))
+		3.l=[10,10,20,20,30]
+		  unique=[]
+		  for i in l:
+			if i not in unique:
+				unique.append(i)
+		  print(unique)
+	text = "apple,banana,orange"
+	result = text.split(",")
+
+	n = int(input())
+	for i in range(2, int(n**0.5)+1):
+		if n % i == 0:
+			print("Not Prime")
+			break
+	else:
+		print("Prime")
+	
+	How to identify the max value:
+	
+	def max_profit(prices):
+		min_price = float('inf')
+		max_profit = 0
+
+		for price in prices:
+			if price < min_price:
+				min_price = price
+			else:
+				profit = price - min_price
+				max_profit = max(max_profit, profit)
+
+		return max_profit
+	l = [3,4,2,1,6,9,3]
+	print(max_profit(l))
+	List:
+	===================================================================
+	Adding
+		append()  -->Add item to the end
+			l.append(40)
+		extend()  -->Add multiple items
+			l.extend([50,60])
+		insert()  -->Insert at specific index  :list.insert(index, element)
+			l.insert(2, 70)
+		l['0']=30
+	Removing
+		remove()  -->Remove first matching item
+			l.remove(100)
+		pop()    -->Remove by index (list) or key (dict)
+			l.pop(2)
+		clear()  Remove all elements
+			my_list.clear()
+
+		index() Get index of value   (Tuple)
+		count() Count occurrence of value(Tuple)
+			text = "Hello"
+			print(text.count("h"))
+	
+		sort()
+			numbers = [5, 2, 9, 1]
+			numbers.sort()
+		reverse()
+			l.reverse()
+		copy()
+			b=l.copy()
+
+	Dict:
+	====================================================================
+	  1. To get the dict values
+		  ex: a.get(1) /update
+		  a = {'x': 1, 'y': 2}
+		  b = {'y': 20, 'z': 3}
+		  a.update(b)
+	  2. To add the element
+		  ex: a[3]= "Open Source"
+	  3. To replace the key value pairs
+		  ex: a[2]="is a Language"
+
+	Adding:
+
+		update()
+
+	Removing:
+		pop()
+		popitem()
+		clear()
+	Fetching
+		get()
+		keys()
+		values()
+		items()
+		setdefault()
+		dict.fromkeys()
+	======================================================================
+	Set:
+	----
+	add(x) :s.add(5)
+	update(x) :s.update([1, 2, 3])
+
+	remove/ discard(value)
+	pop()
+	clear()
+ 
+	We can't fetch values directly by index, but we can fetch values by looping through the set
+	==========================================================================================
+	service@hdfclife.com
+
+	data = [("Reddy,Srinivasulu",), ("Sharma,Anjali",)]
+	df = spark.createDataFrame(data, ["full_name"])
+	df = df.withColumn("surname", split(col("full_name"), ",")[0]) \
+		   .withColumn("name", split(col("full_name"), ",")[1])
+
+	df.show()
+
+	square = lambda x: x * x
+	print(square(5))  # Output: 25
+========================
+Read:
+
+df : spark.createDataFrame([(),()],schema)
+     spark.read.csv(<path>,header=True,inferSchema=True)
+	 spark.read.format().option().load(<psth>)        -->PERMISSIVE(D)/DROPMALFORMED/FAILFAST
+	
+	 spark.read.table()
+	 spark.sql("select")
+	 spark.createOrReplaceTempView("")
+	
+	 rdd.toDF()
+	
+	 sql:
+	
+	 selecr * from `delta`.''
+	 select * from read_files(<>)
+	
+	 spark.range(5)
+	
+	 na.fill()/fillna()
+	 na.drop()/dropna()
+	
+	 dropDuplicate()  .distict .drop()
+	
+	 select
+	 selectExpr() cast
+Write:
+
+    df.write.format().mode("").option().save(<path>)
+	df.write.format().saveAstable()
+	df.write.format().option("path","").saveAstable()  -->overwrite/append/error/ignore
+
+	from pyspark import sparkContext
+	
+	from pyspark.sql import SparkSession
+	spark=SparkSession.builder.appName("Hi").getOrCreate()
+	    pyspark.sql.types
+		pyspark.sql.function
+		pyspark.sql.window
+	
+		pyspark.storagelevel
+	
+	select *,sum(sal).over( partition by deptno oreder by salary ) from emp
+	         sum(sal).over(Window.partitionBy("Department").orderBy("Salary"))
+	
+			 withColumn()
+                                   on
+			 df_new=df1.join(df2,[deptno,sal],'outer')
+			 df_unions =df1.union(df2,allowMissingColumns=True)
+
+ Using HD insigts in pipeline for big data analytics
+ By partitioning the data
+ Monitoring and troubleshoot
+ Network Bandwidth
+ Optimize source queries, use partitioning, reduce activity chaining, use staging.
+  Limitation of iF activity?
+
+ Batch size in copy activity  (10)
+ Fault tolerance                :
+ DB --> cloud(ADLGEN)
+ CLoud(File has 5) to DB (Customer) -->
+=======================================================================================
+Replacing CSV files into parque :
+# Read the CSV file
+df = spark.read.csv("path/to/data.csv", header=True, inferSchema=True)
+
+# Write to Parquet
+df.write.parquet("path/to/parquet_output")
+
+ ======================================================================================
+ How to read multiple csv files?
+ automatically read all CSV files within it and combine them into a single DataFrame
+
+df = spark.read.option("header", "true").csv("path/to/folder/")
+
+ How to read multi lines files?
+If you are reading unstructured raw text files/multi-line logs) and want to load the entire file content as a single row, use the wholetext format.
+
+df_text = spark.read.format("text").option("wholetext", True).load("path/to/logs/")
+
+======================================================================================
+If broadcast table data is grown what will happen?
+it will exhaust your system memory, causing Out of Memory (OOM) errors and system crashes. Because every executor in the cluster stores a full copy of the broadcasted table, memory usage multiplies .Driver Node Crashes: Executor OOMs: Performance Degradation:
+Fix the Issue:
+default auto-broadcast threshold (usually 10MB to 50MB) and your cluster has sufficient RAM, you can manually increase the threshold using the spark.sql.autoBroadcastJoinThreshold configuration.
+Optimize Data Formats: If you are broadcasting a DataFrame, ensure it is flattened to reduce JVM memory overhead, or cache it first to properly gauge its in-memory size via the Spark UI.
+Implement Bucketing: Consider bucketing your large tables so that you can join them efficiently without any network shuffling or memory
+
+====================================================================================================
+ 
+ File formats:
+ CSV -->Simple tabular data
+ JSON-->Semi-structured logs
+ Parquet-->Big data & analytics
+ ORC->Hive/Spark tables
+ Avro-->Streaming & data exchange
+ Delta-->Data lakes with versioning
+ =====================================================================================
+To change partition column, you must use:
+Partition structure cannot be altered directly on an existing table.
+table had to be recreated with partition because it cannot be altered directly
+ mode("overwrite")
+
+df.write
+  .format("delta") \
+  .mode("overwrite") \
+  .option("overwriteSchema", "true") \
+  .partitionBy("new_partition_column") \
+  .save("path")
+=================================================================================================
+ In catalog,
+     we can not create managed parquet table
+	 we can not use volumes path as external location
+ ==========================================================
+ Data Lake
+ Data Warehouse
+ Data Lakehouse
+ Delta Lake
+ 
+ In a data warehouse, data is stored in structured tables with a predefined schema to support fast SQL-based analytics and reporting.
+ In a data lake, data is stored as files in various formats such as CSV, JSON, Avro, or Parquet.
+ A data lakehouse combines features of both data lakes and data warehouses
+ In a data lakehouse, data is stored as files, but it can be queried in a structured way using tables—similar to a data warehouse. It also supports ACID transactions, time travel, and schema enforcement.
+ Data Lakehouse architecture is implemented using the open-source framework Delta Lake.
+ Delta Lake supports ACID transactions, time travel, and schema enforcement. It also supports efficient upserts and deletes using MERGE operations.
+ =====================================================================
+ How many pipelines were used in your project?
+ Challenging Situation
+
+ Why Azure Databricks (ADB) and not Azure Data Factory (ADF)?:
+	Use ADB for complex transformations, streaming data, ML, PySpark/Scala.
+ Why Azure Data Factory (ADF) and not Azure Databricks (ADB)?:
+	 Use ADF for simple data movements, GUI orchestration, cost-effective ETL.
+
+=========================================================================
+ How to improve pipeline performance?
+	 Replacing CSV files into parquet
+	 Using HD insigts in pipeline for big data analytics
+	 By partitioning the data
+	 Monitoring and troubleshoot
+	 bucketing :Network Bandwidth
+	 Optimize source queries, use partitioning, reduce activity chaining, use staging.
+ How to imporve the notebook performance?
+     Use broadcast joins, caching, optimize cluster size, handle data skew, Z-ordering.
+ 
+======================
+Spark version used in your projects?
+============================
+ What kind of cluster used in your project and how many executores are there?
+ About Project?
+ How to handle incremental data?
+   Use watermark columns, Delta Lake MERGE, checkpointing, and CDC techniques
+
+ How to debug the issues?
+ 
+ 1 GB-->128 MB--> 8 partitions
+ 1 TB -->128 MB(size)-->8192 partitions
+ 
+Broadcast join:
+ <10MB
+Shuffle Hash Join (SHJ):
+ One of the tables is small enough to fit in memory of each executor.
+ Spark can build a hash table of the smaller table and stream through the larger one.
+ Typically used when:
+	Join keys are not sorted.
+	Not eligible for broadcast join.
+	The smaller table doesn't need to be huge, but must fit in memory.
+ If small_table is small enough but not small enough for broadcast, SHJ is preferred.
+Sort Merge Join (SMJ):
+ Both tables are large and cannot fit into memory.
+ Join keys are sortable and Spark can sort both datasets by the join key, then merge them.
+ Ideal for equi-joins on large datasets.
+ 
+ Delta tables
+ Spark Joins
+ Catalogs
+ Delta live tables: GUI
+ Performance
+ Sprak Arch:
+ Project
+ Auto Loader  :
+ Works Flows  : Scheduling
+
+
+MapReduce(hadoop) vs Spark
+===========================
+ 	>Mape Reduce(Involves more disk input and outputs ) vs spark (In memory compution, compatability with all languages)
+	
+		MapReduce is the traditional Hadoop processing engine that works in a disk-based manner and processes data in multiple stages, which makes it relatively slow
+		MapReduce is designed only for batch processing.
+		It requires writing complex Java code, which makes development harder.
+
+		Spark is much faster because it processes data in memory using RDDs (Resilient Distributed Datasets) and DAGs (Directed Acyclic Graphs).
+		Spark supports batch, real-time, and streaming data processing
+		Spark provides high-level APIs in languages like Python, Scala,R and SQL, which makes it much easier to use compared to the Java-based MapReduce framework
+	
+	Spark:
+		Open source parallel processing framewrok that suppors in memory processing to boost the performance of applications that analyse big data
+		Spark processes large amounts of data in memory , which is much faster than disk based alternatives.
+
+		 A lineage graph illustrates the dependencies between RDDs, showing which RDD is formed as a result of another RDD
+
+	Cluster : set of virtual machine which helps for parallel execution
+
+ADF:
+===
+ Azure Data Factory (ADF) is a cloud-based ETL and data integration service that allows us to create data pipelines to move and transform data
+ across various sources.
+
+Data Bricks:
+===========
+	Databricks is a cloud-based data platform built on top of Apache Spark that helps in big data processing, machine learning, and analytics.
+	It provides a collaborative workspace where data engineers, data scientists, and analysts can work together.
+	It supports batch and streaming data, integrates with data lakes, and uses Delta Lake for reliable and ACID-compliant storage
+ 
+Difference between ADF vs ADB:
+----------------------------
+ADF is mainly used for data movement, integration, and orchestration. It’s great for lift-and-shift scenarios, like copying data from on-prem systems
+to the cloud using built-in connectors.Databricks, on the other hand, is used for complex transformations, big data processing, streaming, and machine learning.
+In many cases, ADF ingests and orchestrates data, while Databricks processes and analyzes it.
+
+Spark Context:
+-------------
+	 >Prior to Spark 2.0, Spark context was entry point for all spark jobs
+	 >For each context, one API is required.
+	   eg:
+		For hive, hive context is required
+		For SQL,  sql context is required
+		For streaming, Streaming context is required
+	
+Spark Version:
+--------------
+	 >Spark 2.0 onwards, Spark session is entry point for all spark jobs
+	 >All API's are available in Spark Session
+	
+Spark RDD(Resilient distributed datasets):
+-----------------------------------------
+		RDD is an immutable means Once created, it cannot be changed, but it can be transformed into new RDD through operations such as map, filter, and reduce.
+		RDDs are partitioned and distributed across the nodes in the cluster, allowing for parallel processing.
+		RDDs are fault-tolerant, meaning that they can recover from failure by recomputing from lineage information on other nodes.
+		RDD deosn't allow to write SQL queries
+		RDD is a low-level API
+
+Data Frame:
+		In a DataFrame, data is organized into named columns and stored in memory
+		DataFrame allows to write SQL queries
+		DataFrame is a high-level API.
+	
+	
+Spark Architecture:
+==================
+ 	The Driver Program creates the SparkSession and requests the Cluster Manager for worker nodes (executors). The Cluster Manager then allocates the required worker nodes/executors
+	Lineage is recorded as transformations are applied to the data.
+	When an action is invoked, the Spark SQL engine calls the Catalyst Optimizer, which applies logical and physical optimizations and generates multiple physical plans. Based on the cost model, Spark selects the optimal plan for execution(This happens based on the lineage that is recorded.)
+	Spark creates a DAG (Directed Acyclic Graph) from the physical plan and uses the DAG Scheduler to divide it into stages and tasks for execution across the cluster
+	Task scheduler assigns the task to worker nodes
+
+    Jobs are divided into multiple stages, and each stage is further divided into multiple tasks.
+    Job: Created when an action (like .show(), .collect(), .write()) is triggered.
+    Stage: A job is split into stages based on shuffle boundaries. Each stage is a set of tasks that can be executed without shuffling.
+    Task: Each stage is divided into tasks, where one task operates on one partition of the data.
+    Number of Tasks = Number of partitions
+	====================================================================================
+	Action
+	  ↓
+	Job                        				:1 Action = 1 Job
+	  ↓
+	Stages (based on wide transformations)  :No. of Stages = No. of Wide Transformations + 1
+	  ↓
+	Tasks (based on partitions)             :No. of Tasks = No. of Partitions
+	
+	An action creates a job.
+	Stages are divided based on wide transformations (stages = wide + 1).
+	Each stage has tasks equal to the number of partitions.
+	====================================================================================
+	
+    Pyspark's Architecture consists of the following components:
+
+		 Spark Driver:
+			The Spark driver is responsible to run program and creates the SparkSession, which is entry point for creating RDDs,DaraFrames, and Datasets
+		 SparkSession
+			The SparkSession is the entry point for creating RDDs, Data frames, and Datasets. It is responsible for coordinating the spark application
+			and executing the user's code on the cluster.
+		 Cluster manager
+			The cluster manager is responsible for managing the resources(CPU,memory, and Disk) of the cluster. Pyspark supports different cluster managers such as YARN,Mesos,and standalone
+		 Executors
+			Executors are the worker nodes thar run the tasks and store the data in memory or disk. Each executor runs on a separte node in the cluster.
+
+	Driver Program Modes in Apache Spark
+	 1. Local Mode
+		Where Driver Runs: On your local machine
+		Executors: Also run on the local machine
+	 2.Client Mode (Cluster Deployments)
+		Where Driver Runs: On the machine that submits the job (e.g., your laptop or gateway node)
+		Executors: Run on the cluster
+	 3.Cluster Mode
+		Where Driver Runs: On the cluster itself (inside a worker node)
+		Executors: Run on other worker nodes
+	
+Catalyst Optimizer :
+------------------
+	 The Catalyst Optimizer is a core component of Spark engine that improves query performance through rule-based and cost-based optimizations.
+	 It transforms SQL queries or DataFrame operations into highly efficient execution plans.
+	 It happens in four stages: analysis, logical optimization, physical optimization, and code generation.
+
+		Unresolved Logical Plan:
+			Created by the spark SQL or DataFrame parser. Table/column names not yet validated.
+		Analyzed Logical Plan
+			Validates table and column names using the catalog (metastore). (semantic check)
+		logical optimization (Rule-based optimization)
+			Applies rules like constant folding, predicate pushdown, and projection pruning.
+				Constant folding: Precomputes constant expressions (2 + 3 → 5)
+				Predicate pushdown: Moves filters closer to the data source
+				Projection pruning: Only selects required columns instead of loading all data
+		Physical  optimization (cost-based optimization)
+			Based on cost estimation, it selects the most efficient physical execution strategy.
+			For instance, it might choose a broadcast join over a shuffle join if one table is small.
+		Selected Physical Plan (best one chosen)
+		Executed by Spark Engine
+ 
+Optimization Techniques:
+-----------------------
+		Choosing the best serialization technique
+			Java Serialization: Use for Java/Scala objects if you don't need optimized performance.
+			Kryo Serialization: Best for performance-critical applications with large objects or datasets.
+			Pickle/CloudPickle: Ideal for Python-specific workflows, especially when working with Python objects.
+			Custom Serialization: Use for specialized requirements or highly complex objects.
+	    Choosing the optimal file format (e.g., Parquet, ORC)
+		Using cache and persist effectively
+		Applying repartition and coalesce wisely
+		Using reduceByKey instead of groupByKey
+		Using DataFrames over RDDs
+		Using broadcast joins and broadcast variables
+		Using partitionBy and bucketBy for better data organization
+	
+	
+Spark RDD(Resilient distributed datasets):
+-----------------------------------------
+		RDD is an immutable means Once created, it cannot be changed, but it can be transformed into new RDD through operations such as map, filter, and reduce.
+		RDDs are partitioned and distributed across the nodes in the cluster, allowing for parallel processing.
+		RDDs are fault-tolerant, meaning that they can recover from failure by recomputing from lineage information on other nodes.
+		RDD deosn't allow to write SQL queries
+		RDD is a low-level API
+	
+Transformation:
+--------------
+		Transformations are operations that create a new RDD from an existing RDD
+		Narrow Transformations:
+			  In a narrow transformation, the number of partitions before and after transaction remains the same, no shuffling is involved,
+			  and there is no data exchange between nodes across the cluster
+			  Ex:  map(), flatMap(),filter(),union()
+     	Wide transformations:Joins,groupBy,orderBy
+			 In wide transformations, the number of partitions may change, shuffling is involved, and data is exchanged between nodes
+			 across the cluster
+			 Ex: groupByKey(), reduceByKey(), Join(), distict()
+Lazy evalution:
+--------------
+		Lazy evaluation means Spark does not execute transformations immediately when they are called on an RDD or DataFrame
+        The actual computation only happens when an action is triggered (e.g., collect(), count(), show()).
+	
+		Instead, it builds a logical execution plan (DAG)
+Partition:
+----------
+        >partition is a logical chunk of data that is stored and processed on a single node
+		>Partition can be controlled by user.
+	
+		1. Difference between map() and flatMap()
+		    Map() : takes one element and produce one element
+			flatMap() :takes one element and produce one or more elements.
+		2.	Difference repartition and coalesce
+			repartition()
+  			  Repartition is used to either increase or decrease the number of partitions .More shuffling across nodes
+			coalesce()
+			  Coalesce is used to reduce the number of partitions with less shuffling across nodes
+		3.	Difference groupByKey and reduceByKey
+			groupByKey()
+			    >When we choose groupByKey, Data will go one node first , then apply grouping
+			reduceByKey()
+				>When we choose reduceByKey, First applies grouping in each node. Then it will go to one node.
+		4.  Can you please write wordcount program?
+			rd=spark.sparkContext.parallelize(["Hello srini","hello ravi","hello kavi"])
+			new_rdd =rd.flatMap(lambda x :x.split()).map(lambda x: (x,1)).reduceByKey(lambda x,y:x+y)
+			print(new_rdd.collect())
+	
+Data Frame:
+		In a DataFrame, data is organized into named columns and stored in memory
+		DataFrame allowes to write SQL queries
+		DataFrame is a high-level API.
+
+Cache vs Persist:
+		Cache is very similar to persist. Both are used to store intermediate results in memory to speed up Spark computations
+		The key difference is that persist() provides multiple storage options such as MEMORY_ONLY, DISK_ONLY, and MEMORY_AND_DISK,
+		whereas cache() always uses the default storage level MEMORY_AND_DISK
+ 
+		df.persist(StorageLevel.MEMORY_AND_DISK)
+FAQs
+		1. What is Apache Spark DataFrame?
+			In dataframe, Data is organized into named columns, data is stored in in-memory. and we can apply SQL queries on top of datastore.
+			and it is high level api
+		2.How to do create a spark dataframe from a file?
+			df=spark.read.csv("input_path")
+		3.How can i select specific column from a spark dataframe?
+			df.select("id","sal")
+		4.How do i filter rows in a spark dataframe based on certain condition?
+			df.where("id=100")
+			or
+			df.createOrReplaceTempView("emp")
+			spark.sql("select * from emp where id=100")
+		5.What are the different ways to join spark dataframe?
+			Inner join : df1.join(df2,"df1.id=df2.id","inner")
+			LOJ        : df1.join(df2,"df1.id=df2.id","left")
+			ROJ		   : df1.join(df2,"df1.id=df2.id","right")
+			FOJ		   : df1.join(df2,"df1.id=df2.id","full")
+			cross join : df1.crossjoin(df2)
+		6.How can i group data in a spark dataframe?
+			df.groupBy("country").show()
+		7.How do i perform aggregation on spark dataframe?
+			df.agg(sum("sal")).show()
+		8.What is the difference between dataframe and RDD in Spark?
+	
+		   RDD: RDD is a resilient distributed dataset.It looks like array but it has partiotions.Those are used to process the data parallely.and it is low level API.and it follows type strict
+		   DataFrame :In dataframe, Data is organized into named columns, data is stored in in-memory. and we can apply SQL queries on top of datastore.and it is high level api
+	
+		9.How can i handle missing or null values in a spark Dataframe?
+		   df.na.fill("") -->For string
+		   df.na.fill(0)  -->For integer
+		10.How can i sort a spark dataframe based on one or more columns?
+		   df.orderBy("sal").df.orderBy(desc("deptno"))
+		11.What are some common transformations and actions in spark dataframe?
+		   Transformations:
+				Narrow Transformations:  where ,select
+				  In a narrow transformation, the number of partitions before and after remains the same, no shuffling is involved, and there is no data exchange between nodes
+				Wide transformations:Joins,groupBy,orderBy
+				 In wide transformations, the number of partitions may change, shuffling is involved, and data is exchanged between nodes across the cluster
+			Actions:
+				show(),collect(),count(),first(),take(n)
+		12.How do i convert a spark dataframe to a pandas dataframe?
+			df.toPandas()
+		13.What is the purpose of caching a spark dataframe?
+		   cache: df.cache()
+			If we use same dataframe multiple times, we apply cache on dataframe
+		14.How can i optimize the performance of spark dataframes?
+			Repartition
+			Coalesce
+			use reduceByKey insted of groupByKey
+			use cache()
+			Try to use UDF's
+			kryo serelization instead of Java serelization(we need to add property)
+		15.How do i write the contents of a spark dataframe to a file or database?
+			File: df.write.parquet("path")
+			database:df.write.jdbc(url="",properties="",table_name="")
+		16.How i can rename columns in a spark dataframe?
+			df.withColumnRenamed("sal","salary")
+		17.How do i calculate the total number of rows in a spark dataframe?
+		   df.count()
+		18.How can i limit the number of rows returned by a spark dataframe?
+		   df.limit(10)
+		19.What is the significance of partition in spark dataframe?
+			no of partitions : df.rdd.getNumPartitions()
+			df.repartition(5)
+		20.How can i create a new column based on existing columns in a spark dataframe?
+			df.withColumn("full_name",concat(col("surname"),col("lastname"))
+	
+Delta Tables:
+-------------
+	   A Delta table is a data table stored in a special format that supports updates, deletes, and versioning, unlike regular Parquet or CSV files.
+	   Delta Table is a Parquet-based table stored in a data lake
+	
+	   It is built on top of Parquet files and offers features like ACID transactions, schema enforcement and evolution,
+	   data versioning,time travel,efficient updates and deletes , upserts and audit history.
+	
+	   ACID:
+	   Atomicity   : All or nothing: Either the entire transaction succeeds, or nothing happens.
+	   Consistency : The database must go from one valid state to another./Rules, constraints, and triggers are enforced.
+	   Isolation   : Multiple transactions can run at the same time without interfering.The final result must be the same as if they ran one after the other.
+	   Durability  : Once a transaction is committed, the change is permanent — even if the system crashes right after.
+	
+	   Z-ordering
+	   Liquid Clusterting (First 32columns)
+	   Vacuum(0)
+	   MergeSchema
+	   spark.conf.set("spark.databricks.delta.retentionDurationCheck.enabled", "false") --> Default Value is 7Days
+	   optimize  :command is used to compact small files into larger files, which improves query performance
+		 Schema enforcement Vs Schema evolution
+			 Schema enforcement ensures that incoming data strictly follows the table schema, and any mismatch in structure or data types is rejected
+			 Schema evolution allows adding new columns dynamically during data writes.
+			 Schema Enforcement → Strict (rejects mismatch)
+			 Schema Evolution → Flexible (allows new columns)
+
+Spark Joins :
+============
+	Broadcast join:
+		 <10MB
+	Shuffle Hash Join (SHJ):
+		 One of the tables is small enough to fit in memory of each executor.
+		 Spark can build a hash table of the smaller table and stream through the larger one.
+		 Typically used when:
+			Join keys are not sorted.
+			Not eligible for broadcast join.
+			The smaller table doesn't need to be huge, but must fit in memory.
+		 If small_table is small enough but not small enough for broadcast, SHJ is preferred.
+	Sort Merge Join (SMJ):
+		 Both tables are large and cannot fit into memory.
+		 Join keys are sortable and Spark can sort both datasets by the join key, then merge them.
+		 Ideal for equi-joins on large datasets.
+
+
+	Partitioning → Creates folders
+	Bucketing → Creates files (based on hash of bucket columns)
+	Z-ordering → Rearranges data within files
+	Deletion Vectors → Creates sidecar metadata files
+						Tracks logically deleted rows without rewriting Parquet files
+	
+	Partition By → Use partitioning to reduce data scanning by splitting data into folders based on commonly filtered, low-cardinality columns like date.
+	Bucketing → Use bucketing to improve large joins by distributing data into fixed hash buckets to reduce shuffle.
+	Z-ORDER (Delta in Databricks) → Use Z-ORDER to group related column values together in files to improve filtering performance.
+	Liquid CLUSTER BY → Use Liquid Clustering to dynamically organize Delta data for better query performance without fixed partitions.
+	OPTIMIZE (Delta) → Use OPTIMIZE to compact small files and reorganize data to improve query performance.
+	
+	Partitioning:
+		Partitioning divides data into folders based on column values to improve query filtering performance.
+		Example: sales data stored as year=2023, year=2024.
+	Bucketing:
+		Bucketing distributes data into a fixed number of files using a hash function to improve join performance.
+		Example: employee data split into 8 buckets by dept_id.
+ 
+	spark.sql.shuffle.partitions: This property controls the number of output partitions for wide transformations (like groupBy, joins, aggregations).
+	The spark.sql.files.maxPartitionBytes setting (default 128 MB)
+	
+	👉 Partitioning and Liquid Clustering cannot be interchanged without recreating (dropping) the table.
+    👉 Z-ORDER is different — it does NOT require dropping the table.
+	you cannot add PARTITION BY to an existing Delta table.
+	
+	Z-ORDER on Existing Delta Table (No Partition)
+	Z-ORDER on Existing Delta Table (No Partition)
+	❌ 3️⃣ Z-ORDER on Liquid Clustered Table  : No
+	
+	Use partitioning for low-cardinality, frequently filtered columns in large datasets.
+	Use liquid clustering for high-cardinality columns and evolving query patterns.
+	
+	If column values < 100 → consider partition
+	If column values > 1,000 → consider clustering
+	
+	Liquid CLUSTER BY can only be defined using SQL in Databricks.
+	PARTITION BY can be done using both SQL and PySpark in Delta tables
+
+
+10.partitioning 
+	allows us to group data based on column values all releated data will be stored under 1 partition 
+	scanning only relevant partitioned data instead of the whole dataset ,Dynamic partitioning values for partition columns 
+	are known in the runtime.
+11.What is indexing and why do we need it?
+	we use it to speed up the access of a column or set of columns in a Hive database. 
+12.Bucketing
+	it is 1 level depper to partition can be acheived by using hash function on the coulmn in the table 
+	partitionBy:
+	============
+		Partitioning means splitting data into folders based on a column value.
+		For each value, one folder is created.We usually use low-cardinality columns.
+		It helps in improving filtering performance and reducing data scan.
+			df.write.partitionBy("year").saveAsTable("users")
+				sales data stored as year=2023, year=2024
+	bucketBy:
+    ========
+		Bucketing means splitting data into a fixed number of files using a hash function.
+		It helps in faster joins, especially for large datasets
+		   df.write.bucketBy(4, "user_id").saveAsTable("users") : column should be mandatory
+	CLUSTER BY:
+    ==========
+		Liquid clustering is a flexible way to organize data where the system groups similar data together without fixed partitions or buckets,
+		and we can change it later.
+			 CREATE TABLE table_name (
+			   column1 datatype,
+			   column2 datatype
+			  )
+			 CLUSTER BY (column1, column2);
+	
+	
+		-- Create an empty table.
+		CREATE OR REPLACE TABLE table1(column01 int, column02 string) CLUSTER BY AUTO;
+
+		-- Enable automatic liquid clustering on an existing table.
+		-- For tables that previously had manually specified keys.
+		ALTER TABLE table1 CLUSTER BY AUTO;
+
+		-- Disable automatic liquid clustering on an existing table.
+		ALTER TABLE table1 CLUSTER BY NONE;
+
+		-- Disable automatic liquid clustering by setting the clustering keys
+		-- to chosen clustering columns or new columns.
+		ALTER TABLE table1 CLUSTER BY (column01, column02);
+	OPTIMIZE:
+	=========
+		OPTIMIZE compacts small files into larger ones and improves query performance. It can also use Z-ORDER for faster filtering.
+			OPTIMIZE table_name;
+	Z-ORDER:
+	========
+		Z-ORDER reorganizes data within files so similar column values are stored together, improving filtering performance and reducing data scan
+			OPTIMIZE table_name
+			ZORDER BY (column1, column2);
+	
+Memory Management:
+=================
+    OOM:
+		OOM stands for Out Of Memory. It happens when Spark cannot allocate enough memory for processing data.
+		This can occur on the driver when using collect or on workers during heavy operations like joins or aggregations
+	
+	In Spark, execution and storage memory are allocated from a shared pool using UNIFIED MEMORY MANAGEMENT.
+	Execution memory is used for processing tasks and can take memory from storage if needed, while storage memory is used for caching and can be evicted when execution requires more space.
+	
+	Memory management in Apache Spark is how memory is used for processing and storing data. If memory is not enough or not used properly,
+	it can cause OOM errors, slow performance, or data spilling to disk.
+    We can fix this by writing efficient code, using proper partitions, avoiding collect, handling data skew,
+	and using AQE in Databricks, which improves performance at runtime.
+ 
+	WRITING EFFICIENT CODE MEANS PROCESSING LESS DATA BY FILTERING EARLY, SELECTING ONLY NEEDED COLUMNS, AND USING EFFICIENT JOINS.
+	
+AQE: It was introduced in version 3.0 and enabled by default starting from version 3.2
+----
+	AQE (Adaptive Query Execution) is a feature in Spark that optimizes queries at runtime using actual data statistics.
+	It improves performance by
+	1.Coalescing shuffle partitions --> Removes unnecessary shuffle partitions
+	2.Dynamically switching join strategies -->Converting a Sort Merge Join to a Broadcast Join
+	3.Handling skewed data      -->Merges small partitions and splits larger partitions
+
+Catalog :
+--------
+	Unity Catalog is a unified governance solution for all data and assets in Databricks.
+	It provides centralized control over permissions, auditing, and data lineage across multiple workspaces.
+	The main advantage is that you define access controls once, and they apply consistently and securely everywhere in Databricks. : Define once , apply everywhere in Databricks
+	Unity Catalog follows a three-level namespace: Catalog → Schema → Table/View.
+	Unity Catalog does support external locations across different cloud providers
+	
+	DROP CATALOG dev_sql CASCADE
+	
+	Metastore → root location defined
+   └── Catalog → MANAGED LOCATION defined
+         └── Schema → MANAGED LOCATION defined
+               ├── Tables (managed)
+               └── Volumes (managed)
+	In Unity Catalog, if we want, we can access ADLS Gen2 using access key, service principal or mount path like Hive metastore,
+	but recommended one is using Storage Credential.
+	
+✅ Unity Catalog Implementation (Latest – with Access Connector)
+    Step 1: Create ADLS Gen2
+			Create Storage Account (ADLS Gen2 enabled)
+			Create containers:
+			metastore
+			raw
+    Step 2: Create Access Connector
+			Create Access Connector for Azure Databricks
+			Assign role:
+			Storage Blob Data Contributor on ADLS
+	Step 3: Create Metastore
+			Go to Account Console → Catalog → Create Metastore
+			Provide:
+			Region
+			Metastore Root Location:
+				abfss://metastore@<storage-account>.dfs.core.windows.net/unity-catalog/
+			Access Connector (Managed Identity) ✅
+			Attach Metastore to Workspace
+	Step 4: Create Storage Credential
+			Go to Databricks → Catalog → Credentials → Create Credential
+			Use Access Connector Resource ID
+	Step 5: Create External Location
+			Create External Location using:
+			ADLS path (raw container)
+			Storage Credential
+				abfss://raw@<storage-account>.dfs.core.windows.net/
+    Access Connector is used during Metastore creation and Storage Credential, which is then reused to create External Locations to access ADLS data.
+	Access Connector → Storage Credential → External Location → Access ADLS Data
+	
+DLT (Delta Live Tables)
+========================
+
+	Delta Live Tables is a declarative framework in Databricks for building reliable ETL pipelines.
+	Instead of managing orchestration manually, you just define tables and transformations, and DLT automatically handles dependencies,
+	data quality checks, and lineage.
+	It supports both batch and streaming data, which makes pipelines simpler, reliable, and easier to maintain
+
+	1.Normal Databricks Notebooks
+		You write imperative code (step by step).
+		You are responsible for orchestration (order of execution).
+		Must manually handle dependencies between tables.
+		Monitoring, retries, error handling → need custom code or workflows.
+		Data quality checks → must be written and maintained by you.
+		Good for ad-hoc analysis and small ETL jobs.
+
+	2. Delta Live Tables (DLT)
+		Uses a declarative approach → you just define the tables and transformations.
+		Dependencies are managed automatically (DLT knows which table depends on which).
+		Built-in data quality checks using EXPECT clauses.
+		Provides automatic lineage, monitoring, logging, and retries.
+		Supports both batch and streaming pipelines.
+		Good for production-grade, reliable ETL pipelines.
+		Reliable → Pipelines are fault-tolerant, recoverable, and consistent
+	
+	/*Delta Live Tables is a declarative framework in Databricks for building reliable ETL pipelines.
+	Instead of managing orchestration manually, you just define tables and transformations and dlt
+	Automatically handles dependencies between tables.
+	Built-in data quality checks using EXPECT clauses.
+	Provides automatic lineage, monitoring, logging, and retries.*/
+	
+	1.Automatic Lineage
+		If you define a sales_summary table built from orders and customers, DLT shows the lineage graph automatically, so you know exactly which source data feeds the summary.
+	2.Monitoring
+		If your daily pipeline that processes 10 GB of logs suddenly starts receiving 50 GB, DLT alerts you to the increased load.
+	3.Logging
+		If a data quality rule fails (e.g., order_id cannot be null), the logs capture how many records failed validation and why, making debugging easier.
+    4.Retries
+		If a temporary network issue prevents loading data into a target table, DLT retries automatically instead of requiring manual rerun.
+	
+	Topics:
+		Append Flow : For incremental data
+		Apply changes : SCD1 and SCD2
+		Expectation : For constraints
+		AutoLoader
+		Volumes     : this is for unstructured data
+
+SCD Type 1 , SCD Type 2 ,fact table , dimension table :
+==========================================================
+Difference Between SCD Type 1 & Type 2
+Feature	SCD Type 1	SCD Type 2
+History	Not maintained	Maintained
+Update	Overwrite data	Update old then Insert new row
+Storage	Less	More
+Complexity	Simple	Complex
+Use Case	Current state	Historical tracking
+
+Types of Clusters:
+==================
+	All-Purpose Cluster:
+		>Starts manually and can be used by multiple users.
+		>Runs continuously until manually stopped or auto-terminated.
+		>Used for interactive analysis, development, and testing.
+
+	Job Cluster:
+		>Starts automatically when a job is triggered.
+		>Shuts down automatically after the job completes.
+		>Dedicated to a single task or workflow.
+
+	Job --> Runs a single task (like a notebook, Python script, SQL, or JAR) on a cluster.
+	
+	Compute Permission:
+	
+		Can Manage     :Full control over the cluster
+				Start / Stop cluster/Restart cluster/Change configuration (node type, size, autoscaling)/Delete cluster/Assign permissions
+		Can Restart	   :Limited control — only restart capability
+				Restart the cluster
+		Can Attach To  :Permission to use the cluster for running notebooks/jobs
+				Attach notebook to cluster/Run code
+	
+Workflows:
+=========
+		>Orchestrate multiple tasks with dependencies to build complete pipelines.
+		>Can be scheduled or triggered by events.
+		>Provide retries, error handling, and monitoring.
+
+COPY INTO : with schema/ without schema 
+============
+	COPY INTO is a Databricks SQL command used to efficiently load data from cloud storage (Azure Blob, ADLS, S3) into a Delta table.
+	
+	Supports Incremental Loads - Only loads new files
+	Auto Schema Inference - Detects column types automatically
+	Schema Evolution - Adds new columns dynamically
+	Works with Multiple File Formats - JSON, CSV, PARQUET, AVRO
+	Good for batch file ingestion and small number of files (few thousand or less)
+
+	Load data into a schemaless Delta Lake table
+	Set schema and load data into a Delta Lake table
+	
+	COPY INTO placeholder_table_name
+	FROM '/path/to/files'
+	FILEFORMAT = <format>
+	FORMAT_OPTIONS('mergeSchema' = 'true')
+	COPY_OPTIONS('mergeSchema' = 'true');
+
+Auto Loader:
+============
+ is used to automatically load new files from cloud storage into a table without manual work. It works in a streaming way and is useful for real-time data processing.
+	Auto Loader is databricks feature that loads data continuously and as new data arrives
+	Built on top of Spark Structured Streaming
+	Automatically detects new files as they land in cloud storage (e.g., ADLS Gen2, S3, GCS)
+	Supports common file formats like JSON, CSV, Parquet, Avro, binary and text
+
+	UnknownFieldException : when schema is changed
+	addNewColumns/rescue/none/failOnNewColumns
+	
+	df = (
+    spark
+    .readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "csv")
+    .option("pathGlobFilter", "*.csv")
+    .option("header", "true")
+    #.option("cloudFiles.schemaHints", "Quantity int, UnitPrice double")
+    .option("cloudFiles.schemaLocation", "/Volumes/dev_catalog/dev_schema/dev_volume/autoLoaderOutput/")
+    .option("cloudFiles.schemaEvolutionMode", "rescue")  #addNewColumns (default)/rescue/failOnNewColumns/none
+    .load("/Volumes/dev_catalog/dev_schema/dev_volume/autoLoader/")
+	)
+	
+	from pyspark.sql.functions import col
+	(
+    df
+    .withColumn("_file", col("_metadata.file_name"))
+    .writeStream
+    .option("checkpointLocation", "/Volumes/dev_catalog/dev_schema/dev_volume/autoLoaderOutput/")
+    .option("mergeSchema", True)
+    .outputMode("append")
+    .trigger(availableNow=True)
+    .toTable("dev_catalog.dev_schema.autoloader")
+	)
+	
+	df.writeStream.format("delta") \
+	.option("checkpointLocation", "/Volumes/interview_catalog/source/ansh_volume/destination/checkpoint") \
+	.trigger(once=True) \
+	.start("/Volumes/interview_catalog/source/ansh_volume/destination/data")
+	
+	Use .format("delta") only with .start(path)
+	
+	.trigger(processingTime="10 seconds")  :Runs the query at fixed intervals (every 10 seconds)
+	.trigger(once=True)  : Processes all available data once and stops
+	.trigger(availableNow=True) :Processes all available data in batches and then stops (recommended over once)
+	.trigger(continuous="10 seconds") :Runs in low-latency continuous mode (real-time streaming)
+	once = single batch, availableNow = multiple batches for same data
+	
+	
+VOLUMES:
+========
+	Volumes are used to store and manage non-tabular files in a secure, governed way in Unity Catalog
+	Yes, you can directly access ADLS, but Volumes add governance + simplicity.
+	
+	CREATE EXTERNAL VOLUME <catalog>.<schema>.<volume_name>
+	LOCATION 'abfss://<container>@<storage-account>.dfs.core.windows.net/<path>/';
+
+	CREATE VOLUME <catalog>.<schema>.<volume_name>;
+
+	SELECT *
+	FROM files('dbfs:/Volumes/<catalog>/<schema>/<volume_name>/file.csv');
+
+
+	SELECT *
+	FROM csv.`dbfs:/Volumes/<catalog>/<schema>/<volume\\\_name>/file.csv`;
+
+Difference between ADF vs ADB:
+----------------------------
+
+ADF is mainly used for data movement, integration, and orchestration. It’s great for lift-and-shift scenarios, like copying data from on-prem systems to the cloud using built-in connectors.
+Databricks, on the other hand, is used for complex transformations, big data processing, streaming, and machine learning.
+In many cases, ADF ingests and orchestrates data, while Databricks processes and analyzes it.
+
+
+														ADF:
+====================================================================================================================================================
+
+What is Azure data factory
+	 Azure Data Factory (ADF) is a cloud-based ETL and data integration service that allows us to create data pipelines to move
+	 and transform data across various sources.
+Linked service:
+	 A Linked Service in ADF is a connection configuration that tells Data Factory how to connect to a data source.It could be an Azure SQL Database, Blob Storage, or an on-premises database
+	 A Linked Service in ADF defines the connection information required to access a data source
+Data set :
+	 A Dataset in Azure Data Factory represents the structure and metadata of the data that we want to read from or write to. It could be a table in a database or a file in storage.
+	 A Dataset in ADF acts like a pointer to the actual data
+Integration runtime: computation resource
+	 Integration Runtime is the backbone engine in ADF that executes data movement and transformation tasks
+	 Azure IR	     : for cloud-to-cloud operations and data flows,
+	 Self-hosted IR  :for on-premises or private network sources, and
+	 Azure SSIS IR   :for running SSIS packages in the cloud.
+Types of trigeers:
+	 Schedule Trigeer
+		A Schedule Trigger in ADF is used to automatically run pipelines at specified times or intervals.
+	 Tumbling window Trigger:
+		A Tumbling Window Trigger is used to process historical data in non-overlapping time windows, ensuring each time slice is processed exactly once.
+		It can be linked to only one pipeline, supports dependencies between activities within the pipeline, and includes a retry mechanism for failures.
+	 Event Trigger: storage events or custom events
+   ==========================================================
+ADF components:
+	 Pipeline
+	 Activity
+	 Dataset
+	 Linked Service
+	 Trigger
+	 Integration Runtime (IR)
+ 
+	 Trigger starts the Pipeline
+	 Pipeline has Activities (e.g., Copy from source to destination)
+	 Datasets point to source/target data
+	 Linked Services provide connections
+	 Integration Runtime runs the activities
+Activities
+	   a.Copy Data
+	   b.Append variable/Set variable
+	   c.Get Metadata
+	   d.Lookup : File/Floder
+	   e.Validation
+	   f.If Condition
+	   g.ForEach
+Difference ways to execute pipelines
+	a.Under debug mode
+	b.Manual execution using Trigger now
+	c.Using an added scheduled, tumbling window or event triggered
+=============================================================
+what are Arm Templates in ADF? What are they used for?
+	An ARM Template (Azure Resource Manager Template) in ADF is a JSON file used to define and deploy ADF resources like pipelines, datasets, linked services,
+	and triggers in a declarative manner across different environments.
+======================================================
+How do you deploy Data Factory code to higer environments?
+    We deploy ADF code to higher environments using ARM templates and Azure DevOps pipelines.
+    We export the template from the source environment, parameterize the environment-specific values, and deploy it using CI/CD to UAT or Prod.
+ 
+    1.Create a feature branch.
+	2.Create a pull request (PR) to merge the code into the Dev branch.
+	3.Publish the code from Dev to generate the ARM template.
+	4.This triggers an automated CI/CD Azure DevOps pipeline to deploy the code to higher environments.
+ 
+   Seccond way: Using Npm package
+==================================================================
+What challenges did you face while copying data from on-premises to the cloud, and how did you resolve them?
+	Throughput/Speed
+
+	1.Network Connectivity Issues
+	I coordinated with the network/security team to whitelist IPs and ensure stable connectivity. We also set up retry logic in the ADF pipeline and monitored using activity logs
+	2.Large Volume Data Transfer (Under Copy activity settings)
+	  a.Enable staging with a storage path and enable compression.  under settings
+		I enabled staging via Azure Blob Storage, used compression (e.g., Gzip) to reduce data size, and used parallel copy to improve performance.
+	  b.Degree of Copy parallelism : it can be 16,32,64
+	  c.Data integration unit(CPUs)
+	3.Data Format and Schema Mismatch
+	 C :Sometimes source data had inconsistent formats or missing columns which caused pipeline failures.
+	 R :I added data validation steps, used schema drift handling where possible, and implemented custom error handling to skip or log bad records.
+	4.Authentication Issues
+	C :On-premises systems (like SQL Server) required Windows Authentication which isn’t directly supported.
+	R :I configured the self-hosted IR with a Windows service account that had appropriate permissions on the source database.
+
+Can we Execute For-Each inside another For-Each Activity? even it is for IF condition
+	No
+
+If you want to use the output of a query execution, which activity should you use?
+	Lookup activity is used to run a query or stored procedure and retrieve the result.
+================================
+How do you  verify the presence of a file in storage?
+	Validation Activity/Get Meta data
+
+How do you pass parameters to your notebooks in the Execute Notebook activity in ADF?
+	Under the Settings tab, find the Base parameters section
+ ===========================================================
+How do you handle incremental data in Azure Data Factory?
+	
+	In Azure Data Factory, I handle incremental data by using a watermark column (such as LastModifiedDate, UpdatedDate, or an auto-incrementing ID)
+	to track and pull only new or changed records since the last run.
+
+	a. Delta data loading from the database using a watermark column
+	b. Delta data loading from SQL Database using Change Tracking
+	c. In Copy Activity, applying filter using "Filter by last modified" Start and End time
+	d. Handling file loading behavior with Binary Copy enabled
+	e. Using Change Data Capture (CDC) for incremental data processing
+===============================================================
+How you send email notifications on your pipeline failure?
+    a.Using logic Apps with Web/Web hook activity
+	b.Alerts and Metrics
+
+Describe the use of ADF in your project?
+
+How do you test your pipeline when you have created code in feature branch?
+  1.Use debug mode
+
+How do you log pipeline execution details to database?
+  1. Using stored procedure Activity parameters and system variables
+
+Can we give one use case for "child items" property in get metadata activity?
+   1.Count number of files are present in the folder?
+ 
+	Product/@{formatDateTime(utcNow(),'yyyy')}/@{formatDateTime(utcNow(),'MM')}/@{formatDateTime(utcNow(),'dd')}/@{formatDateTime(utcNow(),'mm')}/@{formatDateTime(utcNow(),'ss')}
+
+How to resolve issues while copying data from a file to a database?
+  1.By setting the Write batch size under the Sink tab to control the number of rows written per batch.
+  2.By enabling "Fault tolerance" under the Settings tab and choosing "Skip incompatible rows" to continue the load while ignoring problematic rows.
+  3.Under setting ,By enabling logging to store error records
+
+	Source: CSV file in Blob Storage
+	Sink: SQL Database
+	Resolution Steps:
+		Set Encoding to UTF-8 in source.
+		Enable Skip incompatible rows in Fault Tolerance. under settings  **
+		Configure Write batch size in Sink settings.                      **
+		Map columns correctly under Mapping tab.
+		Use staging table if transformation is needed.
+
+How to Resolve Issues While Copying Data from a Database to a File?
+	Source: SQL Database
+	Sink: CSV File in Blob Storage
+	Recommended Settings:
+		Set encoding to UTF-8.
+		Enable "First row as header".
+		Set row delimiter to \n and column delimiter to , or |.
+		Use query timeout and batch size settings for performance tuning.
+		Use data flow for any required transformations.
+	
+How to resolve issues while copying data from a file to a file?
+		Source: CSV in Blob Storage
+		Sink: Parquet in ADLS
+		Use a Copy Activity or Data Flow
+		Set:
+		Encoding: UTF-8
+		Fault tolerance: Skip incompatible rows
+		Mapping: Map source columns to sink fields if formats differ
+	
+What are mapping data flow in data factory?
+   		Mapping Data Flow in Azure Data Factory is a visual, no-code ETL tool that allows us to design and execute data transformation logic at scale.
+		It runs on Spark clusters behind the scenes, but we don’t need to write any Spark code.
+	
+How will you design a pipeline to transfer 100 tables to the target?
+	Lookup → get list of tables from metadata table
+	ForEach → iterate each table
+	Copy Activity → dynamic source & target : @item().TableName
+
+How do you handle duplicates rown in data flows?
+	Using aggregate tranformation
+
+If your input has a 'date' column and you receive bad records in that column, how do you handle them?
+	Conditional split
+
+What is the difference between pipeline and data flow?
+	 ADF pipelines are mainly for data movement and orchestration, while Data Flows are for data transformation
+	 Orchestration refers to the scheduling, and management of tasks
+ 
+	In Azure Data Factory, a pipeline is used to orchestrate and manage the workflow — it defines the sequence of steps like copying data, running data flows, executing stored procedures, etc.
+	A Data Flow, specifically a Mapping Data Flow, is used inside the pipeline for performing data transformations such as filtering, joining, aggregating, and deriving columns — all visually and without writing any code.
+ 
+How you can  open and read the contents of a file in adf?
+  Web and look up activity
+
+If you want to delete files in blob storage?
+   delete activity
+ 
+How would you handle schema drift in Azure Data Factory when dealing with evolving datasets?
+	Schema Drift
+	Validate Schema : to validate Schema
+
+	
+Ansh Lamba:
+
+
+
+How would you load multiple data files from REST APIs using single Copy Activity
+	From URLs:
+	HTTP → only Files (JSON/CSV/XML)
+	REST API → JSON + pagination/metadata/complex structure
+	
+	Servers:
+	SFTP: Used to transfer files securely from remote/shared servers over SSH.
+	File System: Used to access files from local/on-premises drives via Self-hosted IR.
+	
+	HTTP is for file access, REST API for structured API data, SFTP for secure remote transfer, and File System for local files.
+
+How would you design a fault-tolerant ADF pipeline to process billions of records daily?
+	Retry policy
+	Parallelism
+	Failure Notification
+
+Your ADF pipeline is running slow. how would you identify and fix the performance bottlenecks?
+
+	Identify issue: Check Monitor → pipeline/activity runs
+	Copy Activity: Increase degree of parallelism, enable staging
+	Self-hosted IR: Scale up machine (CPU/RAM) or scale out nodes
+	Data Flow: Apply filter early, use partitioning, optimize transformations
+
+How would you implement incremental data load in ADF when working with large transactional databases.
+	Copy Activity:
+		Filter by last modified   : start date and end date
+	For Databases:
+		Watermark Tables: Track last processed value (e.g., ID/date)
+		CDC: Capture inserts/updates automatically
+	For files:
+		Get Metadata → get childItems
+		ForEach → iterate files
+		If Condition → check  : @greater(item().lastModified, variables('LastRunTime'))
+	Copy Activity: if pulls files have modified date between start and end date
+		Use Last Modified Date filter (Start Date & End Date)
+	
+	For databases: Use Watermark tables to track last processed ID/date or CDC to capture inserts/updates automatically.
+	For files: Use Get Metadata → childItems → ForEach, then filter using @greater(item().lastModified, variables('LastRunTime')) or
+	Copy Activity with Last Modified Date between Start Date and End Date.
+
+How would you implement a real time streaming pipeline in ADF using ADF only
+	Event based Trigger
+	Use Event-based Trigger integrated with Azure Event Grid (requires subscription registration) to
+	trigger pipelines automatically when a file/event arrives, enabling near real-time processing.
+
+you have a JSON file with an unknown Structure. how would you process it in ADF
+	1.Enable Schema Drift
+		In Mapping Data Flow, I enable Schema Drift on the source.
+		This allows ADF to ingest columns dynamically without predefined schema.
+		It is useful when JSON structure keeps changing or is semi-structured.
+	2.Use Flatten Transformation
+		If the JSON contains nested objects or arrays, I use the Flatten transformation.
+		This converts hierarchical JSON into a tabular format.
+		After flattening, I can clearly see and work with columns.
+
+How would you load data to different locations based on the file name
+	Get Metadata (Folder) → get list of files
+	ForEach → iterate each file
+	Switch Activity → route based on file name : @replace(item().name,'.csv','')  : file name should not have .csv
+	Copy Activity → load data to respective target based on case condition
+
+How would you store all the file names in a variable and number of files in the folder?
+	Take two variables (Array for file names, Int for count)
+	Get Metadata (Folder) → get childItems
+	ForEach → iterate files → Append Variable (store item().name)
+	Set Variable (outside ForEach) → get count : @length(variables('FileList'))
+			(Optional) Convert to string if needed : @string(variables('FileList'))
+
+How to save the logs of pipeline:
+	1) Copy Activity Built-in Logging (Settings → Enable Logging)
+	2) Empty File + Additional Column (Custom Logging via Copy Activity)
+	3) Stored Procedure Logging (Best Practice for Enterprise)
+
+How to copy millions of record from on premises:
+   1. Enabling Staging (Recommended for large data)
+   2, bulk insert or write batch size
+   Bulk insert: Uses database-level bulk loading to efficiently load millions of records with high performance.
+   Write batch size: Controls the number of rows per batch to optimize performance and manage memory during data load.
+
+How will you handle failures in Azure Data Factory pipelines?
+   Retry: Configure retry count and interval in the activity to automatically handle transient failures.
+   Notification on failure: Use alerts (email/Logic Apps) triggered on activity or pipeline failure to inform stakeholders immediately.
+ 
+How do you delete files older than 10 days in Azure Data Factory?
+	Get Metadata (Folder) → get list of files
+	ForEach → iterate each file
+	Get Metadata (File) → get lastModified
+	If Condition → check file age            : @less(item().lastModified, addDays(utcNow(), -10))
+	Delete Activity → delete old files
+
+How to copy the files only which are not available in sink
+  Approach A (Recommended)
+		Get Metadata (Source) → get childItems
+		Get Metadata (Sink) → get childItems
+		Filter Activity → compare source vs sink  : @not(contains(activity('GetSinkFiles').output.childItems, item().name))
+		Copy Activity → copy filtered (missing) files
+  Approach B (Alternative)
+		Get Metadata (Source) → get childItems
+		Get Metadata (Sink) → get childItems
+		ForEach (Sink files) → Append Variable (store sink file names)
+		ForEach (Source files) → If Condition → Copy Activity	: @not(contains(variables('SinkFileList'), item().name))
+
+How do you read Azure Key Vault secret in Azure Data Factory using Web Activity?
+	Use Web Activity to call Azure Key Vault REST API and retrieve the secret value.
+
+Your pipeline processes large datasets and sometimes runs out of memory. How would you avoid this?
+  Use partitioning in Data Flows to distribute data processing and prune unnecessary data early to reduce memory usage.
+
+Your pipeline runs daily, but sometimes the same records get processed twice. How would you ensure idempotency?
+   Ensure idempotency by using incremental loads (watermark column)or upsert (merge) operations to avoid processing duplicate records.
+
+Your ADF pipeline must process files in a specific order. How would you handle this?
+   Use ForEach activity with the sequential option enabled to process files one by one in order.
+
+You have 2 different files having different schemas. You need to process both the files using a single Copy Activity (with Mapping).
+	Dynamic mapping
+	Take two parameters (Object type for mappings from Translator)
+	Get Metadata → ForEach → iterate files
+	Copy Activity → dynamic mapping : @if(contains(item().name,'sales'), pipeline().parameters.p_map1, pipeline().parameters.p_map2)
+
+
+WITH cte AS (
+    SELECT
+        id,
+        month,
+        salary,
+        SUM(salary) OVER ( PARTITION BY id ORDER BY month ) AS csal,
+        RANK() OVER ( PARTITION BY id ORDER BY month DESC ) AS rnk
+    FROM employee
+)
+SELECT
+    id,
+    month,
+    csal
+FROM cte
+WHERE rnk > 1
+ORDER BY id ASC, month DESC;
+
+--> RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+
+SELECT
+  sale_date,
+  amount,
+  SUM(amount) OVER (
+    ORDER BY sale_date
+    RANGE BETWEEN INTERVAL 2 DAY PRECEDING AND CURRENT ROW
+  ) AS rolling_3_day_sum
+FROM sales_table;
+
+
+RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING : Includes all rows in the partition regardless of current row.
+RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW : RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW (Default)
+RANGE BETWEEN 2 PRECEDING AND CURRENT ROW :Includes all rows where month value is within 2 units less than current month up to current month.
+
+Use ROWS for strict row-by-row control.
+Use RANGE when your calculation should treat rows with the same ordering value as one group.
+
+RANGE BETWEEN 1 PRECEDING AND CURRENT ROW   -- ❌ invalid for DATE
+RANGE BETWEEN INTERVAL '<n> <unit>' PRECEDING AND CURRENT ROW
+		<n> = number
+        <unit> = DAY, HOUR, MINUTE, SECOND, YEAR, MONTH
+
+Joins:
+	data1 = [
+    (1, "Alice", 101),
+    (2, "Bob", 102),
+    (3, "Charlie", 103),
+    (4, "David", None),
+    (5, "Eve", 105),
+	(1, "Alice", 101)
+	]
+	columns1 = ["emp_id", "name", "dept_id"]
+	df_emp = spark.createDataFrame(data1, columns1)
+	df_emp.show()
+
+	data2 = [
+    (101, "HR"),
+    (102, "Finance"),
+    (104, "IT"),
+    (105, "Marketing")
+	]
+	columns2 = ["dept_id", "dept_name"]
+	df_dept = spark.createDataFrame(data2, columns2)
+	
+	Inner Join :
+      inner
+    Full Outer Join
+	  outer/full/fullouter/full_outer
+	Left Outer Join
+      left/leftouter/left_outer
+    Right Outer Join
+      right/rightouter/right_outer
+	Left Semi Join                  :left rows that have a match
+	  semi/leftsemi/left_semi
+	Left Anti Join					:left rows that do NOT have a match.
+	   anti/leftanti/left_anti
+	Cross Join
+	
+Set Operators:
+	union,unionAll,intersect,intersectAll
+	unionByName  --> allowMissingColumns
+	except/exceptAll
+	
+	data1 = [
+    (1, "A", 10),
+    (2, "B", 20),
+    (3, "C", 30),
+    (3, "C", 30),   # duplicate
+    (4, "D", 40)
+	]
+	df1 = spark.createDataFrame(data1, ["id", "name", "value"])
+	df1.show()
+	
+	data2 = [
+    (3, "C", 30),
+    (3, "C", 30),   # duplicate
+    (4, "D", 40),
+    (5, "E", 50),
+    (6, "F", 60)
+	]
+
+	df2 = spark.createDataFrame(data2, ["id", "name", "value"])
+	df2.show()
+	
+	data3 = [
+    ("G", 70, 7),
+    ("H", 80, 8)
+	]
+
+	df3 = spark.createDataFrame(data3, ["name", "value", "id"])
+	df3.show()
+	
+	data4 = [
+    (9, "I"),
+    (10, "J")
+	]
+
+	df4 = spark.createDataFrame(data4, ["id", "name"])
+	df4.show()
+	
+	df1.union(df2).show()              # UNION ALL behavior
+	df1.union(df2).distinct().show()  # UNION (distinct)
+	df1.intersect(df2).show()         # distinct common rows
+	df1.intersectAll(df2).show()      # keeps duplicates
+	df1.except(df2).show()            # distinct difference
+	df1.exceptAll(df2).show()         # count-based difference
+	df1.unionByName(df3).show()
+	df1.unionByName(df4, allowMissingColumns=True).show()
+	
+	df_large.join(broadcast(df_small), "id").show()
+	
+	
+from pyspark.sql.functions import split
+
+df = df.withColumn("first_name", split(df.fullname, " ")[0]) \
+	   .withColumn("last_name", split(df.fullname, " ")[1])
+	
+from pyspark.sql.functions import concat_ws
+df = df.withColumn(
+	"full_name",
+	concat_ws(" ", "first_name", "last_name")
+)
+
+df.dropna(how="all")             # drop only if all columns are null
+df.dropna(subset=["name"])       # drop if 'name' is null
+df.dropna(thresh=2)              # keep rows with at least 2 non-null values
+
+df.dropna(subset=["name", "age"])					:Removes rows where name OR age is NULL
+df.dropna(how="all", subset=["name", "age"]).show() :Removes rows where both name AND age are NULL
+	
+	df.fillna({
+    "name": "Unknown",
+    "age": 0
+	}).show()
+	
+	distinct() → all columns
+	dropDuplicates() → can target specific columns
+	df.dropDuplicates(["col1", "col2"]).show() vs distinct()
+	
+	limit(n) vs limit(n) vs take(n) vs first() vs first() vs collect()
+	
+	limit() → DataFrame (lazy), head/take/first → small data to driver, collect() → entire data to driver.
+
+WITH expanded AS (
+  SELECT product, price
+  FROM products
+  LATERAL VIEW explode(sequence(1, quantity)) AS q
+),
+ordered AS (
+  SELECT *,
+         SUM(price) OVER (ORDER BY price ASC) AS running_cost
+  FROM expanded
+)
+SELECT product, COUNT(*) AS qty_taken
+FROM ordered
+WHERE running_cost <= 100
+GROUP BY product;
+
+
+>How to run multiple notebooks parallel
+
+	from concurrent.futures import ThreadPoolExecutor, as_completed
+	ThreadPoolExecutor(max_workers=2) as executor: : to call notebook parallel
+
+>delta share
+	CREATE SHARE banking_share;
+
+	ALTER SHARE banking_share
+	ADD TABLE finance.sales.transactions;
+
+	CREATE RECIPIENT partner_company;
+
+	GRANT SELECT ON SHARE banking_share TO RECIPIENT partner_company;
+>Row Level Security and Column Level Security:
+	Dynamic View
+		CREATE VIEW sales_rls AS
+		SELECT *
+		FROM sales
+		WHERE region = current_user_region();
+	
+	CREATE VIEW sales_cls AS
+	SELECT
+		id,
+		name,
+		CASE
+			WHEN is_member('HR') THEN salary
+			ELSE NULL
+		END AS salary
+	FROM sales;
+
+>External Location vs External Volumes
+  External Location + Volume
+	Anyone with cluster + credential can access
+	No auditing at Unity Catalog level
+	Hard to track who accessed what
+	Not aligned with data governance policies
+  External Location + Volume
+	GRANT SELECT
+    GRANT READ FILES
+    GRANT WRITE FILES
+	
+	GRANT READ FILES ON VOLUME my_volume TO data_team;
+	
+	Only specific users can access ✅
+	Fully audited in Databricks ✅
+	Central governance ✅
+	
+	Difference between Spark and PySpark
+	DAG : DAG represents the sequence of operations (transformations) :Directed Acyclic Graph
+	
+	Tungsten is Spark’s execution engine that improves performance through memory optimization, binary processing, and code generation
+	Optimizes how data is processed in memory and CPU
+	During execution
+Epam:
+	
+	1. AQE vs Tungsten
+	   Happens before execution starts
+		Applies memory optimizations
+		Converts to binary format
+		Generates optimized code (whole-stage codegen)
+	   AQE: Runtime optimization (dynamic decisions)
+		Join strategies
+		Shuffle partitions
+		Skew data
+	2. Data Lake vs Data Warehouse
+	    In a data warehouse, data is stored in structured tables with a predefined schema to support fast SQL-based analytics and reporting.
+	    In a data lake, data is stored as files in various formats such as CSV, JSON, Avro, or Parquet.
+	3. Partition Pruning
+		Partition pruning is an optimization technique where Spark reads only required partitions instead of scanning the entire dataset.
+	4. Parquet vs JSON
+	   Parquet is a columnar file format that stores data in a compressed binary format, making it faster for processing and efficient in storage
+	   JSON is a text-based format that is human-readable and flexible, but it is slower to process compared to Parquet.
+	
+	5. DAG and Advantages
+		DAG (Directed Acyclic Graph) represents the sequence of transformations in Spark.
+		It ensures fault tolerance, enables parallel execution, and helps in optimizing the execution plan.
+		DAG is divided into stages, and each stage consists of multiple tasks.
+	6. Spark vs PySpark
+		Spark = Distributed processing engine (Scala-based)
+		PySpark = Python API for Spark , PySpark is the Python API for Spark. It provides built-in APIs like DataFrame and
+				  SQL functions and integrates with Python libraries such as Pandas and NumPy for data processing and analysis.
+	7. Decorators and Generators
+		Decorators:
+			Used to modify or extend function behavior
+			def my_decorator(func):
+				def wrapper():
+					print("Before")
+					func()
+					print("After")
+				return wrapper
+		Generators:
+			Used to generate values one at a time using yield
+			def gen():
+				for i in range(3):
+					yield i
+	
+In my project, we faced several challenges, and I worked on resolving them as follows:
+
+	1. Performance optimization
+	We had performance issues while processing large volumes of data in Databricks.
+	I optimized the Spark jobs by applying partitioning, caching, and reducing data shuffling, which improved execution time.
+
+	2. Join issues and data skew
+	In some cases, improper join conditions caused Cartesian products and data skew.
+	I analyzed the joins, corrected the logic, and used optimized join strategies like broadcast joins where applicable.
+
+	3. Data quality issues
+	We faced issues like null values, duplicates, and inconsistent data from multiple sources.
+	I implemented data validation checks and cleansing logic in the Silver layer to ensure data quality.
+
+	4. Incremental loading (CDC)
+	Processing full data loads was inefficient, so I implemented incremental loading using watermark or timestamp-based logic to process only new and updated data.
+
+	5. Pipeline monitoring and failures
+	There were occasional pipeline failures due to data or system issues.
+	I worked on implementing proper logging, error handling, and alerts in Azure Data Factory to quickly identify and resolve issues.
+	
+Error handling:
+	I implemented logging and error handling using Azure Data Factory and Databricks.
+	In ADF, I used failure paths and separate error-handling pipelines to capture failures. I also logged pipeline and activity details into a logging table.
+	In Databricks, I used try-except blocks and logged errors and execution details into Delta tables.
+	Additionally, I used Azure Monitor to set up alerts for pipeline failures, which helped in quick issue resolution
+	
+Deploy:
+	I use Git for source control. For deployment, I use a CI/CD pipeline like Azure DevOps or GitHub Actions.
+	For ADF, I deploy using ARM templates.
+	For Azure Databricks, I deploy using Databricks Asset Bundles YMAL files
+	The pipeline promotes code across dev, test, and prod using environment-specific configurations.
+	databricks bundle deploy --target dev
+	I have worked with GitHub and can use GitHub Actions, and I’m also aware of Azure DevOps pipelines.
+
+EPAM:
+
+1. Max profit
+	def max_profit(prices):
+	min_price = float('inf')
+	max_profit = 0
+
+	for price in prices:
+		if price < min_price:
+			min_price = price
+		else:
+			profit = price - min_price
+			max_profit = max(max_profit, profit)
+
+	return max_profit
+	l = [3,4,2,1,6,9,3]
+	print(max_profit(l))
+2.  To identify the indices
+	def two_sum(nums, target):
+		seen = {}
+
+		for i, num in enumerate(nums):
+			complement = target - num
+			if complement in seen:
+				return seen[complement], i
+			seen[num] = i
+	nums = [7, 2, 5, 6, 7]
+	target = 9
+
+	target=9
+	nums=[7,2,6,89]
+	intial=0
+	out=[]
+	for i,j in enumerate(nums):
+		intial = intial+i
+		out.append(j)
+		if intial==target:
+			break
+	print(out)
+3. Difference A==B, A IS B
+	A =5
+	B =5
+	A==B: Checks value equality
+	A IS B : whether both variables point to the same object in memory
+4.what is use of finally key word in exception block?
+	It executes always
+5.What is __init__ method and self key word ?
+	__init__
+    	Special method in python
+		Whenever we are creating object constructor will be executed automatically and
+		we are not required to call explicitly
+	
+	self:
+		Self is a reference variable which is always pointing to current object.
+		The first argument to the constructor and instance method should be self.
+		By using self we can declare instance variables.
+6.Decorators and Generators
+		Decorators:
+			Used to modify or extend function behavior
+			def my_decorator(func):
+				def wrapper():
+					print("Before")
+					func()
+					print("After")
+				return wrapper
+		Generators:
+			Used to generate values one at a time using yield
+			def gen():
+				for i in range(3):
+					yield i
+7.soft cloning and hard cloning in python
+ADF:
+7. How to load only files greater than 10GB from a folder using Azure Data Factory (ADF)?
+	Get Metadata (Folder) → get list of files (childItems)
+	ForEach → iterate each file (@activity('Get Metadata').output.childItems)
+	Get Metadata (File) → get file properties (size, lastModified)
+	If Condition → check file size > 10GB : @greater(activity('Get Metadata File').output.size, 10737418240) :1 GB = 1024 × 1024 × 1024 = 1,073,741,824 bytes
+	Copy Activity → load only large files to target (@item().name)
+8. Difference between Schedule Trigger vs Tumbling Window Trigger
+9. How to pass values from Notebook to ADF (Databricks Notebook Activity)
+	result = "File processed successfully"
+	dbutils.notebook.exit(result)
+	@activity('NotebookActivityName').output.runOutput
+ 10.Pipleline is running slowly how you will resolve?
+ 
+ADB:
+  1. Memory segments in executor nodes
+	Execution Memory
+		Used for processing tasks
+		Example: joins, aggregations, sorting
+		This memory is used while Spark is doing actual computation
+	Storage Memory
+		Used to store cached data
+		Example: when you do cache() or persist()
+	User Memory
+		Used for your code / variables
+		Example: Python/Scala objects, UDFs
+	Reserved Memory
+		Small portion kept by Spark internally
+		Not directly usable
+	Execution and storage share memory dynamically, and all cores use this shared pool—there is no fixed memory per core
+	
+	If executor has 64GB memory
+		60% is used as unified memory for execution and storage
+			Execution Memory → 30%
+			Storage Memory → 30%
+		40% user memory
+		1%	Reserved Memory (approx, not exact %)
+	
+  2. How will you handle the governance using Unity Catalog.
+	 governance:
+		Controlling who can access what data
+	
+	I use Unity Catalog for governance with role-based access, row and column-level security, Delta Sharing,
+	volume permissions, and audit logs, following least privilege.
+	
+	In Unity Catalog, I handle governance mainly using access control.
+	
+	I give permissions at catalog, schema, and table level based on roles.
+		GRANT ALL PRIVILEGES ON CATALOG sales_cat TO admin;
+		GRANT USAGE ON SCHEMA sales_cat.reporting TO analyst;
+		GRANT SELECT ON ALL TABLES IN SCHEMA sales_cat.reporting TO analyst;
+		GRANT SELECT ON TABLE sales_cat.reporting.sales_summary TO intern;
+	I use column-level and row-level security to restrict sensitive data.
+		CREATE VIEW customer_view AS
+		SELECT name, email FROM customer;
+		GRANT SELECT ON VIEW customer_view TO user_role;
+	
+		SELECT * FROM sales WHERE region = 'US';
+	For external sharing, I use Delta Sharing.  : This way, data is shared securely without copying
+		CREATE SHARE sales_share;
+		ALTER SHARE sales_share ADD TABLE sales_cat.reporting.sales_data;
+		GRANT SELECT ON SHARE sales_share TO RECIPIENT partner_company;
+	
+		They get a Delta Sharing profile file (JSON)
+		Contains:
+		endpoint (URL)
+		token (secure access)
+	I also control access to files using volumes.
+		-- give access
+		GRANT READ FILES ON VOLUME sales_vol TO analyst;
+
+	And I enable audit logs to track who is accessing what data.
+		Audit logs are not enabled inside Unity Catalog directly.
+		We enable them at the Databricks workspace / account level.
+	I usually follow least privilege, so users only get the access they need.
+ 
+  3. Data frames vs data sets
+		DataFrame → untyped (no compile-time check) : Most commonly used in PySpark
+		Dataset → typed (compile-time safety): Mostly used in Scala/Java
+		Compile-time means errors are identified while writing the code, before running it
+  4. OPTIMIZE vs auto OPTIMIZE
+  5. Difference between spark version 3 and 2:
+  6. Jobs is running slowly how you will resolve?
+		We can fix this by writing efficient code, using proper partitions, avoiding collect, handling data skew,
+		and using AQE in Databricks, which improves performance at runtime.
+	
+		I first check Spark UI to identify bottlenecks, then optimize partitions,
+		handle data skew, improve joins, and ensure efficient transformations. If needed, I tune the cluster resources.
+	
+		1.Check where time is going
+			I check Spark UI to see which stage is taking more time
+				Look for:Skew,Shuffle issues,Long-running tasks
+		2.Check data size & partitions
+				I verify if data is properly partitioned.
+		3.Optimize transformations
+			Avoid unnecessary:
+				collect()
+				distinct()
+				repeated scans
+			Use:
+			filter early
+			select only required columns
+		4.Handle skew  :Use salting and Repartition properly
+		5.Use caching (if reused)
+		6.Optimize joins :Use broadcast join for small tables
+		7.Use proper file format : I prefer Parquet/Delta instead of CSV
+		8.Cluster tuning
+	
+  7. Parquet vs ORC
+		We use Parquet because it is a columnar format, gives better performance through column pruning and compression,
+		and is widely supported across different platforms.
+		Parquet: Snappy
+		ORC :ZLIB
+	
+		ORC is optimized more for Hive,
+		Parquet is more widely used across tools (Spark, Databricks, cloud platforms)
+  8. Use of Delta share and how it works internally
+  9. OOM errors
+  10. df.count() , how many jobs, stages , tasks will be created
+  11. AQE vs catalyste optimizer
+  12. what is the use of Catalog
+      Databricks Unity Catalog is a centralized governance layer for data and AI assets. It allows organizations to define security, access control, and metadata once and enforce them everywhere across multiple workspaces and cloud regions.
+     a Catalog is the primary organizational unit at the top of the hierarchy.Metastore: Sits at the account level and holds all metadata.Catalog: Sits beneath the metastore (e.g., finance_catalog).Schema (Database): Sits within a catalog (e.g., us_taxes).Securables: The lowest level assets, such as tables, volumes, AI models, or views
+  13. Auto loader:
+      Auto Loader is a powerful Databricks feature that incrementally and efficiently ingests data files (like JSON, CSV, and Parquet) from cloud storage     into Delta Lake tables, automating schema inference and file tracking.
+  14. How you will handle late arrival files
+		In Auto Loader, late arriving files are handled automatically based on file arrival.
+		If a late file comes for a previous date, I identify it using timestamp and reprocess only that specific date instead of full data.
+  15. what is fault tolerance:
+		Spark uses DAG for execution and lineage for fault tolerance
+		RDDs are fault-tolerant, meaning that they can recover from failure by recomputing from lineage information on other nodes.
+  16. what is the use of broadcast join
+  17. Soft cloning and hard cloning
+  18. star schema vs snoflake schema
+		In star schema, data is denormalized.  : When performance is important
+			One fact table in center
+			Connected to dimension tables
+			Dimensions are not split further
+		In snowflake, dimension tables are normalized (split into multiple tables).  : When data is large and needs normalization
+			Star → simple, fast, less joins
+			Snowflake → normalized, more joins, less redundancy
+  19. how you will log the errors
+		>Application Level Logging
+			from pyspark.sql import Row
+			try:
+				df = spark.read.csv("/path/file.csv")
+			except Exception as e:
+				error_msg = str(e)
+				error_df = spark.createDataFrame([Row(error=error_msg)])
+				error_df.write.mode("append").saveAsTable("error_log_table")
+		>Python Logging
+			we use logging module for better control
+			import logging
+			logging.basicConfig(level=logging.INFO)
+			logging.info("Job started")
+			logging.error("Error occurred")
+		>Infrastructure
+			Databricks automatically captures logs at cluster level
+			Includes:
+			Driver logs
+			Executor logs
+			Spark logs
+			Databricks UI → Cluster → Logs
+		>Job Level Logs
+			Job run status (success/failure)
+			Error messages
+			Execution time
+ SQL:
+  1. Cluster index and non cluster index
+  2. View vs Materialized View
+  3. how you will be improve the query performance
+  4. Types of indexes
+  5. Coding standards
+ 
+  how you will crate CI/CD pipelines
+  how will you deploy the code in ADF and data bricks
+  =================================================================================================
+ 
+  	dayofmonth
+	dayofmonth()	Day in month (1–31)	15
+	dayofweek()		Day in week (1–7)	6
+	dayofyear()		Day in year (1–365/366)	258
+ 
+    year,month,dayofmonth(),hour ,minute,second
+    to_unix_timestamp()/col("timestamp").cast("long")/unix_timestamp
+ 
+	df=spark.createDataFrame(data,columns)
+	df.withColumn("c",to_timestamp("c"))
+	.withColumn("previou_date",lag("c").over(Window.partitionBy("account_id").orderBy("c")))
+	.withColumn("difference",(unix_timestamp(col("c"))-unix_timestamp(col("previou_date")))/60)
+	.withColumn("status",when(col("difference") < 2,"duplicate").otherwise("not duplicate"))
+	.display()
+	
+	
+	year,month,dayofmonth(),hour ,minute,second
+	to_unix_timestamp()/col("timestamp").cast("long")/unix_timestamp
+	to_date('2025-04-27', 'yyyy-MM-dd')
+	to_timestamp('2025-04-27 10:30:00', 'yyyy-MM-dd HH:mm:ss')
+	date_format(date_col, 'yyyy-MM')
+	current_date()
+	current_timestamp()
+	
+	
+	unix_timestamp(current_time) - unix_timestamp(prev_time)   -->Seconds
+	(unix_timestamp(current_time) - unix_timestamp(prev_time)) / 60  || (col("current_time").cast("long") - col("prev_time").cast("long")) / 60 -->Minutes
+	(unix_timestamp(current_time) - unix_timestamp(prev_time)) / 3600  --> Hours
+    datediff(date1, date2)  -->Days
+	months_between(date1, date2) / 12  -->Months
+	datediff(date1, date2) / 365               -->years
+	FLOOR(months_between(date1, date2) / 12)   -->years
+	
+	window_spec = Window.orderBy("date").rowsBetween(-6, 0)
+	df_run = df_booking.withColumn("running_total", sum("amount").
+          over(Window.partitionBy(month("booking_date")).orderBy("booking_date").rowsBetween(Window.unboundedPreceding, Window.currentRow)))
+	
+	HH:mm:ss
+	date_format(col("booking_time"), "MM") : "01", "02", "12"
+	month(col("booking_time")) : 1, 2, 12
+	
+	date_trunc("year", col("ts"))/date_trunc("month", col("ts"))/date_trunc("day", col("ts"))/date_trunc("hour", col("ts"))
+	date_trunc('DAY', current_timestamp())
+	date_trunc('WEEK', current_timestamp())
+	date_trunc('MONTH', current_timestamp())
+	date_trunc('YEAR', current_timestamp())
+	trunc(col("date"), "MM")/trunc(col("date"), "YY")
+================================================================================================
+	percentage:
+	 Percentage = (Part / Total) × 100
+	
+	 ((Current - Previous) / Previous) * 100)
+	 ((current - previous) / NULLIF(previous, 0)) * 100
+======================================================================
+ NULLIF vs COALESCE vs NVL (very common interview combo)
+===========================================================================
+>CTE vs subquery
+Common Table Expressions (CTEs) and subqueries are both temporary result sets used to break down complex SQL logic, but they differ significantly in syntax, readability, and structural features. While a subquery is nested inline within a clause (like FROM or WHERE), a CTE is defined upfront using the WITH keyword, making it named, reusable, and dramatically easier to read A subquery is written inside another query and is harder to read and cannot be reused easily.
+================================================================================================================
+Databricks provides two compute options: Serverless Compute and Cluster-based Compute. In serverless compute, Databricks completely manages the infrastructure, so we don’t see or manage any VMs.
+ In cluster-based compute, the VMs are still provisioned in the cloud, but we configure things like cluster size, node type, and scaling.
+ =====================================================================================
+ ====================================================================================================
+Question1: You have a Spark job that needs to process 10GB of data.
+How would you decide the number of cores and memory per executor for this job? Explain your reasoning
+
+			+--------------------------------------+
+			| Spark Pool Memory, Unified Memory    |
+			| Executor Memory = 60% (6GB - 300MB)  |
+			|--------------------------------------|
+			| User Memory = 40% (4GB - 300MB)      |
+			|--------------------------------------|
+			| Reserved Memory = 300MB              |
+			+--------------------------------------+
+													 +-----------------------------+
+													 |      Storage Memory         | 50%
+													 |        (Caching)            |
+													 |-----------------------------|
+													 |     Execution Memory        | 50%
+													 +-----------------------------+
+
+			Executor Container = 10GB
+			+--------------------------------------+
+			| 128 MB = 1 Partition                 |
+			| 10 GB Data = 80 Partitions           |
+			+--------------------------------------+
+							|
+							v
+						+-----------+
+						| 80 cores  |
+						+-----------+
+							|
+							v
+					 +----------------+
+					 | 10 Executors   |
+					 +----------------+
+
+			1 Executor has 8 cores (assumption)
+			8 Cores = 8 Partitions (128MB each) = 1GB
+			Memory Allocation
+			+--------------------------------------------------------------+
+			| 3.5GB Per Executor                                           |
+			| (Based on the Spark Pool Memory Allocation)                  |
+			+--------------------------------------------------------------+
+=============================================================================================================
+Yesterday the job was running fine, but today it’s slower — I approach this systematically.
+
+So if data is different, I focus on volume and skew.
+If data is same, I analyze Spark UI, execution plan, cluster behavior, and data layout to identify the bottleneck.
+
+Data is NOT Same (Volume increased / Distribution changed)
+
+	If data volume increased → more processing time is expected
+	If data skew is present → some tasks run longer than others
+
+	I use Spark UI to:
+		Identify long-running stages
+		Check for skewed tasks (uneven task duration / high shuffle read)
+	Based on that, I optimize by:
+		Repartitioning data properly
+		Using salting techniques for skew (for highly skewed keys)
+		Applying broadcast joins where applicable (to reduce shuffle)
+	Additionally:
+		I ensure efficient code by pushing filters early to reduce data before joins/aggregations
+	For Delta tables:
+		I run OPTIMIZE to reduce small files
+		Use Z-ORDER to improve data skipping
+	If Liquid Clustering is enabled:
+		It can replace Z-ORDER for data skipping
+		However, OPTIMIZE may still be required to manage file sizes
+	AQE:
+		AQE helps reduce skew impact at runtime
+		But in cases of high or extreme skew, we may still need techniques like salting or repartitioning
+	
+Data is Same
+	If both data and logic are same, then I focus on execution and environment changes.
+
+	Spark UI Analysis
+		Compare stages with previous run.Check (Shuffle increase/GC time/Task skew)
+	
+		GC time = time spent by Spark executors cleaning unused memory
+		It is the time JVM spends removing unused objects from memory to free up space.
+	
+	Cluster / Environment Changes
+		Cluster size (workers reduced?)/Autoscaling delays/Max worker limits/Cloud provisioning latency(delay in getting new machines (VMs) from the cloud provider)
+	Execution Plan Changes
+		Use explain() to compare plans
+		Check if 1.Broadcast join → Shuffle join 2.Join strategy changed
+	Data Layout Issues
+		Even with same data, layout can change:
+		Too many small files/Missing partition pruning/Table not optimized
+			Fix:
+				Run OPTIMIZE
+				Adjust partitioning
+	Caching Issues
+		Cached data might be cleared
+		Leads to recomputation
+
+	External/System Factors
+		Storage latency (ADLS / S3)
+		Network delays
+	
+=====================================================================================================================================
+How you will log the errors in ADB
+		>Application Level Logging
+			from pyspark.sql import Row
+			try:
+				df = spark.read.csv("/path/file.csv")
+			except Exception as e:
+				error_msg = str(e)
+				error_df = spark.createDataFrame([Row(error=error_msg)])
+				error_df.write.mode("append").saveAsTable("error_log_table")
+		>Python Logging
+			we use logging module for better control
+			import logging
+			logging.basicConfig(level=logging.INFO)
+			logging.info("Job started")
+			logging.error("Error occurred")
+		>Infrastructure
+			Databricks automatically captures logs at cluster level
+			Includes:
+			Driver logs
+			Executor logs
+			Spark logs
+			Databricks UI → Cluster → Logs
+		>Job Level Logs
+			Job run status (success/failure)
+			Error messages
+			Execution time
+===================================================================================================
+Day-to-day work and the challenges you faced in ADB
+======================================================================================================================================
+How would you implement incremental data load in ADF when working with large transactional databases.
+	Copy Activity:
+		Filter by last modified   : start date and end date
+	For Databases:
+		Watermark Tables: Track last processed value (e.g., ID/date)
+		CDC: Capture inserts/updates automatically
+	For files:
+		Get Metadata → get childItems
+		ForEach → iterate files
+		If Condition → check  : @greater(item().lastModified, variables('LastRunTime'))
+	Copy Activity: It pulls files have modified date between start and end date
+		Use Last Modified Date filter (Start Date & End Date)
+	
+	For databases: Use Watermark tables to track last processed ID/date or CDC to capture inserts/updates automatically.
+	For files: Use Get Metadata → childItems → ForEach, then filter using @greater(item().lastModified, variables('LastRunTime')) or
+	Copy Activity with Last Modified Date between Start Date and End Date.
+=============================================================
+Your ADF pipeline is running slow. how would you identify and fix the performance bottlenecks?
+
+	Identify issue: Check Monitor → pipeline/activity runs
+	Copy Activity: Increase degree of parallelism, enable staging
+	Self-hosted IR: Scale up machine (CPU/RAM) or scale out nodes
+	Data Flow: Apply filter early, use partitioning, optimize transformations
+=======================================================
+How to save the logs of pipeline:
+	1) Copy Activity Built-in Logging (Settings → Enable Logging)
+	2) Empty File + Additional Column (Custom Logging via Copy Activity)
+	3) Stored Procedure Logging (Best Practice for Enterprise)
+	
+Day-to-day work and the challenges you faced in ADB
+===============================================
+                +----------------------+
+                |      Source Systems  |
+                | (SQL / APIs / Files)|
+                +----------------------+
+                           |
+                           v
+                +----------------------+
+                |   Azure Data Factory |
+                |   (Ingestion Layer)  |
+                +----------------------+
+                           |
+                           v
+                +----------------------+
+                |        ADLS          |
+                |   (Raw Storage)      |
+                +----------------------+
+                           |
+                           v
+                +----------------------+
+                |   Azure Databricks   |
+                |  (Processing Engine) |
+                +----------------------+
+                           |
+        ---------------------------------------------
+        |                  |                        |
+        v                  v                        v
+
++----------------+  +---------------------+  +----------------------+
+|   Bronze Layer |  |    Silver Layer     |  |     Gold Layer       |
+|----------------|  |---------------------|  |----------------------|
+| Raw Data       |  | Cleansing           |  | Business Aggregates  |
+| Schema Enforce |  | Deduplication       |  | Data Marts           |
+| No Transform   |  | Data Quality Checks |  | KPIs                 |
++----------------+  | Enrichment          |  +----------------------+
+                    +---------------------+
+                                   |
+                                   v
+                        +----------------------+
+                        | Analytics / Reporting|
+                        |    (Power BI etc.)   |
+                        +----------------------+
+-------------------------------------------------------------
+   Metadata Driven Architecture (Control Tables / Config)
+   Monitoring | Logging | Error Handling | Audit
+-------------------------------------------------------------
+Data is ingested from multiple sources using ADF into ADLS.
+Databricks processes the data using a medallion architecture — 
+Bronze for raw data, Silver for cleansing and transformations,
+and Gold for business-ready data. 
+principal :
+1. Layered Data Progression:
+You don’t transform everything at once — you progressively refine data step by step.
+2. Progressive Data Quality Improvement
+Instead of fixing data in one go, quality checks and transformations are applied incrementally.
+3. Separation of Concerns
+Each layer has a clear responsibility:
+Bronze → ingestion & historical storage
+Silver → transformation & standardization
+Gold → analytics & reporting
+4. Single Source of Truth with Reprocessability
+Raw data is always preserved in Bronze layer.
+Data can be reprocessed anytime if business logic changes
+
+Finally, the data is used for reporting through tools like Power BI.
+The entire pipeline is metadata-driven with monitoring and logging
+
+====================================================================================================================================================
+Ques6: You're working as a Data Engineer for an e-commerce company. The business team tracks a daily revenue KPI in Databricks using a Delta table.
+If daily revenue drops by more than 10% compared to the previous day, the business stakeholders should get an alert immediately on email or Slack.
+How would you design and implement alerts in Databricks to notify the respective stakeholders?
+
+alert option with sql query
+
+===================================================================================================================================================
+Ques8 : Your finance and business teams use Databricks for analysis, but they are not comfortable editing SQL queries.
+They often ask you to run the same SQL logic again and again, just with different dates, countries, or product names.
+Question:
+How would you design re-usable SQL queries in Databricks so that non-technical users can run the analysis by just changing inputs,
+without touching the core SQL logic?
+
+		SELECT * FROM sales
+		WHERE product = :product_filter;
+=============================
+Ques8: Your organization is using multiple Databricks workspaces (dev, test, prod) across different teams. Data is stored in a centralized cloud storage account, and you want:
+- Fine-grained access control (table, column, row level)
+- A single governance layer across all workspaces
+- Central auditing and lineage
+============================================================================
+How would you design the architecture using Unity Catalog in a modern Databricks workspace?
+Explain the key components involved (metastore, catalogs, schemas, storage, and access control) and how they interact.
+===================================================
+Ques9: Your team uses a Serverless SQL Warehouse for BI dashboards. During business hours,
+hundreds of users hit the dashboard and queries slow down. At night, usage drops to almost zero.
+
+Which compute type would you choose for the SQL Warehouse, and how does it scale automatically to handle this pattern?
+
+  Warehouse type:
+	Serverless
+	Pro               --Auto Scaling  : add clusters
+	Classic           --Auto Scaling  :add clusters
+	
+=================================================================
+Ques10: Your company has a Databricks Lakehouse with Delta tables for sales, customers, and transactions. Business users (non-technical) want to ask questions in plain English like:
+- "What were last quarter’s top-selling products in Canada?"
+Genie spaces
+=================
+Ques11: You work as a Data Engineer at an airline company.
+The business team wants to understand how flight ticket sales are trending over time to plan pricing and promotions.
+Using PySpark, how would you analyze the trend of flight ticket sales over time (daily or monthly)?
+	
+==========================
+df_run = df_booking.withColumn("running_total", sum("amount").
+          over(Window.partitionBy(month("booking_date")).orderBy("booking_date").rowsBetween(Window.unboundedPreceding, Window.currentRow)))
+==============================================================================
+Multiple source systems send data with different schemas, but all of them contain some common numeric columns that need aggregation. The business frequently changes:
+
+• Which columns to aggregate
+• Which aggregation functions to apply (sum, avg, max, count, etc.)
+• Hard-coding logic every time is not acceptable.
+
+
+class my_utility:
+
+    def __init__(self):
+        pass
+
+    def aggregator(self, df, groupby_col, aggregator_col, agg_type):
+
+        df = df.groupBy(groupby_col).agg(agg_type(aggregator_col))
+
+        return df
+	
+obj = my_utility()
+df_results = obj.aggregator(df_booking, 'airport_id', 'amount', sum)
+display(df_results)
+========================================================================================
+
+Capgemini
+	1. How you will handle the skewdata
+	2. Write a query to get the second highest salary for the previous month
+	3.
+Shell Interview Question:
+============================
+1.Can you explain how Auto Loader works in Databricks?
+Auto loader incrementally processes new data files as they arrive in cloud storage.
+It uses identifier called cloudFiles to point to an input directory path, automatically processing files without requiring any manual file tracking or scheduling setups.
+it does exactly once processing ,its logs meta data within your pipeline by check point location,
+If failure occurs auto loader resumes where it left off with out redundant processing.
+Automatic Schema Inference & Evolution You do not need to provide a hardcoded schema. Auto Loader detects changes dynamically:
+
+2.What are the schema evolution modes available in Auto Loader? Can you explain each mode with examples?
+The four schema evolution modes are:
+1.addNewColumns (default): Automatically adds new columns to your table schema as they are discovered. and ingests it on the next run.
+Suppose your first few files contained id and name
+New File: Contains a new age column.
+Result: The stream fails, automatically adds age to the table schema, and ingests it on the next run
+2.rescue : Any unexpected columns or data type mismatches are captured and bundled together in a special JSON blob column (usually named _rescued_data)
+Your table schema has id and name.
+New File: Arrives with an unexpected phone_number column.
+Result: The stream processes the file smoothly without failing.
+The phone_number data is not lost; it is placed neatly inside the _rescued_data column (e.g., {"phone_number": "123-456-7890"}).
+3.failOnNewColumns :Auto Loader encounters any columns that were not in the initially inferred schema, the stream fails completely and will not restart until you manually update the schema
+Your table schema has id and name.
+New File: Arrives with a new column named address.
+Result: The pipeline fails. It pauses data ingestion until you manually approve the new address column to alter the table structure.
+4.none:Useful if you only need a specific set of base fields and intentionally want to discard newly introduced or temporary upstream fields.
+Your table schema has id and name.
+New File: Arrives with id, name, and an unexpected department column.
+Result: Auto Loader ingests id and name as usual but entirely drops and ignores the department data.
+
+Auto Loader ingests data into a Delta table. If a record is deleted in the source system, how would you reflect that deletion in Databricks?
+Auto Loader only appends new or modified files; it cannot natively detect if a record was deleted in the source system. To propagate source deletions to a Delta table, you must capture the change events (CDC) from your source system and apply them using a MERGE INTO statement or Delta Live Tables (DLT). The Autoloader is designed to process files exactly once unless the option "cloudFiles.allowOverwrites" is enabled.
+
+Suppose the Bronze and Silver tables contain multiple unprocessed versions due to a pipeline failure, and the data was not propagated to the Gold layer.
+How would you identify the missing versions and recover the Gold layer? 4 principals of this architecture ?
+
+
+If a large number of JSON files arrive in the source location every day, how would you design and optimize the ingestion process in Databricks?
+To ingest a large volume of daily JSON files into Databricks efficiently, you should use Databricks Auto Loader to load the data directly into a Delta Lake Bronze table. This architectural approach directly solves the performance bottlenecks of managing millions of small files, handling unpredictable JSON schemas, and scaling compute.
+# Streaming Auto Loader implementation with optimized production settings
+df = (spark.readStream
+      .format("cloudFiles")
+      .option("cloudFiles.format", "json")
+      .option("cloudFiles.useNotifications", "true")  # Scales efficiently without file listing
+      .option("cloudFiles.schemaLocation", "s3://my-bucket/meta/schema")
+      .option("cloudFiles.inferColumnTypes", "true")   # INFERS proper types automatically
+      .load("s3://my-bucket/raw/json/landing/"))
+
+query = (df.writeStream
+         .format("delta")
+         .outputMode("append")
+         .option("checkpointLocation", "s3://my-bucket/meta/checkpoints")
+         .trigger(availableNow=True)                  # Processes all new daily files as a single batch
+         .toTable("hive_metastore.bronze.daily_json_ingest"))
+
+What is the difference between explode() and explode_outer() in Spark? When would you use each function?
+explode creates a row for each element in the array by ignoring null or empty values in array whereas explode_outer returns all values in array or map including null or empty.
+explode gives the following output-
+
+id | name | likes
+_______________________________
+1  | Luke | baseball
+1  | Luke | soccer
+Whereas explode_outer gives the following output-
+
+id | name | likes
+_______________________________
+1  | Luke | baseball
+1  | Luke | soccer
+2  | Lucy | null
+
+What is watermarking in Structured Streaming, and why is it important?
+
+What is a checkpoint location in Structured Streaming, and what role does it play in fault tolerance and exactly-once processing?
+
+What is the use of Change Data Feed (CDF) in Databricks?
+Incremental ETL: Process only the rows that have changed since the last pipeline run instead of reloading or comparing entire datasets.
+tracks row-level modifications (inserts, updates, and deletes) between different versions of a table.
+Audit Trails: Capture a chronological, row-level history of all data modifications for compliance and governance requirements.
+Each change record includes metadata indicating the operation type (e.g., INSERT, DELETE, UPDATE_PREIMAGE, UPDATE_POSTIMAGE), the commit version, and the timestamp.
+spark.read \
+  .option("readChangeFeed", "true") \
+  .option("startingVersion", 0) \
+  .table("<table_name>")
+
+How do you connect Databricks to external SQL databases and REST APIs, and how do you securely manage the credentials?
+connects to external SQL databases using or standard JDBC/ODBC drivers,
+connects to REST APIs using native Python libraries like requests, and credentials via Unity Catalog connections or Databricks Secret Scopes.
+:
+ emp_id | punch_time 		| flag
+----------------------------------------
+E001 | 2026-04-14 09:01:12 | IN
+E001 | 2026-04-14 18:05:33 | OUT
+E002 | 2026-04-14 08:55:47 | IN
+E002 | 2026-04-14 17:45:10 | OUT
+E003 | 2026-04-14 09:10:05 | IN
+E003 | 2026-04-14 18:20:44 | OUT
+E004 | 2026-04-14 09:03:22 | IN
+E004 | 2026-04-14 17:55:30 | OUT
+================================================================
+need emp_id , logintime in hours
